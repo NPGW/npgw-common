@@ -1,0 +1,1 @@
+# npgw-api-specification
