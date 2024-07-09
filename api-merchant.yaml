@@ -1,0 +1,460 @@
+openapi: 3.0.3
+
+info:
+  title: merchant api
+  version: 0.1.1
+  contact:
+    email: info@npgw.xyz
+
+externalDocs:
+  url: https://docs.npgw.xyz
+
+servers:
+  - url: https://api.npgw.xyz/merchant-v1
+
+paths:
+  /transaction/{transactionId}:
+    get:
+      operationId: getTransactionById
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/TransactionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /transaction:
+    get:
+      operationId: getTransaction
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: merchantId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: externalTransactionId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/TransactionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '500':
+          $ref: '#/components/responses/Error'
+
+    post:
+      operationId: createTransaction
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: async
+          schema:
+            type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/TransactionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '500':
+          $ref: '#/components/responses/TransactionResponse'
+
+  /token:
+    post:
+      operationId: getToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NpgwToken'
+          description: Everything works as expected.
+        '401':
+          $ref: '#/components/responses/Error'
+        '405':
+          $ref: '#/components/responses/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Invalid data was sent or some parameters are missing.
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: No valid key provided.
+    Forbidden:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: The API key doesn't have a permission for this action.
+    NotFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: The requested resource doesn't exist.
+    Validation:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: The request payload did not pass the validation (probably incorrect).
+    Error:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Internal Gateway error.
+
+    TransactionResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransactionResponse'
+      description: Everything works as expected.
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        id:
+          type: string
+        code:
+          type: string
+
+    User:
+      type: object
+      required:
+        - name
+        - password
+      properties:
+        name:
+          type: string
+        password:
+          type: string
+
+    NpgwToken:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        expiresIn:
+          type: integer
+        idToken:
+          type: string
+        refreshToken:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+
+    PaymentMethod:
+      type: string
+      description: Payment method
+      enum:
+        - CreditCard
+
+    PaymentDetails:
+      type: object
+      discriminator:
+        propertyName: paymentMethod
+      required:
+        - paymentMethod
+      properties:
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+
+    CreditCardDetails:
+      allOf:
+        - $ref: '#/components/schemas/PaymentDetails'
+        - type: object
+        - description: CreditCard
+          required:
+            - pan
+            - expMonth
+            - expYear
+            - cvv
+            - cardHolderName
+          properties:
+            pan:
+              type: string
+              description: Full card number.
+              example: 4242424242424242
+            expMonth:
+              type: string
+              description: Card expiry month (1..12).
+              example: 6
+            expYear:
+              type: string
+              description: Card expiry year (e.g. 2024).
+              example: 2025
+            cvv:
+              type: string
+              description: 3-digit card security code (CVV2/CVC2).
+              example: 048
+            cardHolderName:
+              type: string
+              description: Card holder name.
+              example: john doe
+
+    CustomerDetails:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - address1
+        - city
+        - country
+        - dateOfBirth
+      properties:
+        customerId:
+          type: string
+          description: Unique customer id.
+          example: 3a5f04af-fb52-41ce-b9bc-283e72207cd5
+        externalCustomerId:
+          type: string
+          description: Unique id for each customer in the merchant's system.
+          example: 32556
+        firstName:
+          type: string
+          description: Billing Address first name.
+          example: Edvard
+        lastName:
+          type: string
+          description: Billing Address last name.
+          example: Munch
+        email:
+          type: string
+          description: Customer email.
+          example: ed.munch@gmail.com
+        address1:
+          type: string
+          description: Billing Address line 1 (street address).
+          example: Toyengata 53
+        address2:
+          type: string
+          description: Billing Address line 2 (optional).
+          example: unit 5
+        city:
+          type: string
+          description: Billing Address city.
+          example: Oslo
+        state:
+          type: string
+          description: Billing Address state.
+          example: ???
+        country:
+          type: string
+          description: Billing Address 2-char country code (ISO 3166-1, alpha-2).
+          example: NO
+        zip:
+          type: string
+          description: Billing Address zip code.
+          example: 0578
+        phone:
+          type: string
+          description: Billing Address phone number (incl. country code).
+          example: +4723493500
+        dateOfBirth:
+          type: string
+          description: Customer’s date of birth (must be 18+ y.o.).
+          example: 2019-08-24
+        ipAddress:
+          type: string
+          description: Customer's IP address.
+          example: 192.168.3.123
+
+    CurrencyCode:
+      type: string
+      description: Currency Type (ISO 4217)
+      enum:
+        - EUR
+        - USD
+        - GBP
+
+    TdsStatus:
+      type: string
+      description: 3DSecure status
+      enum:
+        - PENDING
+        - SUCCESS
+        - FAILED
+        - CANCELLED
+
+    TdsDetails:
+      type: object
+      description: 3DSecure details
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/TdsStatus'
+
+    TransactionStatus:
+      type: string
+      description: |
+        INITIATED - transaction accepted by the NPGW Gateway.
+        PENDING - transaction submitted for processing.
+        SUCCESS - transaction confirmed success/captured, customer has paid.
+        FAILED - transaction confirmed failed, the customer has not paid and must try again via a new transaction.
+        CANCELLED - transaction cancelled by customer, the customer has not paid and must try again via a new transaction.
+        EXPIRED - transaction expired (as defined by the "expires At" field), the customer has not paid and must try again via a new transaction.
+      enum:
+        - INITIATED
+        - PENDING
+        - SUCCESS
+        - FAILED
+        - CANCELLED
+        - EXPIRED
+
+    TransactionResponse:
+      type: object
+      required:
+        - merchantId
+        - externalTransactionId
+        - amount
+        - currency
+        - notificationUrl
+        - redirectUrlSuccess
+        - redirectUrlCancel
+        - redirectUrlFail
+        - paymentDetails
+      properties:
+        transactionId:
+          type: string
+          description: Unique transaction id in the NPGW system.
+          example: 3a5f04af-fb52-41ce-b9bc-283e72207cd5
+        merchantId:
+          type: string
+          description: Unique merchant id in the NPGW system.
+          example: company786
+        externalTransactionId:
+          type: string
+          description: Unique transaction id in merchant's system.
+          example: REF00L00000
+        status:
+          $ref: '#/components/schemas/TransactionStatus'
+        amount:
+          type: number
+          format: double
+          description: Transaction amount.
+          example: 19.99
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        notificationUrl:
+          type: string
+          description: The merchant URL which should be used for server-to-server webhooks.
+          example: https://example.com/notification_transaction
+        error:
+          $ref: '#/components/schemas/Error'
+        redirectUrlSuccess:
+          type: string
+          description: The merchant URL to which the user should be redirected in case of a successful transaction.
+          example: https://example.com/successful_transaction
+        redirectUrlCancel:
+          type: string
+          description: The merchant URL to which the user should be redirected in case of a cancelled transaction.
+          example: https://example.com/cancel_transaction
+        redirectUrlFail:
+          type: string
+          description: The merchant URL to which the user should be redirected in case of a failed transaction.
+          example: https://example.com/failed_transaction
+        createdOn:
+          format: date-time
+          type: string
+          description: Created time.
+          example: 2022-04-08T11:11:59.711Z
+        updatedOn:
+          format: date-time
+          type: string
+          description: Updated time.
+          example: 2022-04-08T11:11:59.711Z
+        expiresAt:
+          format: date-time
+          type: string
+          description: |
+            Time of the transaction expiration, timestamp+30min by default. If the transaction
+            is not completed within this time, we will reject any attempt to complete it. The expiration is
+            extended each time a user (re-)submits a payment, so provided expiration date will be
+            updated in most cases. Max value is (now)+3h
+          example: 2021-12-22T05:17:56.323Z
+        paymentUrl:
+          type: string
+          description: Payment link to which the customer should be redirected to complete 3DSecure and subsequent processing.
+          example: https://api.npgw.xyz/merchant-v1/fingerprint?transactionId=id.transaction.3a5f04af-fb52-41ce-b9bc-283e72207cd5
+        paymentDetails:
+          $ref: '#/components/schemas/PaymentDetails'
+        tdsDetails:
+          $ref: '#/components/schemas/TdsDetails'
+
+    Transaction:
+      allOf:
+        - $ref: '#/components/schemas/TransactionResponse'
+        - type: object
+          properties:
+            customerDetails:
+              $ref: '#/components/schemas/CustomerDetails'
