@@ -1,4 +1,4 @@
-name: API
+name: Generate documentation
 
 on:
   pull_request:
@@ -6,28 +6,38 @@ on:
       - main
 
 jobs:
-  run-api:
+  generate-docs:
     runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
     steps:
       - name: Git clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Install JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: '17'
-          cache: 'maven'
 
       - name: Download openapi cli
         run: curl https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.7.0/openapi-generator-cli-7.7.0.jar -o openapi-generator-cli.jar
 
-      - name: API Merchant validation
+      - name: Validation API
         run: java -jar openapi-generator-cli.jar validate -i api-merchant.yaml --recommend
 
-#      - name: Generate API Merchant documentation
-#        run: |
-#          java -jar openapi-generator-cli.jar generate -i api-merchant.yaml \
-#            -g html2 -o docs
+      - name: Generate documentation
+        run: |
+          rm -rf docs
+          java -jar openapi-generator-cli.jar generate -i api-merchant.yaml -g html2 -o docs
+
+      - name: Remove generator (openapi cli)
+        run: rm -rf openapi-generator-cli.jar
+
+      - name: Commit generated documentation
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: Commit generated documentation
