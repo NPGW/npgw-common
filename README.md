@@ -35,7 +35,7 @@ Below you will find test cards to be used in the Sandbox/Stage environment for t
 | 2303779999000317 | Frictionless (3DS Status == U) | Failed (Unavailable) |
 | 2303779999000424 | Challenge (3DS Status == N) | Failed (Not Authenticated) |
 | 2303779999000432 | Challenge (3DS Status == U) | Failed (Unavailable) |
-| 4093191766216474 | None 3DS enabled Card | Failed (Not attempted) |
+| 4093191766216474 | None 3DS enabled Card | Failed (Not Attempted) |
 | 4154939775666626 | Challenge (3DS Status == C) | Failed (Issuer Decline) |
 
 ❕ **NOTE:**
