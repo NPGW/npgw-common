@@ -878,7 +878,7 @@ ul.nav-tabs {
         "example" : "Hal Jordan"
       }
     },
-    "description" : "CreditCard details"
+    "description" : "CreditCard"
   } ]
 };
     defs["CurrencyCode"] = {
@@ -1017,17 +1017,17 @@ ul.nav-tabs {
   "description" : "Payment method",
   "enum" : [ "CreditCard" ]
 };
-    defs["ThreeDSecureDetails"] = {
+    defs["TdsDetails"] = {
   "required" : [ "status" ],
   "type" : "object",
   "properties" : {
     "status" : {
-      "$ref" : "#/components/schemas/ThreeDSecureStatus"
+      "$ref" : "#/components/schemas/TdsStatus"
     }
   },
   "description" : "3DSecure details"
 };
-    defs["ThreeDSecureStatus"] = {
+    defs["TdsStatus"] = {
   "type" : "string",
   "description" : "3DSecure status",
   "enum" : [ "PENDING", "SUCCESS", "FAILED", "CANCELLED" ]
@@ -1096,7 +1096,7 @@ ul.nav-tabs {
     "redirectUrlFail" : {
       "type" : "string",
       "description" : "The merchant URL to which the user should be redirected in case of a failed transaction.",
-      "example" : "https://example.com/fail"
+      "example" : "https://example.com/failed"
     },
     "createdOn" : {
       "type" : "string",
@@ -1124,8 +1124,8 @@ ul.nav-tabs {
     "paymentDetails" : {
       "$ref" : "#/components/schemas/PaymentDetails"
     },
-    "ThreeDSecureStatusDetails" : {
-      "$ref" : "#/components/schemas/ThreeDSecureDetails"
+    "tdsDetails" : {
+      "$ref" : "#/components/schemas/TdsDetails"
     }
   }
 };
@@ -1193,7 +1193,7 @@ ul.nav-tabs {
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 0.1.3</div>
+              <div class="app-desc">Version: 0.1.2</div>
             <hr>
             <div id="app-description" class="app-desc">
                 <p><strong>Overview</strong></p>
@@ -1754,82 +1754,6 @@ $(document).ready(function() {
                                 <input id='responses-Authentication-getToken-405-schema-data' type='hidden' value=''></input>
                               </div>
                             </div>
-                            <h3 id="examples-Authentication-getToken-title-500"></h3>
-                            <p id="examples-Authentication-getToken-description-500" class="marked"></p>
-                            <script>
-                              var responseAuthentication500_description = `Internal Gateway error.`;
-                              var responseAuthentication500_description_break = responseAuthentication500_description.indexOf('\n');
-                              if (responseAuthentication500_description_break == -1) {
-                                $("#examples-Authentication-getToken-title-500").text("Status: 500 - " + responseAuthentication500_description);
-                              } else {
-                                $("#examples-Authentication-getToken-title-500").text("Status: 500 - " + responseAuthentication500_description.substring(0, responseAuthentication500_description_break));
-                                $("#examples-Authentication-getToken-description-500").html(responseAuthentication500_description.substring(responseAuthentication500_description_break));
-                              }
-                            </script>
-
-
-                            <ul id="responses-detail-Authentication-getToken-500" class="nav nav-tabs nav-tabs-examples" >
-                                <li class="active">
-                                  <a data-toggle="tab" href="#responses-Authentication-getToken-500-schema">Schema</a>
-                                </li>
-
-
-
-
-                            </ul>
-
-
-                            <div class="tab-content" id="responses-Authentication-getToken-500-wrapper" style='margin-bottom: 10px;'>
-                              <div class="tab-pane active" id="responses-Authentication-getToken-500-schema">
-                                <div id="responses-Authentication-getToken-schema-500" class="exampleStyle">
-                                  <script>
-                                    $(document).ready(function() {
-                                      var schemaWrapper = {
-  "description" : "Internal Gateway error.",
-  "content" : {
-    "application/json" : {
-      "schema" : {
-        "$ref" : "#/components/schemas/Error"
-      }
-    }
-  }
-};
-                                      var schema = findNode('schema',schemaWrapper).schema;
-                                      if (!schema) {
-                                        schema = schemaWrapper.schema;
-                                      }
-                                      if (schema == null) {
-                                        return;
-                                      }
-                                      if (schema.$ref != null) {
-                                        schema = defsParser.$refs.get(schema.$ref);
-                                        if (schema.properties != null) {
-                                          Object.keys(schema.properties).forEach( (item) => {
-                                            if (schema.properties[item].$ref != null) {
-                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
-                                            }
-                                          });
-                                        }
-                                      } else if (schema.items != null && schema.items.$ref != null) {
-                                        schema.items = defsParser.$refs.get(schema.items.$ref);
-                                      } else {
-                                        schemaWrapper.definitions = Object.assign({}, defs);
-                                        $RefParser.dereference(schemaWrapper).catch(function(err) {
-                                          console.log(err);
-                                        });
-                                      }
-
-                                      var view = new JSONSchemaView(schema, 3);
-                                      $('#responses-Authentication-getToken-500-schema-data').val(JSON.stringify(schema));
-                                      var result = $('#responses-Authentication-getToken-schema-500');
-                                      result.empty();
-                                      result.append(view.render());
-                                    });
-                                  </script>
-                                </div>
-                                <input id='responses-Authentication-getToken-500-schema-data' type='hidden' value=''></input>
-                              </div>
-                            </div>
                         </article>
                       </div>
                       <hr>
@@ -1879,6 +1803,9 @@ $(document).ready(function() {
  -d '{
   &quot;notificationUrl&quot; : &quot;https://example.com/notification_endpoint&quot;,
   &quot;amount&quot; : 19.99,
+  &quot;tdsDetails&quot; : {
+    &quot;status&quot; : &quot;PENDING&quot;
+  },
   &quot;redirectUrlCancel&quot; : &quot;https://example.com/cancel&quot;,
   &quot;updatedOn&quot; : &quot;2022-04-08T11:11:59.711Z&quot;,
   &quot;paymentUrl&quot; : &quot;https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token&#x3D;lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq&quot;,
@@ -1890,7 +1817,7 @@ $(document).ready(function() {
   },
   &quot;createdOn&quot; : &quot;2022-04-08T11:11:59.711Z&quot;,
   &quot;transactionId&quot; : &quot;id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g&quot;,
-  &quot;redirectUrlFail&quot; : &quot;https://example.com/fail&quot;,
+  &quot;redirectUrlFail&quot; : &quot;https://example.com/failed&quot;,
   &quot;expiresAt&quot; : &quot;2021-12-22T05:17:56.323Z&quot;,
   &quot;merchantId&quot; : &quot;company786&quot;,
   &quot;redirectUrlSuccess&quot; : &quot;https://example.com/success&quot;,
@@ -1898,9 +1825,6 @@ $(document).ready(function() {
   &quot;externalTransactionId&quot; : &quot;REF00L00000&quot;,
   &quot;paymentDetails&quot; : {
     &quot;paymentMethod&quot; : &quot;CreditCard&quot;
-  },
-  &quot;ThreeDSecureStatusDetails&quot; : {
-    &quot;status&quot; : &quot;PENDING&quot;
   },
   &quot;customerDetails&quot; : {
     &quot;zip&quot; : &quot;0578&quot;,
@@ -1941,7 +1865,7 @@ public class PaymentApiExample {
 
         // Create an instance of the API class
         PaymentApi apiInstance = new PaymentApi();
-        Transaction transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/fail","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // Transaction | 
+        Transaction transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/failed","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // Transaction | 
         Boolean async = true; // Boolean | Indicates whether the transaction should be processed asynchronously from our downstream CreditCard Acquirers. When set to true, the request will return immediately with a status indicating that processing is ongoing.
 
         try {
@@ -1980,7 +1904,7 @@ try {
 public class PaymentApiExample {
     public static void main(String[] args) {
         PaymentApi apiInstance = new PaymentApi();
-        Transaction transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/fail","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // Transaction | 
+        Transaction transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/failed","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // Transaction | 
         Boolean async = true; // Boolean | Indicates whether the transaction should be processed asynchronously from our downstream CreditCard Acquirers. When set to true, the request will return immediately with a status indicating that processing is ongoing.
 
         try {
@@ -2005,7 +1929,7 @@ public class PaymentApiExample {
 
 // Create an instance of the API class
 PaymentApi *apiInstance = [[PaymentApi alloc] init];
-Transaction *transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/fail","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // 
+Transaction *transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/failed","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // 
 Boolean *async = true; // Indicates whether the transaction should be processed asynchronously from our downstream CreditCard Acquirers. When set to true, the request will return immediately with a status indicating that processing is ongoing. (optional) (default to null)
 
 // Create a new CreditCard Transaction.
@@ -2032,7 +1956,7 @@ bearerAuth.accessToken = "YOUR ACCESS TOKEN";
 
 // Create an instance of the API class
 var api = new NpgwMerchantApi.PaymentApi()
-var transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/fail","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // {Transaction} 
+var transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/failed","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // {Transaction} 
 var opts = {
   'async': true // {Boolean} Indicates whether the transaction should be processed asynchronously from our downstream CreditCard Acquirers. When set to true, the request will return immediately with a status indicating that processing is ongoing.
 };
@@ -2094,7 +2018,7 @@ OpenAPITools\Client\Configuration::getDefaultConfiguration()->setAccessToken('',
 
 // Create an instance of the API class
 $api_instance = new OpenAPITools\Client\Api\PaymentApi();
-$transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/fail","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // Transaction | 
+$transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/failed","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // Transaction | 
 $async = true; // Boolean | Indicates whether the transaction should be processed asynchronously from our downstream CreditCard Acquirers. When set to true, the request will return immediately with a status indicating that processing is ongoing.
 
 try {
@@ -2140,7 +2064,7 @@ openapi_client.configuration.access_token = 'YOUR_ACCESS_TOKEN'
 
 # Create an instance of the API class
 api_instance = openapi_client.PaymentApi()
-transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/fail","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}} # Transaction | 
+transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/failed","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}} # Transaction | 
 async = true # Boolean | Indicates whether the transaction should be processed asynchronously from our downstream CreditCard Acquirers. When set to true, the request will return immediately with a status indicating that processing is ongoing. (optional) (default to null)
 
 try:
@@ -2155,7 +2079,7 @@ except ApiException as e:
                               <pre class="prettyprint"><code class="language-rust">extern crate PaymentApi;
 
 pub fn main() {
-    let transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/fail","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // Transaction
+    let transaction = {"merchantId":"company786","externalTransactionId":"REF00L00000","amount":19.99,"currency":"USD","expiresAt":"2024-08-21T16:45:00.000000000Z","redirectUrlSuccess":"https://example.com/success","redirectUrlCancel":"https://example.com/cancel","redirectUrlFail":"https://example.com/failed","notificationUrl":"https://example.com/notification_endpoint","customerDetails":{"externalCustomerId":"JLA007","firstName":"Hal","lastName":"Jordan","email":"hal@greenlantern.com","address1":"59 Gil Broome Avenue","address2":"unit 5","city":"Coast City","state":"CA","country":"US","zip":"0578","phone":"+17723493500","dateOfBirth":"2004-08-24","ipAddress":"192.168.3.123"},"paymentDetails":{"paymentMethod":"CreditCard","pan":"2303779999000275","expMonth":"06","expYear":"2025","cvv":"048","cardHolderName":"Hal Jordan"}}; // Transaction
     let async = true; // Boolean
 
     let mut context = PaymentApi::Context::default();
@@ -2201,7 +2125,7 @@ $(document).ready(function() {
         "expiresAt" : "2024-08-21T16:45:00.000000000Z",
         "redirectUrlSuccess" : "https://example.com/success",
         "redirectUrlCancel" : "https://example.com/cancel",
-        "redirectUrlFail" : "https://example.com/fail",
+        "redirectUrlFail" : "https://example.com/failed",
         "notificationUrl" : "https://example.com/notification_endpoint",
         "customerDetails" : {
           "externalCustomerId" : "JLA007",
@@ -2329,7 +2253,7 @@ Indicates whether the transaction should be processed asynchronously from our do
       "example" : {
         "currency" : "USD",
         "redirectUrlSuccess" : "https://example.com/success",
-        "redirectUrlFail" : "https://example.com/fail",
+        "redirectUrlFail" : "https://example.com/failed",
         "externalTransactionId" : "REF00L00000",
         "merchantId" : "company786",
         "notificationUrl" : "https://example.com/notification_endpoint",
@@ -2541,82 +2465,6 @@ Indicates whether the transaction should be processed asynchronously from our do
                                 <input id='responses-Payment-createTransaction-401-schema-data' type='hidden' value=''></input>
                               </div>
                             </div>
-                            <h3 id="examples-Payment-createTransaction-title-403"></h3>
-                            <p id="examples-Payment-createTransaction-description-403" class="marked"></p>
-                            <script>
-                              var responsePayment403_description = `The API key doesn't have a permission for this action.`;
-                              var responsePayment403_description_break = responsePayment403_description.indexOf('\n');
-                              if (responsePayment403_description_break == -1) {
-                                $("#examples-Payment-createTransaction-title-403").text("Status: 403 - " + responsePayment403_description);
-                              } else {
-                                $("#examples-Payment-createTransaction-title-403").text("Status: 403 - " + responsePayment403_description.substring(0, responsePayment403_description_break));
-                                $("#examples-Payment-createTransaction-description-403").html(responsePayment403_description.substring(responsePayment403_description_break));
-                              }
-                            </script>
-
-
-                            <ul id="responses-detail-Payment-createTransaction-403" class="nav nav-tabs nav-tabs-examples" >
-                                <li class="active">
-                                  <a data-toggle="tab" href="#responses-Payment-createTransaction-403-schema">Schema</a>
-                                </li>
-
-
-
-
-                            </ul>
-
-
-                            <div class="tab-content" id="responses-Payment-createTransaction-403-wrapper" style='margin-bottom: 10px;'>
-                              <div class="tab-pane active" id="responses-Payment-createTransaction-403-schema">
-                                <div id="responses-Payment-createTransaction-schema-403" class="exampleStyle">
-                                  <script>
-                                    $(document).ready(function() {
-                                      var schemaWrapper = {
-  "description" : "The API key doesn't have a permission for this action.",
-  "content" : {
-    "application/json" : {
-      "schema" : {
-        "$ref" : "#/components/schemas/Error"
-      }
-    }
-  }
-};
-                                      var schema = findNode('schema',schemaWrapper).schema;
-                                      if (!schema) {
-                                        schema = schemaWrapper.schema;
-                                      }
-                                      if (schema == null) {
-                                        return;
-                                      }
-                                      if (schema.$ref != null) {
-                                        schema = defsParser.$refs.get(schema.$ref);
-                                        if (schema.properties != null) {
-                                          Object.keys(schema.properties).forEach( (item) => {
-                                            if (schema.properties[item].$ref != null) {
-                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
-                                            }
-                                          });
-                                        }
-                                      } else if (schema.items != null && schema.items.$ref != null) {
-                                        schema.items = defsParser.$refs.get(schema.items.$ref);
-                                      } else {
-                                        schemaWrapper.definitions = Object.assign({}, defs);
-                                        $RefParser.dereference(schemaWrapper).catch(function(err) {
-                                          console.log(err);
-                                        });
-                                      }
-
-                                      var view = new JSONSchemaView(schema, 3);
-                                      $('#responses-Payment-createTransaction-403-schema-data').val(JSON.stringify(schema));
-                                      var result = $('#responses-Payment-createTransaction-schema-403');
-                                      result.empty();
-                                      result.append(view.render());
-                                    });
-                                  </script>
-                                </div>
-                                <input id='responses-Payment-createTransaction-403-schema-data' type='hidden' value=''></input>
-                              </div>
-                            </div>
                             <h3 id="examples-Payment-createTransaction-title-422"></h3>
                             <p id="examples-Payment-createTransaction-description-422" class="marked"></p>
                             <script>
@@ -2696,7 +2544,7 @@ Indicates whether the transaction should be processed asynchronously from our do
                             <h3 id="examples-Payment-createTransaction-title-500"></h3>
                             <p id="examples-Payment-createTransaction-description-500" class="marked"></p>
                             <script>
-                              var responsePayment500_description = `Internal Gateway error.`;
+                              var responsePayment500_description = `Everything works as expected.`;
                               var responsePayment500_description_break = responsePayment500_description.indexOf('\n');
                               if (responsePayment500_description_break == -1) {
                                 $("#examples-Payment-createTransaction-title-500").text("Status: 500 - " + responsePayment500_description);
@@ -2724,11 +2572,11 @@ Indicates whether the transaction should be processed asynchronously from our do
                                   <script>
                                     $(document).ready(function() {
                                       var schemaWrapper = {
-  "description" : "Internal Gateway error.",
+  "description" : "Everything works as expected.",
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/Error"
+        "$ref" : "#/components/schemas/TransactionResponse"
       }
     }
   }
@@ -3158,7 +3006,7 @@ pub fn main() {
       "example" : {
         "currency" : "USD",
         "redirectUrlSuccess" : "https://example.com/success",
-        "redirectUrlFail" : "https://example.com/fail",
+        "redirectUrlFail" : "https://example.com/failed",
         "externalTransactionId" : "REF00L00000",
         "merchantId" : "company786",
         "notificationUrl" : "https://example.com/notification_endpoint",
@@ -4029,7 +3877,7 @@ pub fn main() {
       "example" : {
         "currency" : "USD",
         "redirectUrlSuccess" : "https://example.com/success",
-        "redirectUrlFail" : "https://example.com/fail",
+        "redirectUrlFail" : "https://example.com/failed",
         "externalTransactionId" : "REF00L00000",
         "merchantId" : "company786",
         "notificationUrl" : "https://example.com/notification_endpoint",
