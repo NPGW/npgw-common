@@ -1,4 +1,4 @@
-name: Generate and deploy the documentation to Pages
+name: Generate and deploy the docs to Pages
 
 on:
   push:
