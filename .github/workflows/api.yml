@@ -1,17 +1,14 @@
-name: Generate documentation
+name: Validation API
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: ["main"]
 
 jobs:
   generate-docs:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - name: Git clone
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -28,16 +25,3 @@ jobs:
 
       - name: Validation API
         run: java -jar openapi-generator-cli.jar validate -i api-merchant.yaml --recommend
-
-      - name: Generate documentation
-        run: |
-          rm -rf docs
-          java -jar openapi-generator-cli.jar generate -i api-merchant.yaml -g html2 -o docs
-
-      - name: Remove generator (openapi cli)
-        run: rm -rf openapi-generator-cli.jar
-
-      - name: Commit generated documentation
-        uses: EndBug/add-and-commit@v9
-        with:
-          message: Commit generated documentation
