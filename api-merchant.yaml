@@ -1,20 +1,56 @@
 openapi: 3.0.3
 
 info:
-  title: merchant api
-  version: 0.1.1
+  title: NPGW Merchant API
+  version: 0.1.2
+  description: |
+    **Overview**
+
+    Use this API to integrate CreditCard processing capabilities into your application and track transaction statuses. The API supports both stage and production environments with distinct URLs.
+
+    **Usage**
+
+    The endpoints provided include operations for generating authentication tokens, creating new transactions and retrieving transaction details for CreditCard payments.
+
+    Useful links:
+    - [Merchant API GitHub repo](https://github.com/NPGW/npgw-api-specification)
+    - [Merchant API YAML definition](https://github.com/NPGW/npgw-api-specification/blob/main/api-merchant.yaml)
+  x-meta:
+    Title: API and SDK Documentation
+    Author: NPGW
+    Date: 2024-07-18
+    Version: 0.1.1
   contact:
     email: info@npgw.xyz
 
 externalDocs:
-  url: https://docs.npgw.xyz
+    url: https://docs.npgw.xyz
+    description: View our full Technical Documentation here
 
 servers:
+  - url: https://api-staging.npgw.xyz/merchant-v1
+    description: Sandbox server
   - url: https://api.npgw.xyz/merchant-v1
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: |
+      Validate yourself with the identity service and obtain an access token. 
+  - name: Payment
+    description: |
+      Submit a Payment to the NPGW Gateway.  
+  - name: Status
+    description: |
+      Query the status of a Transaction on the NPGW Gateway.
 
 paths:
   /transaction/{transactionId}:
     get:
+      tags:
+        - Status
+      summary: Get Transaction by ID
+      description: Retrieve transaction details using the NPGW Transaction ID
       operationId: getTransactionById
       security:
         - bearerAuth: []
@@ -26,7 +62,33 @@ paths:
             type: string
       responses:
         '200':
-          $ref: '#/components/responses/TransactionResponse'
+          description: A successful response with the transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+              example:
+                currency: "USD"
+                redirectUrlSuccess: "https://example.com/success"
+                redirectUrlFail: "https://example.com/failed"
+                externalTransactionId: "REF00L00000"
+                merchantId: "company786"
+                notificationUrl: "https://example.com/notification_endpoint"
+                redirectUrlCancel: "https://example.com/cancel"
+                status: "SUCCESS"
+                transactionId: "3id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g"
+                amount: 19.99
+                createdOn: "2022-04-08T11:11:59.711Z"
+                updatedOn: "2022-04-08T11:11:59.711Z"
+                expiresAt: "2021-12-22T05:17:56.323Z"
+                paymentUrl: "https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq"
+                paymentDetails:
+                  paymentMethod: "CreditCard"
+                  pan: "************0275"
+                  expMonth: "06"
+                  expYear: "2025"
+                  cvv: "***"
+                  cardHolderName: "Hal Jordan" 
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -42,6 +104,10 @@ paths:
 
   /transaction:
     get:
+      tags:
+        - Status
+      summary: Get Transaction
+      description: Retrieve transaction details using your External Transaction ID
       operationId: getTransaction
       security:
         - bearerAuth: []
@@ -58,7 +124,33 @@ paths:
             type: string
       responses:
         '200':
-          $ref: '#/components/responses/TransactionResponse'
+          description: A successful response with the transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+              example:
+                currency: "USD"
+                redirectUrlSuccess: "https://example.com/success"
+                redirectUrlFail: "https://example.com/failed"
+                externalTransactionId: "REF00L00000"
+                merchantId: "company786"
+                notificationUrl: "https://example.com/notification_endpoint"
+                redirectUrlCancel: "https://example.com/cancel"
+                status: "SUCCESS"
+                transactionId: "3id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g"
+                amount: 19.99
+                createdOn: "2022-04-08T11:11:59.711Z"
+                updatedOn: "2022-04-08T11:11:59.711Z"
+                expiresAt: "2021-12-22T05:17:56.323Z"
+                paymentUrl: "https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq"
+                paymentDetails:
+                  paymentMethod: "CreditCard"
+                  pan: "************0275"
+                  expMonth: "06"
+                  expYear: "2025"
+                  cvv: "***"
+                  cardHolderName: "Hal Jordan"
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -73,6 +165,11 @@ paths:
           $ref: '#/components/responses/Error'
 
     post:
+      tags:
+        - Payment      
+      summary: Create a new CreditCard Transaction.
+      description: |
+        A successful request will return a secure payment URL via {body.paymentUrl} to which the customer should be redirected to complete online 3DSecure authentication with their bank. Payments will proceed to Authorization on successful authentication by the customer.           
       operationId: createTransaction
       security:
         - bearerAuth: []
@@ -81,15 +178,73 @@ paths:
           name: async
           schema:
             type: boolean
+          description: Indicates whether the transaction should be processed asynchronously from our downstream CreditCard Acquirers. When set to true, the request will return immediately with a status indicating that processing is ongoing.
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/Transaction'
+            example:
+              merchantId: "company786"
+              externalTransactionId: "REF00L00000"
+              amount: 19.99
+              currency: "USD"
+              expiresAt: "2024-08-21T16:45:00.000000000Z"
+              redirectUrlSuccess: "https://example.com/success"
+              redirectUrlCancel: "https://example.com/cancel"
+              redirectUrlFail: "https://example.com/failed"
+              notificationUrl: "https://example.com/notification_endpoint"                  
+              customerDetails:
+                externalCustomerId: "JLA007"
+                firstName: "Hal"
+                lastName: "Jordan"
+                email: "hal@greenlantern.com"
+                address1: "59 Gil Broome Avenue"
+                address2: "unit 5"
+                city: "Coast City"
+                state: "CA"
+                country: "US"
+                zip: "0578"
+                phone: "+17723493500"
+                dateOfBirth: "2004-08-24"
+                ipAddress: "192.168.3.123"
+              paymentDetails:
+                paymentMethod: "CreditCard"
+                pan: "2303779999000275"
+                expMonth: "06"
+                expYear: "2025"
+                cvv: "048"
+                cardHolderName: "Hal Jordan"
         required: true
       responses:
         '200':
-          $ref: '#/components/responses/TransactionResponse'
+          description: A successful response with the transaction details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+              example:
+                currency: "USD"
+                redirectUrlSuccess: "https://example.com/success"
+                redirectUrlFail: "https://example.com/failed"
+                externalTransactionId: "REF00L00000"
+                merchantId: "company786"
+                notificationUrl: "https://example.com/notification_endpoint"
+                redirectUrlCancel: "https://example.com/cancel"
+                status: "INITIATED"
+                transactionId: "3id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g"
+                amount: 19.99
+                createdOn: "2022-04-08T11:11:59.711Z"
+                updatedOn: "2022-04-08T11:11:59.711Z"
+                expiresAt: "2021-12-22T05:17:56.323Z"
+                paymentUrl: "https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq"
+                paymentDetails:
+                  paymentMethod: "CreditCard"
+                  pan: "************0275"
+                  expMonth: "06"
+                  expYear: "2025"
+                  cvv: "***"
+                  cardHolderName: "Hal Jordan"                            
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -99,8 +254,13 @@ paths:
         '500':
           $ref: '#/components/responses/TransactionResponse'
 
-  /token:
+  /token:  
     post:
+      tags:
+        - Authentication      
+      summary: Create a new or refresh an expired Bearer Token.
+      description: |
+        This token allows you to execute operations on the NPGW Gateway APIs with authority, and whilst a single token will expire after 15 minutes, you can generate one at any time.  
       operationId: getToken
       requestBody:
         content:
@@ -116,9 +276,9 @@ paths:
                 $ref: '#/components/schemas/NpgwToken'
           description: Everything works as expected.
         '401':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/Unauthorized'
         '405':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/BadRequest'
 
 components:
   securitySchemes:
@@ -242,15 +402,15 @@ components:
             pan:
               type: string
               description: Full card number.
-              example: 4242424242424242
+              example: 2303779999000275
             expMonth:
               type: string
-              description: Card expiry month (1..12).
-              example: 6
+              description: Card expiry month (01..12).
+              example: 06
             expYear:
               type: string
               description: Card expiry year (e.g. 2024).
-              example: 2025
+              example: 2029
             cvv:
               type: string
               description: 3-digit card security code (CVV2/CVC2).
@@ -258,7 +418,7 @@ components:
             cardHolderName:
               type: string
               description: Card holder name.
-              example: john doe
+              example: Hal Jordan
 
     CustomerDetails:
       type: object
@@ -282,19 +442,19 @@ components:
         firstName:
           type: string
           description: Billing Address first name.
-          example: Edvard
+          example: Hal
         lastName:
           type: string
           description: Billing Address last name.
-          example: Munch
+          example: Jordan
         email:
           type: string
           description: Customer email.
-          example: ed.munch@gmail.com
+          example: hal@greenlantern.com
         address1:
           type: string
           description: Billing Address line 1 (street address).
-          example: Toyengata 53
+          example: 59 Gil Broome Avenue
         address2:
           type: string
           description: Billing Address line 2 (optional).
@@ -302,15 +462,15 @@ components:
         city:
           type: string
           description: Billing Address city.
-          example: Oslo
+          example: Coast City
         state:
           type: string
           description: Billing Address state.
-          example: ???
+          example: CA
         country:
           type: string
           description: Billing Address 2-char country code (ISO 3166-1, alpha-2).
-          example: NO
+          example: US
         zip:
           type: string
           description: Billing Address zip code.
@@ -318,11 +478,11 @@ components:
         phone:
           type: string
           description: Billing Address phone number (incl. country code).
-          example: +4723493500
+          example: +17723493500
         dateOfBirth:
           type: string
-          description: Customer’s date of birth (must be 18+ y.o.).
-          example: 2019-08-24
+          description: Customer's date of birth (must be 18+ y.o.).
+          example: 2004-08-24
         ipAddress:
           type: string
           description: Customer's IP address.
@@ -387,7 +547,7 @@ components:
         transactionId:
           type: string
           description: Unique transaction id in the NPGW system.
-          example: 3a5f04af-fb52-41ce-b9bc-283e72207cd5
+          example: id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g
         merchantId:
           type: string
           description: Unique merchant id in the NPGW system.
@@ -408,21 +568,21 @@ components:
         notificationUrl:
           type: string
           description: The merchant URL which should be used for server-to-server webhooks.
-          example: https://example.com/notification_transaction
+          example: https://example.com/notification_endpoint
         error:
           $ref: '#/components/schemas/Error'
         redirectUrlSuccess:
           type: string
           description: The merchant URL to which the user should be redirected in case of a successful transaction.
-          example: https://example.com/successful_transaction
+          example: https://example.com/success
         redirectUrlCancel:
           type: string
           description: The merchant URL to which the user should be redirected in case of a cancelled transaction.
-          example: https://example.com/cancel_transaction
+          example: https://example.com/cancel
         redirectUrlFail:
           type: string
           description: The merchant URL to which the user should be redirected in case of a failed transaction.
-          example: https://example.com/failed_transaction
+          example: https://example.com/failed
         createdOn:
           format: date-time
           type: string
@@ -437,15 +597,15 @@ components:
           format: date-time
           type: string
           description: |
-            Time of the transaction expiration, timestamp+30min by default. If the transaction
+            Time of the transaction expiration, _timestamp+30min_ by default. If the transaction
             is not completed within this time, we will reject any attempt to complete it. The expiration is
             extended each time a user (re-)submits a payment, so provided expiration date will be
-            updated in most cases. Max value is (now)+3h
+            updated in most cases. Max value is _(now)+3h_
           example: 2021-12-22T05:17:56.323Z
         paymentUrl:
           type: string
           description: Payment link to which the customer should be redirected to complete 3DSecure and subsequent processing.
-          example: https://api.npgw.xyz/merchant-v1/fingerprint?transactionId=id.transaction.3a5f04af-fb52-41ce-b9bc-283e72207cd5
+          example: https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
         paymentDetails:
           $ref: '#/components/schemas/PaymentDetails'
         tdsDetails:
