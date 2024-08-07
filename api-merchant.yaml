@@ -35,14 +35,11 @@ servers:
 
 tags:
   - name: Authentication
-    description: |
-      Validate yourself with the identity service and obtain an access token. 
+    description: Validate yourself with the identity service and obtain an access token.
   - name: Payment
-    description: |
-      Submit a Payment to the NPGW Gateway.  
+    description: Submit a Payment to the NPGW Gateway.
   - name: Status
-    description: |
-      Query the status of a Transaction on the NPGW Gateway.
+    description: Query the status of a Transaction on the NPGW Gateway.
 
 paths:
   /transaction/{transactionId}:
