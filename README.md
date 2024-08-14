@@ -17,7 +17,7 @@ The NPGW APIs have been created using the principles of REST. They will accept a
 * [Technical Documentation](https://npgw.github.io/npgw-api-specification/)
 * [API Wiki](https://npgw.notion.site/NPGW-API-Explorer-08bd820fcb3342b9aa9db3e7daabfccf)
 
-### Definitions
+## ✒️ Definitions
 
 The API definition in this repository is provided in YAML format.
 
