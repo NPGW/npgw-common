@@ -312,7 +312,7 @@ components:
             cvv:
               type: string
               description: 3-digit card security code (CVV2/CVC2).
-              example: 048
+              example: 148
             cardHolderName:
               type: string
               description: Card holder name.
