@@ -515,5 +515,5 @@ components:
           example: 2021-12-22T05:17:56.323Z
         customerDetails:
           $ref: '#/components/schemas/CustomerDetails'
-        paymentDetails:
+        creditCardDetails:
           $ref: '#/components/schemas/CreditCardDetails'
