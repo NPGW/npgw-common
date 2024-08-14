@@ -121,7 +121,7 @@ paths:
         - payment      
       summary: Create a new CreditCard Transaction.
       description: |
-        A successful request will return a secure payment URL via {body.paymentUrl} to which the customer should be redirected to complete online 3DSecure authentication with their bank. Payments will proceed to Authorization on successful authentication by the customer.     
+        A successful request will return a secure payment URL via **{body.paymentUrl}** to which the customer should be redirected to complete online 3DSecure authentication with their bank. Payments will proceed to Authorization on successful authentication by the customer.     
       operationId: createTransaction
       security:
         - bearerAuth: []
@@ -515,5 +515,5 @@ components:
           example: 2021-12-22T05:17:56.323Z
         customerDetails:
           $ref: '#/components/schemas/CustomerDetails'
-        creditCardDetails:
+        paymentDetails:
           $ref: '#/components/schemas/CreditCardDetails'
