@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: NPGW Merchant API
-  version: 0.1.2
+  version: 0.1.3
   description: |
     **Overview**
 
@@ -15,11 +15,12 @@ info:
     Useful links:
     - [Merchant API GitHub repo](https://github.com/NPGW/npgw-api-specification)
     - [Merchant API YAML definition](https://github.com/NPGW/npgw-api-specification/blob/main/api-merchant.yaml)
+    - [Merchant API Wiki](https://npgw.notion.site/NPGW-Merchant-API-Wiki-08bd820fcb3342b9aa9db3e7daabfccf)
   x-meta:
     Title: API and SDK Documentation
     Author: NPGW
-    Date: 2024-07-18
-    Version: 0.1.1
+    Date: 2024-08-12
+    Version: 0.1.3
   contact:
     email: info@npgw.xyz
 
@@ -34,20 +35,23 @@ servers:
     description: Production server
 
 tags:
-  - name: Authentication
-    description: Validate yourself with the identity service and obtain an access token.
-  - name: Payment
+  - name: authentication
+    description: Validate yourself with the identity service and obtain an access token. 
+  - name: payment
     description: Submit a Payment to the NPGW Gateway.
-  - name: Status
+    externalDocs:
+      description: Available Test Cards
+      url: https://npgw.notion.site/NPGW-Merchant-API-Wiki-08bd820fcb3342b9aa9db3e7daabfccf?pvs=97#d91314e331f5481d9015bb6897dfcca9  
+  - name: status
     description: Query the status of a Transaction on the NPGW Gateway.
 
 paths:
   /transaction/{transactionId}:
     get:
       tags:
-        - Status
+        - status
       summary: Get Transaction by ID
-      description: Retrieve transaction details using the NPGW Transaction ID
+      description: Retrieve transaction details using the NPGW Transaction ID    
       operationId: getTransactionById
       security:
         - bearerAuth: []
@@ -59,33 +63,7 @@ paths:
             type: string
       responses:
         '200':
-          description: A successful response with the transaction details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TransactionResponse'
-              example:
-                currency: "USD"
-                redirectUrlSuccess: "https://example.com/success"
-                redirectUrlFail: "https://example.com/failed"
-                externalTransactionId: "REF00L00000"
-                merchantId: "company786"
-                notificationUrl: "https://example.com/notification_endpoint"
-                redirectUrlCancel: "https://example.com/cancel"
-                status: "SUCCESS"
-                transactionId: "3id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g"
-                amount: 19.99
-                createdOn: "2022-04-08T11:11:59.711Z"
-                updatedOn: "2022-04-08T11:11:59.711Z"
-                expiresAt: "2021-12-22T05:17:56.323Z"
-                paymentUrl: "https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq"
-                paymentDetails:
-                  paymentMethod: "CreditCard"
-                  pan: "************0275"
-                  expMonth: "06"
-                  expYear: "2025"
-                  cvv: "***"
-                  cardHolderName: "Hal Jordan" 
+          $ref: '#/components/responses/TransactionResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -102,9 +80,9 @@ paths:
   /transaction:
     get:
       tags:
-        - Status
+        - status
       summary: Get Transaction
-      description: Retrieve transaction details using your External Transaction ID
+      description: Retrieve transaction details using your External Transaction ID    
       operationId: getTransaction
       security:
         - bearerAuth: []
@@ -121,33 +99,7 @@ paths:
             type: string
       responses:
         '200':
-          description: A successful response with the transaction details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TransactionResponse'
-              example:
-                currency: "USD"
-                redirectUrlSuccess: "https://example.com/success"
-                redirectUrlFail: "https://example.com/failed"
-                externalTransactionId: "REF00L00000"
-                merchantId: "company786"
-                notificationUrl: "https://example.com/notification_endpoint"
-                redirectUrlCancel: "https://example.com/cancel"
-                status: "SUCCESS"
-                transactionId: "3id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g"
-                amount: 19.99
-                createdOn: "2022-04-08T11:11:59.711Z"
-                updatedOn: "2022-04-08T11:11:59.711Z"
-                expiresAt: "2021-12-22T05:17:56.323Z"
-                paymentUrl: "https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq"
-                paymentDetails:
-                  paymentMethod: "CreditCard"
-                  pan: "************0275"
-                  expMonth: "06"
-                  expYear: "2025"
-                  cvv: "***"
-                  cardHolderName: "Hal Jordan"
+          $ref: '#/components/responses/TransactionResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -163,10 +115,10 @@ paths:
 
     post:
       tags:
-        - Payment      
+        - payment      
       summary: Create a new CreditCard Transaction.
       description: |
-        A successful request will return a secure payment URL via {body.paymentUrl} to which the customer should be redirected to complete online 3DSecure authentication with their bank. Payments will proceed to Authorization on successful authentication by the customer.           
+        A successful request will return a secure payment URL via {body.paymentUrl} to which the customer should be redirected to complete online 3DSecure authentication with their bank. Payments will proceed to Authorization on successful authentication by the customer.     
       operationId: createTransaction
       security:
         - bearerAuth: []
@@ -181,67 +133,10 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Transaction'
-            example:
-              merchantId: "company786"
-              externalTransactionId: "REF00L00000"
-              amount: 19.99
-              currency: "USD"
-              expiresAt: "2024-08-21T16:45:00.000000000Z"
-              redirectUrlSuccess: "https://example.com/success"
-              redirectUrlCancel: "https://example.com/cancel"
-              redirectUrlFail: "https://example.com/failed"
-              notificationUrl: "https://example.com/notification_endpoint"                  
-              customerDetails:
-                externalCustomerId: "JLA007"
-                firstName: "Hal"
-                lastName: "Jordan"
-                email: "hal@greenlantern.com"
-                address1: "59 Gil Broome Avenue"
-                address2: "unit 5"
-                city: "Coast City"
-                state: "CA"
-                country: "US"
-                zip: "0578"
-                phone: "+17723493500"
-                dateOfBirth: "2004-08-24"
-                ipAddress: "192.168.3.123"
-              paymentDetails:
-                paymentMethod: "CreditCard"
-                pan: "2303779999000275"
-                expMonth: "06"
-                expYear: "2025"
-                cvv: "048"
-                cardHolderName: "Hal Jordan"
         required: true
       responses:
         '200':
-          description: A successful response with the transaction details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TransactionResponse'
-              example:
-                currency: "USD"
-                redirectUrlSuccess: "https://example.com/success"
-                redirectUrlFail: "https://example.com/failed"
-                externalTransactionId: "REF00L00000"
-                merchantId: "company786"
-                notificationUrl: "https://example.com/notification_endpoint"
-                redirectUrlCancel: "https://example.com/cancel"
-                status: "INITIATED"
-                transactionId: "3id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g"
-                amount: 19.99
-                createdOn: "2022-04-08T11:11:59.711Z"
-                updatedOn: "2022-04-08T11:11:59.711Z"
-                expiresAt: "2021-12-22T05:17:56.323Z"
-                paymentUrl: "https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq"
-                paymentDetails:
-                  paymentMethod: "CreditCard"
-                  pan: "************0275"
-                  expMonth: "06"
-                  expYear: "2025"
-                  cvv: "***"
-                  cardHolderName: "Hal Jordan"                            
+          $ref: '#/components/responses/TransactionResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -251,13 +146,13 @@ paths:
         '500':
           $ref: '#/components/responses/TransactionResponse'
 
-  /token:  
+  /token:
     post:
       tags:
-        - Authentication      
+        - authentication      
       summary: Create a new or refresh an expired Bearer Token.
       description: |
-        This token allows you to execute operations on the NPGW Gateway APIs with authority, and whilst a single token will expire after 15 minutes, you can generate one at any time.  
+        This token allows you to execute operations on the NPGW Gateway APIs with authority, and whilst a single token will expire after 15 minutes, you can generate one at any time.    
       operationId: getToken
       requestBody:
         content:
@@ -283,6 +178,9 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: |
+        JWT-based authentication where the token is passed in the Authorization header.
+        The token must be prefixed with the word "Bearer " (note the space after "Bearer")
 
   responses:
     BadRequest:
@@ -314,13 +212,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-      description: The request payload did not pass the validation (probably incorrect).
+      description: The request payload could not pass the validation (probably incorrect).
     Error:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-      description: Internal Gateway error.
+      description: Something went wrong on our side.
 
     TransactionResponse:
       content:
@@ -514,12 +412,12 @@ components:
     TransactionStatus:
       type: string
       description: |
-        INITIATED - transaction accepted by the NPGW Gateway.
-        PENDING - transaction submitted for processing.
-        SUCCESS - transaction confirmed success/captured, customer has paid.
-        FAILED - transaction confirmed failed, the customer has not paid and must try again via a new transaction.
-        CANCELLED - transaction cancelled by customer, the customer has not paid and must try again via a new transaction.
-        EXPIRED - transaction expired (as defined by the "expires At" field), the customer has not paid and must try again via a new transaction.
+        INITIATED - submitted to NPGW.
+        PENDING - submitted to an acquirer.
+        SUCCESS - confirmed success/captured at acquirer, customer has paid.
+        FAILED - confirmed failed at acquirer; the customer has not paid and must try again via a new transaction.
+        CANCELLED - cancelled by customer (generally a UI cancel button), must try again via a new transaction.
+        EXPIRED - unsuccessful transaction after the time specified in the "expires At" field, must try again via a new transaction.
       enum:
         - INITIATED
         - PENDING
