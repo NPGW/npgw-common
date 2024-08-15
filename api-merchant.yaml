@@ -36,17 +36,14 @@ servers:
 
 tags:
   - name: authentication
-    description: |
-      Validate yourself with the identity service and obtain an access token. 
+    description: Validate yourself with the identity service and obtain an access token. 
   - name: payment
-    description: |
-      Submit a Payment to the NPGW Gateway.
+    description: Submit a Payment to the NPGW Gateway.
     externalDocs:
       description: Available Test Cards
       url: https://npgw.notion.site/NPGW-Merchant-API-Wiki-08bd820fcb3342b9aa9db3e7daabfccf?pvs=97#d91314e331f5481d9015bb6897dfcca9  
   - name: status
-    description: |
-      Query the status of a Transaction on the NPGW Gateway.
+    description: Query the status of a Transaction on the NPGW Gateway.
 
 paths:
   /transaction/{transactionId}:
