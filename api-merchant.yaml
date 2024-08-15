@@ -171,9 +171,9 @@ paths:
                 $ref: '#/components/schemas/NpgwToken'
           description: Everything works as expected.
         '401':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/Unauthorized'
         '405':
-          $ref: '#/components/responses/Error'
+          $ref: '#/components/responses/BadRequest'
 
 components:
   securitySchemes:
