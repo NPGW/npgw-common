@@ -36,12 +36,12 @@ servers:
 
 tags:
   - name: authentication
-    description: Validate yourself with the identity service and obtain an access token. 
+    description: Validate yourself with the identity service and obtain an access token.
   - name: payment
     description: Submit a Payment to the NPGW Gateway.
     externalDocs:
       description: Available Test Cards
-      url: https://npgw.notion.site/NPGW-Merchant-API-Wiki-08bd820fcb3342b9aa9db3e7daabfccf?pvs=97#d91314e331f5481d9015bb6897dfcca9  
+      url: https://npgw.notion.site/NPGW-Merchant-API-Wiki-08bd820fcb3342b9aa9db3e7daabfccf?pvs=97#d91314e331f5481d9015bb6897dfcca9
   - name: status
     description: Query the status of a Transaction on the NPGW Gateway.
 
@@ -51,7 +51,7 @@ paths:
       tags:
         - status
       summary: Get Transaction by ID
-      description: Retrieve transaction details using the NPGW Transaction ID    
+      description: Retrieve transaction details using the NPGW Transaction ID
       operationId: getTransactionById
       security:
         - bearerAuth: []
@@ -82,7 +82,7 @@ paths:
       tags:
         - status
       summary: Get Transaction
-      description: Retrieve transaction details using your External Transaction ID    
+      description: Retrieve transaction details using your External Transaction ID
       operationId: getTransaction
       security:
         - bearerAuth: []
@@ -115,10 +115,10 @@ paths:
 
     post:
       tags:
-        - payment      
+        - payment
       summary: Create a new CreditCard Transaction.
       description: |
-        A successful request will return a secure payment URL via **{body.paymentUrl}** to which the customer should be redirected to complete online 3DSecure authentication with their bank. Payments will proceed to Authorization on successful authentication by the customer.     
+        A successful request will return a secure payment URL via **{body.paymentUrl}** to which the customer should be redirected to complete online 3DSecure authentication with their bank. Payments will proceed to Authorization on successful authentication by the customer.
       operationId: createTransaction
       security:
         - bearerAuth: []
@@ -149,10 +149,10 @@ paths:
   /token:
     post:
       tags:
-        - authentication      
+        - authentication
       summary: Create a new or refresh an expired Bearer Token.
       description: |
-        This token allows you to execute operations on the NPGW Gateway APIs with authority, and whilst a single token will expire after 15 minutes, you can generate one at any time.    
+        This token allows you to execute operations on the NPGW Gateway APIs with authority, and whilst a single token will expire after 15 minutes, you can generate one at any time.
       operationId: getToken
       requestBody:
         content:
@@ -428,36 +428,6 @@ components:
         - EXPIRED
 
     TransactionResponse:
-      allOf:
-        - $ref: '#/components/schemas/Transaction'
-      type: object
-      properties:
-        transactionId:
-          type: string
-          description: Unique transaction id in the NPGW system.
-          example: id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g
-        status:
-          $ref: '#/components/schemas/TransactionStatus'
-        error:
-          $ref: '#/components/schemas/Error'
-        createdOn:
-          format: date-time
-          type: string
-          description: Created time.
-          example: 2022-04-08T11:11:59.711Z
-        updatedOn:
-          format: date-time
-          type: string
-          description: Updated time.
-          example: 2022-04-08T11:11:59.711Z
-        paymentUrl:
-          type: string
-          description: Payment link to which the customer should be redirected to complete 3DSecure and subsequent processing.
-          example: https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
-        tdsDetails:
-          $ref: '#/components/schemas/TdsDetails'
-
-    Transaction:
       type: object
       required:
         - merchantId
@@ -467,9 +437,12 @@ components:
         - redirectUrlSuccess
         - redirectUrlCancel
         - redirectUrlFail
-        - customerDetails
-        - creditCardDetails
+        - paymentDetails
       properties:
+        transactionId:
+          type: string
+          description: Unique transaction id in the NPGW system.
+          example: id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g
         merchantId:
           type: string
           description: Unique merchant id in the NPGW system.
@@ -478,6 +451,8 @@ components:
           type: string
           description: Unique transaction id in merchant's system.
           example: REF00L00000
+        status:
+          $ref: '#/components/schemas/TransactionStatus'
         amount:
           type: number
           format: double
@@ -489,6 +464,8 @@ components:
           type: string
           description: The merchant URL which should be used for server-to-server webhooks.
           example: https://example.com/notification_endpoint
+        error:
+          $ref: '#/components/schemas/Error'
         redirectUrlSuccess:
           type: string
           description: The merchant URL to which the user should be redirected in case of a successful transaction.
@@ -501,6 +478,16 @@ components:
           type: string
           description: The merchant URL to which the user should be redirected in case of a failed transaction.
           example: https://example.com/failed
+        createdOn:
+          format: date-time
+          type: string
+          description: Created time.
+          example: 2022-04-08T11:11:59.711Z
+        updatedOn:
+          format: date-time
+          type: string
+          description: Updated time.
+          example: 2022-04-08T11:11:59.711Z
         expiresAt:
           format: date-time
           type: string
@@ -510,7 +497,19 @@ components:
             extended each time a user (re-)submits a payment, so provided expiration date will be
             updated in most cases. Max value is _(now)+3h_
           example: 2021-12-22T05:17:56.323Z
-        customerDetails:
-          $ref: '#/components/schemas/CustomerDetails'
+        paymentUrl:
+          type: string
+          description: Payment link to which the customer should be redirected to complete 3DSecure and subsequent processing.
+          example: https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
         paymentDetails:
-          $ref: '#/components/schemas/CreditCardDetails'
+          $ref: '#/components/schemas/PaymentDetails'
+        tdsDetails:
+          $ref: '#/components/schemas/TdsDetails'
+
+    Transaction:
+      allOf:
+        - $ref: '#/components/schemas/TransactionResponse'
+        - type: object
+          properties:
+            customerDetails:
+              $ref: '#/components/schemas/CustomerDetails'
