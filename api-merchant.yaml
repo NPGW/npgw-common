@@ -427,7 +427,7 @@ components:
         - CANCELLED
         - EXPIRED
 
-    TransactionResponse:
+    BaseTransaction:
       type: object
       required:
         - merchantId
@@ -439,10 +439,6 @@ components:
         - redirectUrlFail
         - paymentDetails
       properties:
-        transactionId:
-          type: string
-          description: Unique transaction id in the NPGW system.
-          example: id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g
         merchantId:
           type: string
           description: Unique merchant id in the NPGW system.
@@ -451,8 +447,6 @@ components:
           type: string
           description: Unique transaction id in merchant's system.
           example: REF00L00000
-        status:
-          $ref: '#/components/schemas/TransactionStatus'
         amount:
           type: number
           format: double
@@ -464,8 +458,6 @@ components:
           type: string
           description: The merchant URL which should be used for server-to-server webhooks.
           example: https://example.com/notification_endpoint
-        error:
-          $ref: '#/components/schemas/Error'
         redirectUrlSuccess:
           type: string
           description: The merchant URL to which the user should be redirected in case of a successful transaction.
@@ -478,16 +470,6 @@ components:
           type: string
           description: The merchant URL to which the user should be redirected in case of a failed transaction.
           example: https://example.com/failed
-        createdOn:
-          format: date-time
-          type: string
-          description: Created time.
-          example: 2022-04-08T11:11:59.711Z
-        updatedOn:
-          format: date-time
-          type: string
-          description: Updated time.
-          example: 2022-04-08T11:11:59.711Z
         expiresAt:
           format: date-time
           type: string
@@ -497,18 +479,42 @@ components:
             extended each time a user (re-)submits a payment, so provided expiration date will be
             updated in most cases. Max value is _(now)+3h_
           example: 2021-12-22T05:17:56.323Z
-        paymentUrl:
-          type: string
-          description: Payment link to which the customer should be redirected to complete 3DSecure and subsequent processing.
-          example: https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
         paymentDetails:
           $ref: '#/components/schemas/PaymentDetails'
-        tdsDetails:
-          $ref: '#/components/schemas/TdsDetails'
+
+    TransactionResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseTransaction'
+        - type: object
+          properties:
+            transactionId:
+              type: string
+              description: Unique transaction id in the NPGW system.
+              example: id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g
+            status:
+              $ref: '#/components/schemas/TransactionStatus'
+            error:
+              $ref: '#/components/schemas/Error'
+            createdOn:
+              format: date-time
+              type: string
+              description: Created time.
+              example: 2022-04-08T11:11:59.711Z
+            updatedOn:
+              format: date-time
+              type: string
+              description: Updated time.
+              example: 2022-04-08T11:11:59.711Z
+            paymentUrl:
+              type: string
+              description: Payment link to which the customer should be redirected to complete 3DSecure and subsequent processing.
+              example: https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
+            tdsDetails:
+              $ref: '#/components/schemas/TdsDetails'
 
     Transaction:
       allOf:
-        - $ref: '#/components/schemas/TransactionResponse'
+        - $ref: '#/components/schemas/BaseTransaction'
         - type: object
           properties:
             customerDetails:
