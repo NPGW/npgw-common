@@ -274,13 +274,17 @@ components:
 
     PaymentDetails:
       type: object
-      discriminator:
-        propertyName: paymentMethod
       required:
         - paymentMethod
       properties:
         paymentMethod:
           $ref: '#/components/schemas/PaymentMethod'
+      discriminator:
+        propertyName: paymentMethod
+        mapping:
+          CreditCard: '#/components/schemas/CreditCardDetails'
+      oneOf:
+        - $ref: '#/components/schemas/CreditCardDetails'
 
     CreditCardDetails:
       allOf:
