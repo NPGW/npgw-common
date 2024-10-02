@@ -135,7 +135,7 @@ paths:
               $ref: '#/components/schemas/Transaction'
         required: true
       responses:
-        '200':
+        '201':
           $ref: '#/components/responses/TransactionResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
