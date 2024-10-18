@@ -452,10 +452,11 @@ components:
           description: Unique transaction id in merchant's system.
           example: REF00L00000
         amount:
-          type: number
-          format: double
+          type: integer
+          minimum: 1
+          maximum: 9999999
           description: Transaction amount.
-          example: 19.99
+          example: 1999
         currency:
           $ref: '#/components/schemas/CurrencyCode'
         notificationUrl:
