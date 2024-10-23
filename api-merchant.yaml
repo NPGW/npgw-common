@@ -373,8 +373,11 @@ components:
           example: US
         zip:
           type: string
-          description: Billing Address zip code.
-          example: 0578
+          description: Billing Address Zip or Postal code.
+          example: 90210
+          minLength: 2
+          maxLength: 10
+          pattern: '^[a-zA-Z0-9\- ]*$'
         phone:
           type: string
           description: Billing Address phone number (incl. country code).
