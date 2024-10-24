@@ -300,24 +300,39 @@ components:
           properties:
             pan:
               type: string
-              description: Full card number.
+              description: Full card number - must be a valid credit/debit card number.
               example: 2303779999000275
+              minLength: 13
+              maxLength: 19
+              pattern: '^\d{13,19}$'
             expMonth:
               type: string
               description: Card expiry month (01..12).
               example: 06
+              minLength: 1
+              maxLength: 2
+              pattern: '^(0?[1-9]|1[0-2])$'
             expYear:
               type: string
               description: Card expiry year (e.g. 2024).
               example: 2029
+              minLength: 4
+              maxLength: 4
+              pattern: '^\d{4}$'
             cvv:
               type: string
               description: 3-digit card security code (CVV2/CVC2).
               example: 148
+              minLength: 3
+              maxLength: 3
+              pattern: '^\d{3}$'
             cardHolderName:
               type: string
               description: Card holder name.
               example: Hal Jordan
+              minLength: 1
+              maxLength: 150
+              pattern: '^[\p{L}0-9 \_.,-:&]+$'
 
     CustomerDetails:
       type: object
@@ -343,34 +358,58 @@ components:
           type: string
           description: Billing Address first name.
           example: Hal
+          minLength: 1
+          maxLength: 100
+          pattern: '^[\p{L} \-]+$'          
         lastName:
           type: string
           description: Billing Address last name.
           example: Jordan
+          minLength: 1
+          maxLength: 100
+          pattern: '^[\p{L} \-]+$'          
         email:
           type: string
-          description: Customer email.
+          description: Customer email addres - must be a valid email address format.
           example: hal@greenlantern.com
+          minLength: 5
+          maxLength: 255
+          pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         address1:
           type: string
-          description: Billing Address line 1 (street address).
+          description: Billing Address line 1 (Street Address and Number).
           example: 59 Gil Broome Avenue
+          minLength: 1
+          maxLength: 125
+          pattern: '^[\p{L}\d .,-]+$'
         address2:
           type: string
-          description: Billing Address line 2 (optional).
+          description: Billing Address line 2.
           example: unit 5
+          minLength: 1
+          maxLength: 125
+          pattern: '^[\p{L}\d .,-]+$'
         city:
           type: string
           description: Billing Address city.
           example: Coast City
+          minLength: 1
+          maxLength: 125
+          pattern: '^[\p{L} ]+$'
         state:
           type: string
-          description: Billing Address state.
+          description: Billing Address state - required if the country is US or CA, and must be a valid alpha-2 US state or Canadian province code accordingly. Optional field for all other countries.
           example: CA
+          minLength: 2
+          maxLength: 15
+          pattern: '^[\p{L} ]+$'
         country:
           type: string
           description: Billing Address 2-char country code (ISO 3166-1, alpha-2).
           example: US
+          minLength: 2
+          maxLength: 2
+          pattern: '^[A-Z]{2}$'
         zip:
           type: string
           description: Billing Address Zip or Postal code.
@@ -382,14 +421,19 @@ components:
           type: string
           description: Billing Address phone number (incl. country code).
           example: +17723493500
+          minLength: 7
+          maxLength: 14
         dateOfBirth:
           type: string
-          description: Customer's date of birth (must be 18+ y.o.).
+          description: Customer's date of birth - must be 18+ y.o.
           example: 2004-08-24
+          pattern: '^\d{4}-\d{2}-\d{2}$'
         ipAddress:
           type: string
-          description: Customer's IP address.
+          description: Customer's IP address - IPv4 or IPv6.
           example: 192.168.3.123
+          minLength: 3
+          maxLength: 39
 
     CurrencyCode:
       type: string
@@ -454,6 +498,9 @@ components:
           type: string
           description: Unique transaction id in merchant's system.
           example: REF00L00000
+          minLength: 1
+          maxLength: 30
+          pattern: '^[a-zA-Z0-9]*$'
         amount:
           type: integer
           minimum: 1
@@ -482,10 +529,10 @@ components:
           format: date-time
           type: string
           description: |
-            Time of the transaction expiration, _timestamp+30min_ by default. If the transaction
-            is not completed within this time, we will reject any attempt to complete it. The expiration is
-            extended each time a user (re-)submits a payment, so provided expiration date will be
-            updated in most cases. Max value is _(now)+3h_
+            Time of the transaction expiration, minimum allowed is _timestamp+30min_ (will be set by default if field is omitted). 
+            If the transaction is not completed within this time, we will reject any attempt to complete it. 
+            The expiration is extended each time a user (re-)submits a payment, so provided expiration date will be updated in most cases. 
+            Max value is _(now)+3h_
           example: 2021-12-22T05:17:56.323Z
         paymentDetails:
           $ref: '#/components/schemas/PaymentDetails'
