@@ -372,7 +372,6 @@ components:
           type: string
           description: Customer email addres - must be a valid email address format.
           example: hal@greenlantern.com
-          minLength: 5
           maxLength: 255
           pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         address1:
