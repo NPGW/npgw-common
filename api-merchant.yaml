@@ -348,13 +348,14 @@ components:
       properties:
         customerId:
           type: string
-          description: Unique customer id.
+          description: Unique customer id assigned by the NPGW.
           example: 3a5f04af-fb52-41ce-b9bc-283e72207cd5
           maxLength: 40
         externalCustomerId:
           type: string
           description: Unique id for each customer in the merchant's system.
           example: 32556
+          maxLength: 40
         firstName:
           type: string
           description: Billing Address first name.
@@ -380,16 +381,16 @@ components:
           type: string
           description: Billing Address line 1 (Street Address and Number).
           example: 59 Gil Broome Avenue
-          minLength: 1
+          minLength: 5
           maxLength: 125
-          pattern: '^[\p{L}\d .,-]+$'
+          pattern: '^[\p{L}\d .,#/()\-]+$'
         address2:
           type: string
           description: Billing Address line 2.
           example: unit 5
-          minLength: 1
+          minLength: 5
           maxLength: 125
-          pattern: '^[\p{L}\d .,-]+$'
+          pattern: '^[\p{L}\d .,#/()\-]+$'
         city:
           type: string
           description: Billing Address city.
