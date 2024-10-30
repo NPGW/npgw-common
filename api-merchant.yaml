@@ -363,14 +363,14 @@ components:
           example: Hal
           minLength: 2
           maxLength: 100
-          pattern: '^[\p{L} \-]+$'          
+          pattern: '^[\p{L} ''\-]+$'          
         lastName:
           type: string
           description: Billing Address last name.
           example: Jordan
           minLength: 2
           maxLength: 100
-          pattern: '^[\p{L} \-]+$'          
+          pattern: '^[\p{L} ''\-]+$'          
         email:
           type: string
           description: Customer email addres - must be a valid email address format.
