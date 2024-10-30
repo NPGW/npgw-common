@@ -330,7 +330,7 @@ components:
               type: string
               description: Card holder name.
               example: Hal Jordan
-              minLength: 1
+              minLength: 2
               maxLength: 150
               pattern: '^[\p{L}0-9 \_.,-:&]+$'
 
@@ -356,18 +356,19 @@ components:
           description: Unique id for each customer in the merchant's system.
           example: 32556
           maxLength: 40
+          pattern: '^[a-zA-Z0-9\-]*$'
         firstName:
           type: string
           description: Billing Address first name.
           example: Hal
-          minLength: 1
+          minLength: 2
           maxLength: 100
           pattern: '^[\p{L} \-]+$'          
         lastName:
           type: string
           description: Billing Address last name.
           example: Jordan
-          minLength: 1
+          minLength: 2
           maxLength: 100
           pattern: '^[\p{L} \-]+$'          
         email:
