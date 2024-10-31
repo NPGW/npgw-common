@@ -349,11 +349,6 @@ components:
         - country
         - dateOfBirth
       properties:
-        customerId:
-          type: string
-          description: Unique customer id assigned by the NPGW.
-          example: 3a5f04af-fb52-41ce-b9bc-283e72207cd5
-          maxLength: 40
         externalCustomerId:
           type: string
           description: Unique id for each customer in the merchant's system.
