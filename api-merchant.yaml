@@ -29,8 +29,6 @@ externalDocs:
     description: View our full Technical Documentation here
 
 servers:
-  - url: https://api-staging.npgw.xyz/merchant-v1
-    description: Sandbox server
   - url: https://api.npgw.xyz/merchant-v1
     description: Production server
 
@@ -279,12 +277,17 @@ components:
       properties:
         paymentMethod:
           $ref: '#/components/schemas/PaymentMethod'
-      discriminator:
-        propertyName: paymentMethod
-        mapping:
-          CreditCard: '#/components/schemas/CreditCardDetails'
-      oneOf:
-        - $ref: '#/components/schemas/CreditCardDetails'
+
+    PaypalDetails:
+      allOf:
+        - $ref: '#/components/schemas/PaymentDetails'
+        - type: object
+        - description: PaypalDetails
+          required:
+            - paypalId
+          properties:
+            paypalId:
+              type: string
 
     CreditCardDetails:
       allOf:
@@ -537,7 +540,8 @@ components:
             Max value is _(now)+3h_
           example: 2021-12-22T05:17:56.323Z
         paymentDetails:
-          $ref: '#/components/schemas/PaymentDetails'
+          oneOf:
+            - $ref: '#/components/schemas/CreditCardDetails'
 
     TransactionResponse:
       allOf:
