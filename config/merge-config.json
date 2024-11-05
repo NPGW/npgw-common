@@ -1,0 +1,7 @@
+{
+  "inputFiles": [
+    "./api-merchant.yaml",
+    "./config/api-processing.yaml"
+  ],
+  "outputFileType": "yaml"
+}
