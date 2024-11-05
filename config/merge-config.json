@@ -1,7 +1,11 @@
 {
-  "inputFiles": [
-    "./api-merchant.yaml",
-    "./config/api-processing.yaml"
+  "inputs": [
+    {
+      "inputFile": "./../api-merchant.yaml"
+    },
+    {
+      "inputFile": "./api-processing.yaml"
+    }
   ],
-  "outputFileType": "yaml"
+  "output": "./../docs/merchant-v1.yaml"
 }

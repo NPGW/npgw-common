@@ -50,7 +50,7 @@ jobs:
         run: npm install -g openapi-merge-cli
 
       - name: Merge OpenAPI Specs
-        run: openapi-merge-cli --config ./merge-config.json --output ./docs/merchant-v1.yaml
+        run: openapi-merge-cli --config ./config/merge-config.json --output ./docs/merchant-v1.yaml
 
       - name: Set up GitHub Pages
         uses: actions/configure-pages@v5
