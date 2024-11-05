@@ -27,9 +27,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
       - name: Install JDK
         uses: actions/setup-java@v3
         with:
@@ -43,6 +40,20 @@ jobs:
         run: |
           rm -rf docs
           java -jar openapi-generator-cli.jar generate -i api-merchant.yaml -g html2 -o docs
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install openapi-merge-cli
+        run: npm install -g openapi-merge-cli
+
+      - name: Merge OpenAPI Specs
+        run: openapi-merge-cli --config ./merge-config.json --output ./docs/merchant-v1.yaml
+
+      - name: Set up GitHub Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

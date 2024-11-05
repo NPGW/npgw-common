@@ -1,0 +1,265 @@
+openapi: 3.0.3
+
+info:
+  title: processing api
+  version: 0.1.1
+
+paths:
+  /resource/page/{transactionId}:
+    get:
+      operationId: getPage
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Page'
+        '400':
+          $ref: '#/components/responses/Page'
+        '401':
+          $ref: '#/components/responses/Page'
+        '403':
+          $ref: '#/components/responses/Page'
+        '404':
+          $ref: '#/components/responses/Page'
+        '500':
+          $ref: '#/components/responses/Page'
+
+  /resource/frame/{transactionId}:
+    get:
+      operationId: getFrame
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Page'
+        '303':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/Page'
+        '401':
+          $ref: '#/components/responses/Page'
+        '403':
+          $ref: '#/components/responses/Page'
+        '404':
+          $ref: '#/components/responses/Page'
+        '500':
+          $ref: '#/components/responses/Page'
+
+  /fingerprint/{transactionId}:
+    get:
+      operationId: getFingerprintPage
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Page'
+        '400':
+          $ref: '#/components/responses/Page'
+        '401':
+          $ref: '#/components/responses/Page'
+        '403':
+          $ref: '#/components/responses/Page'
+        '404':
+          $ref: '#/components/responses/Page'
+        '422':
+          $ref: '#/components/responses/Page'
+        '500':
+          $ref: '#/components/responses/Page'
+    post:
+      operationId: setFingerprint
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Fingerprint'
+        required: true
+      responses:
+        # If this is not added, then the Fingerprint class is not created (workaround openapi bug)
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fingerprint'
+          description: If this is not added, then the Fingerprint class is not created (workaround openapi bug)
+        '303':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/Page'
+        '401':
+          $ref: '#/components/responses/Page'
+        '403':
+          $ref: '#/components/responses/Page'
+        '404':
+          $ref: '#/components/responses/Page'
+        '422':
+          $ref: '#/components/responses/Page'
+        '500':
+          $ref: '#/components/responses/Page'
+
+  /challenge/{transactionId}:
+    get:
+      operationId: getChallengePage
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Page'
+        '400':
+          $ref: '#/components/responses/Page'
+        '401':
+          $ref: '#/components/responses/Page'
+        '403':
+          $ref: '#/components/responses/Page'
+        '404':
+          $ref: '#/components/responses/Page'
+        '422':
+          $ref: '#/components/responses/Page'
+        '500':
+          $ref: '#/components/responses/Page'
+
+    post:
+      operationId: setChallenge
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CRes'
+        required: true
+      responses:
+        '303':
+          $ref: '#/components/responses/Redirect'
+        '400':
+          $ref: '#/components/responses/Page'
+        '401':
+          $ref: '#/components/responses/Page'
+        '403':
+          $ref: '#/components/responses/Page'
+        '404':
+          $ref: '#/components/responses/Page'
+        '422':
+          $ref: '#/components/responses/Page'
+        '500':
+          $ref: '#/components/responses/Page'
+
+components:
+  responses:
+    Page:
+      content:
+        text/html:
+          schema:
+            type: string
+      description: Response as a page
+    Redirect:
+      headers:
+        Location:
+          description: The URI to which the client should redirect
+          schema:
+            type: string
+      content: {}
+      description: See Other
+
+  schemas:
+    Fingerprint:
+      type: object
+      required:
+        - javascriptEnabled
+      properties:
+        javaEnabled:
+          type: boolean
+          description: Boolean that represents the ability of the cardholder browser to execute Java.
+          example: true
+        language:
+          type: string
+          description: Value representing the browser language as defined in IETF BCP47.
+          example: en-US
+        tz:
+          type: string
+          description: Time-zone offset in minutes between UTC and the Cardholder browser local time.
+          example: 0
+        userAgent:
+          type: string
+          description: Exact content of the HTTP user-agent header.
+          example: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36
+        colorDepth:
+          type: string
+          description: Value representing the bit depth of the colour palette for displaying images, in bits per pixel.
+          example: 24
+        screenHeight:
+          type: string
+          description: Total height of the Cardholder’s screen in pixels.
+          example: 1055
+        screenWidth:
+          type: string
+          description: Total width of the cardholder’s screen in pixels.
+          example: 1680
+        javascriptEnabled:
+          type: boolean
+          description: Boolean that represents the ability of the cardholder browser to execute Javascript.
+          example: true
+
+    CRes:
+      type: object
+      required:
+        - cres
+      properties:
+        cres:
+          type: string
+          description: This is a Base64-encoded form of multiple additional parameters represented in JSON format.
