@@ -1,0 +1,20 @@
+info:
+  description: |
+    **Overview**
+
+    Use this API to integrate CreditCard processing capabilities into your application and track transaction statuses. The API supports both stage and production environments with distinct URLs.
+
+    **Usage**
+
+    The endpoints provided include operations for generating authentication tokens, creating new transactions and retrieving transaction details for CreditCard payments.
+
+    Useful links:
+    - [Merchant API GitHub repo](https://github.com/NPGW/npgw-api-specification)
+    - [Merchant API YAML definition](https://github.com/NPGW/npgw-api-specification/blob/main/api-merchant.yaml)
+  x-meta:
+    Title: API and SDK Documentation
+    Author: NPGW
+    Date: 2024-08-14
+    Version: 0.1.4
+  contact:
+    email: info@npgw.xyz

@@ -2,7 +2,8 @@ name: Generate and deploy the docs to Pages
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -27,30 +28,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'corretto'
-          java-version: '17'
-
-      - name: Download openapi cli
-        run: curl https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.7.0/openapi-generator-cli-7.7.0.jar -o openapi-generator-cli.jar
-
-      - name: Generate documentation
-        run: |
-          rm -rf docs
-          java -jar openapi-generator-cli.jar generate -i api-merchant.yaml -g html2 -o docs
-
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+      - run: npm install -g openapi-merge-cli
 
-      - name: Install openapi-merge-cli
-        run: npm install -g openapi-merge-cli
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - run: pip install pyyaml
 
-      - name: Merge OpenAPI Specs
-        run: openapi-merge-cli --config ./config/merge-config.json
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+      - run: curl https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.7.0/openapi-generator-cli-7.7.0.jar -o openapi-generator-cli.jar
+
+      - name: Merge OpenAPI spec
+        run: openapi-merge-cli --config ./rest/merge-config.json
+
+      - name: Merge Doc spec
+        run: python3 ./rest/script/yaml-merge.py ./rest/doc-api.yaml ./full-api.yaml /info > ./doc-full-api.yaml
+
+      - name: Generate documentation
+        run: |
+          rm -rf docs
+          java -jar openapi-generator-cli.jar generate -i doc-full-api.yaml -g html2 -o docs
+
+      - name: Merge AWS spec
+        run: python3 ./rest/script/yaml-merge.py ./rest/aws-api.yaml ./full-api.yaml x-amazon- > ./docs/merchant-v1.yaml
 
       - name: Set up GitHub Pages
         uses: actions/configure-pages@v5
