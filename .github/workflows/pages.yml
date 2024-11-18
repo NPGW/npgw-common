@@ -49,18 +49,18 @@ jobs:
           java-version: '17'
       - run: curl https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.7.0/openapi-generator-cli-7.7.0.jar -o openapi-generator-cli.jar
 
-      - name: Merge OpenAPI spec
-        run: openapi-merge-cli --config ./rest/merge-config.json
-
-      - name: Merge Doc spec
-        run: python3 ./rest/script/yaml-merge.py ./rest/doc-api.yaml ./full-api.yaml /info > ./doc-full-api.yaml
+      - name: Create Doc spec
+        run: python3 ./rest/script/yaml-merge.py ./rest/doc-api.yaml ./api-merchant.yaml /info > ./api-doc-merchant.yaml
 
       - name: Generate documentation
         run: |
           rm -rf docs
-          java -jar openapi-generator-cli.jar generate -i doc-full-api.yaml -g html2 -o docs
+          java -jar openapi-generator-cli.jar generate -i api-doc-merchant.yaml -g html2 -o docs
 
-      - name: Merge AWS spec
+      - name: Merge API specs
+        run: openapi-merge-cli --config ./rest/merge-config.json
+
+      - name: Create AWS spec
         run: python3 ./rest/script/yaml-merge.py ./rest/aws-api.yaml ./full-api.yaml x-amazon- > ./docs/merchant-v1.yaml
 
       - name: Set up GitHub Pages
