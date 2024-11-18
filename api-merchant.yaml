@@ -3,26 +3,6 @@ openapi: 3.0.3
 info:
   title: NPGW Merchant API
   version: 0.1.4
-  description: |
-    **Overview**
-
-    Use this API to integrate CreditCard processing capabilities into your application and track transaction statuses. The API supports both stage and production environments with distinct URLs.
-
-    **Usage**
-
-    The endpoints provided include operations for generating authentication tokens, creating new transactions and retrieving transaction details for CreditCard payments.
-
-    Useful links:
-    - [Merchant API GitHub repo](https://github.com/NPGW/npgw-api-specification)
-    - [Merchant API YAML definition](https://github.com/NPGW/npgw-api-specification/blob/main/api-merchant.yaml)
-    - [Merchant API Wiki](https://npgw.notion.site/NPGW-Merchant-API-Wiki-08bd820fcb3342b9aa9db3e7daabfccf)
-  x-meta:
-    Title: API and SDK Documentation
-    Author: NPGW
-    Date: 2024-08-14
-    Version: 0.1.4
-  contact:
-    email: info@npgw.xyz
 
 externalDocs:
     url: https://docs.npgw.xyz
@@ -52,7 +32,7 @@ paths:
       description: Retrieve transaction details using the NPGW Transaction ID
       operationId: getTransactionById
       security:
-        - bearerAuth: []
+        - apiKeyAuth: []
       parameters:
         - in: path
           name: transactionId
@@ -83,7 +63,7 @@ paths:
       description: Retrieve transaction details using your External Transaction ID
       operationId: getTransaction
       security:
-        - bearerAuth: []
+        - apiKeyAuth: []
       parameters:
         - in: query
           name: merchantId
@@ -119,7 +99,7 @@ paths:
         A successful request will return a secure payment URL via **{body.paymentUrl}** to which the customer should be redirected to complete online 3DSecure authentication with their bank. Payments will proceed to Authorization on successful authentication by the customer.
       operationId: createTransaction
       security:
-        - bearerAuth: []
+        - apiKeyAuth: []
       parameters:
         - in: query
           name: async
@@ -172,13 +152,11 @@ paths:
 
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: |
-        JWT-based authentication where the token is passed in the Authorization header.
-        The token must be prefixed with the word "Bearer " (note the space after "Bearer")
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: JWT-based authentication where the token is passed in the Authorization header.
 
   responses:
     BadRequest:

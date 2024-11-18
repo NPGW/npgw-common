@@ -7,5 +7,5 @@
       "inputFile": "./api-processing.yaml"
     }
   ],
-  "output": "./../docs/merchant-v1.yaml"
+  "output": "./../full-api.yaml"
 }
