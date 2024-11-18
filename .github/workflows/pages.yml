@@ -62,13 +62,13 @@ jobs:
       - name: Merge AWS spec
         run: python3 ./rest/script/yaml-merge.py ./rest/aws-api.yaml ./full-api.yaml x-amazon- > ./docs/merchant-v1.yaml
 
-      - name: Set up GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './docs/'
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+#      - name: Set up GitHub Pages
+#        uses: actions/configure-pages@v5
+#
+#      - name: Upload artifact
+#        uses: actions/upload-pages-artifact@v3
+#        with:
+#          path: './docs/'
+#
+#      - name: Deploy to GitHub Pages
+#        uses: actions/deploy-pages@v4
