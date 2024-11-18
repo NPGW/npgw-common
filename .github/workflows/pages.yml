@@ -34,6 +34,7 @@ jobs:
           node-version: '18'
       - run: npm install -g openapi-merge-cli
 
+      - run: echo "PyYAML==5.4.1" > requirements.txt
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
