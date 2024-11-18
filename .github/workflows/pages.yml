@@ -1,7 +1,7 @@
 name: Generate and deploy the docs to Pages
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 

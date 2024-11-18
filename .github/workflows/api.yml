@@ -26,3 +26,6 @@ jobs:
 
       - name: Validation API
         run: java -jar openapi-generator-cli.jar validate -i api-merchant.yaml --recommend
+
+      - name: Validation API
+        run: java -jar openapi-generator-cli.jar validate -i ./rest/api-processing.yaml --recommend
