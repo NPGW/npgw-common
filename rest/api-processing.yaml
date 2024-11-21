@@ -1,8 +1,11 @@
 openapi: 3.0.3
 
 info:
-  title: processing api
+  title: NPGW Processing API
   version: 0.1.4
+
+servers:
+  - url: https://api.npgw.xyz/merchant-v1
 
 paths:
   /resource/page/{transactionId}:
@@ -22,13 +25,15 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Page'
-        '400':
-          $ref: '#/components/responses/Page'
         '401':
           $ref: '#/components/responses/Page'
-        '403':
-          $ref: '#/components/responses/Page'
         '404':
+          $ref: '#/components/responses/Page'
+        '405':
+          $ref: '#/components/responses/Page'
+        '406':
+          $ref: '#/components/responses/Page'
+        '429':
           $ref: '#/components/responses/Page'
         '500':
           $ref: '#/components/responses/Page'
@@ -52,13 +57,15 @@ paths:
           $ref: '#/components/responses/Page'
         '303':
           $ref: '#/components/responses/Redirect'
-        '400':
-          $ref: '#/components/responses/Page'
         '401':
           $ref: '#/components/responses/Page'
-        '403':
-          $ref: '#/components/responses/Page'
         '404':
+          $ref: '#/components/responses/Page'
+        '405':
+          $ref: '#/components/responses/Page'
+        '406':
+          $ref: '#/components/responses/Page'
+        '429':
           $ref: '#/components/responses/Page'
         '500':
           $ref: '#/components/responses/Page'
@@ -80,15 +87,15 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Page'
-        '400':
-          $ref: '#/components/responses/Page'
         '401':
-          $ref: '#/components/responses/Page'
-        '403':
           $ref: '#/components/responses/Page'
         '404':
           $ref: '#/components/responses/Page'
-        '422':
+        '405':
+          $ref: '#/components/responses/Page'
+        '406':
+          $ref: '#/components/responses/Page'
+        '429':
           $ref: '#/components/responses/Page'
         '500':
           $ref: '#/components/responses/Page'
@@ -112,24 +119,21 @@ paths:
               $ref: '#/components/schemas/Fingerprint'
         required: true
       responses:
-        # If this is not added, then the Fingerprint class is not created (workaround openapi bug)
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Fingerprint'
-          description: If this is not added, then the Fingerprint class is not created (workaround openapi bug)
         '303':
           $ref: '#/components/responses/Redirect'
         '400':
           $ref: '#/components/responses/Page'
         '401':
           $ref: '#/components/responses/Page'
-        '403':
-          $ref: '#/components/responses/Page'
         '404':
           $ref: '#/components/responses/Page'
+        '405':
+          $ref: '#/components/responses/Page'
+        '406':
+          $ref: '#/components/responses/Page'
         '422':
+          $ref: '#/components/responses/Page'
+        '429':
           $ref: '#/components/responses/Page'
         '500':
           $ref: '#/components/responses/Page'
@@ -151,15 +155,15 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Page'
-        '400':
-          $ref: '#/components/responses/Page'
         '401':
-          $ref: '#/components/responses/Page'
-        '403':
           $ref: '#/components/responses/Page'
         '404':
           $ref: '#/components/responses/Page'
-        '422':
+        '405':
+          $ref: '#/components/responses/Page'
+        '406':
+          $ref: '#/components/responses/Page'
+        '429':
           $ref: '#/components/responses/Page'
         '500':
           $ref: '#/components/responses/Page'
@@ -190,11 +194,15 @@ paths:
           $ref: '#/components/responses/Page'
         '401':
           $ref: '#/components/responses/Page'
-        '403':
-          $ref: '#/components/responses/Page'
         '404':
           $ref: '#/components/responses/Page'
+        '405':
+          $ref: '#/components/responses/Page'
+        '406':
+          $ref: '#/components/responses/Page'
         '422':
+          $ref: '#/components/responses/Page'
+        '429':
           $ref: '#/components/responses/Page'
         '500':
           $ref: '#/components/responses/Page'
@@ -214,7 +222,7 @@ components:
           schema:
             type: string
       content: {}
-      description: See Other
+      description: See other
 
   schemas:
     Fingerprint:
