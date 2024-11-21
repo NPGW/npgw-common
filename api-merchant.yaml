@@ -42,16 +42,16 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/TransactionResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/Validation'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/Error'
 
@@ -78,16 +78,16 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/TransactionResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/Validation'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/Error'
 
@@ -119,8 +119,14 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
         '422':
           $ref: '#/components/responses/Validation'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         '500':
           $ref: '#/components/responses/Error'
 
@@ -145,10 +151,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/NpgwToken'
           description: Everything works as expected.
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '405':
-          $ref: '#/components/responses/BadRequest'
+          $ref: '#/components/responses/NotAllowed'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/Error'
 
 components:
   securitySchemes:
@@ -183,12 +201,30 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
       description: The requested resource doesn't exist.
+    NotAcceptable:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request.
+    NotAllowed:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: The request method is not supported for the requested resource.
     Validation:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
       description: The request payload could not pass the validation (probably incorrect).
+    TooManyRequests:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: The user has sent too many requests in a given amount of time.
     Error:
       content:
         application/json:
@@ -206,14 +242,24 @@ components:
   schemas:
     Error:
       type: object
+      required:
+        - timestamp
+        - status
+        - message
+        - path
       properties:
+        timestamp:
+          type: integer
+          format: int64
         status:
           type: integer
         message:
           type: string
-        id:
+        path:
           type: string
         code:
+          type: string
+        id:
           type: string
 
     User:
@@ -255,17 +301,6 @@ components:
       properties:
         paymentMethod:
           $ref: '#/components/schemas/PaymentMethod'
-
-    PaypalDetails:
-      allOf:
-        - $ref: '#/components/schemas/PaymentDetails'
-        - type: object
-        - description: PaypalDetails
-          required:
-            - paypalId
-          properties:
-            paypalId:
-              type: string
 
     CreditCardDetails:
       allOf:
@@ -516,6 +551,14 @@ components:
           oneOf:
             - $ref: '#/components/schemas/CreditCardDetails'
 
+    TransactionError:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+
     TransactionResponse:
       allOf:
         - $ref: '#/components/schemas/BaseTransaction'
@@ -528,7 +571,7 @@ components:
             status:
               $ref: '#/components/schemas/TransactionStatus'
             error:
-              $ref: '#/components/schemas/Error'
+              $ref: '#/components/schemas/TransactionError'
             createdOn:
               format: date-time
               type: string
