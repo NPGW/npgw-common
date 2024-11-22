@@ -40,20 +40,21 @@ paths:
         uri: '${uri}/token'
         passthroughBehavior: ${passthroughBehavior}
 
+  /resource/{resource}:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/resource/{resource}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.resource: method.request.path.resource
+
   /resource/page/{transactionId}:
     get:
-      operationId: getPage
-      parameters:
-        - in: path
-          name: transactionId
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: token
-          required: true
-          schema:
-            type: string
       x-amazon-apigateway-integration:
         connectionType: ${connectionType}
         connectionId: ${connectionId}

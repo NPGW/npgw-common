@@ -50,18 +50,21 @@ jobs:
       - run: curl https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.7.0/openapi-generator-cli-7.7.0.jar -o openapi-generator-cli.jar
 
       - name: Create Doc spec
-        run: python3 ./rest/script/yaml-merge.py ./rest/doc-api.yaml ./api-merchant.yaml /info > ./api-doc-merchant.yaml
+        run: python3 ./rest/script/yaml-merge.py ./rest/part-doc-api.yaml ./api-merchant.yaml /info > ./api-merchant-doc.yaml
 
       - name: Generate documentation
         run: |
           rm -rf docs
-          java -jar openapi-generator-cli.jar generate -i api-doc-merchant.yaml -g html2 -o docs
+          java -jar openapi-generator-cli.jar generate -i api-merchant-doc.yaml -g html2 -o docs
 
       - name: Merge API specs
         run: openapi-merge-cli --config ./rest/merge-config.json
 
       - name: Create AWS spec
-        run: python3 ./rest/script/yaml-merge.py ./rest/aws-api.yaml ./full-api.yaml x-amazon- > ./docs/merchant-v1.yaml
+        run: python3 ./rest/script/yaml-merge.py ./rest/part-aws-api.yaml ./api-merchant-processing.yaml x-amazon- > ./docs/merchant-v1.yaml
+
+      - name: Validation API
+        run: java -jar openapi-generator-cli.jar validate -i ./docs/merchant-v1.yaml --recommend
 
       - name: Set up GitHub Pages
         uses: actions/configure-pages@v5

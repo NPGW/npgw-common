@@ -5,7 +5,10 @@
     },
     {
       "inputFile": "./api-processing.yaml"
+    },
+    {
+      "inputFile": "./part-resource-api.yaml"
     }
   ],
-  "output": "./../full-api.yaml"
+  "output": "./../api-merchant-processing.yaml"
 }
