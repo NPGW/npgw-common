@@ -63,6 +63,9 @@ jobs:
       - name: Create AWS spec
         run: python3 ./rest/script/yaml-merge.py ./rest/part-aws-api.yaml ./api-merchant-processing.yaml x-amazon- > ./docs/merchant-v1.yaml
 
+      - name: Validation API
+        run: java -jar openapi-generator-cli.jar validate -i ./docs/merchant-v1.yaml --recommend
+
       - name: Set up GitHub Pages
         uses: actions/configure-pages@v5
 

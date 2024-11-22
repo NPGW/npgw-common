@@ -24,8 +24,8 @@ jobs:
       - name: Download openapi cli
         run: curl https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.7.0/openapi-generator-cli-7.7.0.jar -o openapi-generator-cli.jar
 
-      - name: Validation API
+      - name: Validation Merchant API
         run: java -jar openapi-generator-cli.jar validate -i api-merchant.yaml --recommend
 
-      - name: Validation API
+      - name: Validation Processing API
         run: java -jar openapi-generator-cli.jar validate -i ./rest/api-processing.yaml --recommend
