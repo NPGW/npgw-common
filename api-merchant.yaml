@@ -456,7 +456,7 @@ components:
         - USD
         - GBP
 
-    TdsStatus:
+    ThreeDSecureStatus:
       type: string
       description: 3DSecure status
       enum:
@@ -465,14 +465,14 @@ components:
         - FAILED
         - CANCELLED
 
-    TdsDetails:
+    ThreeDSecureDetails:
       type: object
       description: 3DSecure details
       required:
         - status
       properties:
         status:
-          $ref: '#/components/schemas/TdsStatus'
+          $ref: '#/components/schemas/ThreeDSecureStatus'
 
     TransactionStatus:
       type: string
@@ -586,8 +586,8 @@ components:
               type: string
               description: Payment link to which the customer should be redirected to complete 3DSecure and subsequent processing.
               example: https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
-            tdsDetails:
-              $ref: '#/components/schemas/TdsDetails'
+            threeDSecureDetails:
+              $ref: '#/components/schemas/ThreeDSecureDetails'
 
     Transaction:
       allOf:
