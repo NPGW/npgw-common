@@ -360,7 +360,6 @@ components:
         - city
         - zip
         - country
-        - dateOfBirth
       properties:
         externalCustomerId:
           type: string
@@ -445,7 +444,7 @@ components:
           type: string
           description: Customer's IP address - IPv4 or IPv6.
           example: 192.168.3.123
-          minLength: 3
+          minLength: 7
           maxLength: 39
 
     CurrencyCode:
@@ -495,7 +494,6 @@ components:
       type: object
       required:
         - merchantId
-        - externalTransactionId
         - amount
         - currency
         - redirectUrlSuccess
@@ -593,6 +591,8 @@ components:
       allOf:
         - $ref: '#/components/schemas/BaseTransaction'
         - type: object
+          required:
+            - customerDetails
           properties:
             customerDetails:
               $ref: '#/components/schemas/CustomerDetails'
