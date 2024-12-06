@@ -18,8 +18,7 @@ tags:
   - name: payment
     description: Submit a Payment to the NPGW Gateway.
     externalDocs:
-      description: Available Test Cards
-      url: https://npgw.notion.site/NPGW-Merchant-API-Wiki-08bd820fcb3342b9aa9db3e7daabfccf?pvs=97#d91314e331f5481d9015bb6897dfcca9
+      url: https://docs.npgw.xyz/
   - name: status
     description: Query the status of a Transaction on the NPGW Gateway.
 
@@ -149,7 +148,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NpgwToken'
+                $ref: '#/components/schemas/RequestToken'
           description: Everything works as expected.
         '400':
           $ref: '#/components/responses/BadRequest'
@@ -273,7 +272,7 @@ components:
         password:
           type: string
 
-    NpgwToken:
+    RequestToken:
       type: object
       properties:
         accessToken:
