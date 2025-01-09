@@ -11,13 +11,6 @@ paths:
         requestParameters:
           integration.request.path.companyId: method.request.path.companyId
 
-components:
-  securitySchemes:
-    apiKeyAuth:
-      x-amazon-apigateway-authtype: ${x-amazon-apigateway-authtype}
-      x-amazon-apigateway-authorizer:
-        ${x-amazon-apigateway-authorizer}
-
 x-amazon-apigateway-gateway-responses:
   DEFAULT_4XX:
     responseParameters:
