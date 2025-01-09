@@ -1,0 +1,11 @@
+{
+  "inputs": [
+    {
+      "inputFile": "./../../api-merchant.yaml"
+    },
+    {
+      "inputFile": "./../api-processing.yaml"
+    }
+  ],
+  "output": "./../../api-merchant-processing.yaml"
+}

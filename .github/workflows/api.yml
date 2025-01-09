@@ -29,3 +29,6 @@ jobs:
 
       - name: Validation Processing API
         run: java -jar openapi-generator-cli.jar validate -i ./rest/api-processing.yaml --recommend
+
+      - name: Validation Portal API
+        run: java -jar openapi-generator-cli.jar validate -i ./rest/api-portal.yaml --recommend

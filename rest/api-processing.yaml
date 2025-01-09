@@ -8,6 +8,27 @@ servers:
   - url: https://api.npgw.xyz/merchant-v1
 
 paths:
+  /resource/{resource}:
+    get:
+      operationId: getResource
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Page'
+        '404':
+          $ref: '#/components/responses/Page'
+        '405':
+          $ref: '#/components/responses/Page'
+        '406':
+          $ref: '#/components/responses/Page'
+        '429':
+          $ref: '#/components/responses/Page'
+
   /resource/page/{transactionId}:
     get:
       operationId: getPage

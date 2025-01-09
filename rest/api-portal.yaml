@@ -1,0 +1,594 @@
+openapi: 3.0.3
+
+info:
+  title: NPGW Portal API
+  version: 0.1.1
+
+servers:
+  - url: https://npgw.xyz/portal-v1/
+
+paths:
+  /token:
+    $ref: '../api-merchant.yaml#/paths/~1token'
+
+  /user/create:
+    post:
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+        description: User
+      responses:
+        '200':
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /user/confirm:
+    post:
+      operationId: confirmUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmUser'
+        description: User
+      responses:
+        '200':
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /currency/{currencyCode}:
+    delete:
+      operationId: deleteCurrency
+      parameters:
+        - description: The currency code
+          in: path
+          name: currencyCode
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    get:
+      operationId: getOneCurrency
+      parameters:
+        - description: The currency code
+          in: path
+          name: currencyCode
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+          description: Get currency by code
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /currency:
+    get:
+      operationId: getAllCurrency
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrencyList'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    post:
+      operationId: createOrUpdateCurrency
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Currency'
+        description: New record
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /merchant-acquirer:
+    delete:
+      operationId: deleteMerchantAcquirer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MerchantAcquirerID'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MerchantAcquirer'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    get:
+      operationId: getAllMerchantAcquirer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MerchantAcquirerList'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    post:
+      operationId: createOrUpdateMerchantAcquirer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MerchantAcquirer'
+        description: New record
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MerchantAcquirer'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /company/{companyId}:
+    get:
+      operationId: getOneCompany
+      parameters:
+        - description: The company id
+          in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    delete:
+      operationId: deleteCompany
+      parameters:
+        - description: The company id
+          in: path
+          name: companyId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /company:
+    get:
+      operationId: getAllCompany
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyList'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    post:
+      operationId: createOrUpdateCompany
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+        description: New company
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+          description: Created company
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /acquirer/{acquirerId}:
+    get:
+      operationId: getOneAcquirer
+      parameters:
+        - description: The acquirer id
+          in: path
+          name: acquirerId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Acquirer'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    delete:
+      operationId: deleteAcquirer
+      parameters:
+        - description: The acquirer id
+          in: path
+          name: acquirerId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Acquirer'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /acquirer:
+    get:
+      operationId: getAllAcquirer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcquirerList'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    post:
+      operationId: createOrUpdateAcquirer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Acquirer'
+        description: New acquirer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Acquirer'
+          description: Created acquirer
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /transaction:
+    post:
+      operationId: getTransactionList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionFilter'
+      parameters:
+        - in: header
+          name: x-page-limit
+          schema:
+            type: integer
+            default: 20
+        - in: header
+          name: x-page-start-id
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionList'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+components:
+  schemas:
+    Currency:
+      example:
+        currencyCode: EUR
+      properties:
+        currencyCode:
+          $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
+        currencyName:
+          type: string
+        limitMin:
+          format: double
+          type: number
+        limitMax:
+          format: double
+          type: number
+        isBaseCurrency:
+          type: boolean
+        updatedOn:
+          format: date-time
+          type: string
+      required:
+        - currencyCode
+        - currencyName
+        - isBaseCurrency
+        - limitMax
+        - limitMin
+      type: object
+
+    CurrencyList:
+      items:
+        $ref: '#/components/schemas/Currency'
+      type: array
+
+    CreateUser:
+      allOf:
+        - $ref: '../api-merchant.yaml#/components/schemas/User'
+      properties:
+        email:
+          type: string
+      type: object
+
+    ConfirmUser:
+      properties:
+        userName:
+          type: string
+        confirmationCode:
+          type: string
+      type: object
+
+    ActiveStatus:
+      type: string
+      description: status
+      enum:
+        - ACTIVE
+        - INACTIVE
+
+    MerchantAcquirerID:
+      properties:
+        merchantId:
+          type: string
+        priority:
+          type: integer
+      type: object
+
+    MerchantAcquirer:
+      properties:
+        merchantId:
+          type: string
+        priority:
+          type: integer
+        activeStatus:
+          $ref: '#/components/schemas/ActiveStatus'
+        currencyCodeList:
+          items:
+            $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
+          type: array
+        acquirerCode:
+          type: string
+        acquirerConfig:
+          type: string
+      type: object
+
+    MerchantAcquirerList:
+      items:
+        $ref: '#/components/schemas/MerchantAcquirer'
+      type: array
+
+    Merchant:
+      properties:
+        name:
+          type: string
+        merchantId:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+          description: Created time.
+          example: 2022-04-08T11:11:59.711Z
+        updatedOn:
+          format: date-time
+          type: string
+          description: Updated time.
+          example: 2022-04-08T11:11:59.711Z
+        currencyCodeList:
+          items:
+            $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
+          type: array
+        activeStatus:
+          $ref: '#/components/schemas/ActiveStatus'
+      type: object
+
+    Company:
+      properties:
+        companyId:
+          type: string
+        companyName:
+          type: string
+        companyType:
+          type: string
+        companyAddress:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+        country:
+          type: string
+        phone:
+          type: string
+        mobile:
+          type: string
+        fax:
+          type: string
+        description:
+          type: string
+        website:
+          type: string
+        primaryContact:
+          type: string
+        email:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+          description: Created time.
+          example: 2022-04-08T11:11:59.711Z
+        updatedOn:
+          format: date-time
+          type: string
+          description: Updated time.
+          example: 2022-04-08T11:11:59.711Z
+        activeStatus:
+          $ref: '#/components/schemas/ActiveStatus'
+        merchantList:
+          items:
+            $ref: '#/components/schemas/Merchant'
+          type: array
+      type: object
+
+    CompanyList:
+      items:
+        $ref: '#/components/schemas/Company'
+      type: array
+
+    Acquirer:
+      properties:
+        acquirerId:
+          type: string
+        acquirerName:
+          type: string
+        apiProtocol:
+          type: string
+        apiDomain:
+          type: string
+        priority:
+          type: integer
+        createdOn:
+          format: date-time
+          type: string
+          description: Created time.
+          example: 2022-04-08T11:11:59.711Z
+        updatedOn:
+          format: date-time
+          type: string
+          description: Updated time.
+          example: 2022-04-08T11:11:59.711Z
+        activeStatus:
+          $ref: '#/components/schemas/ActiveStatus'
+      type: object
+
+    AcquirerList:
+      items:
+        $ref: '#/components/schemas/Acquirer'
+      type: array
+
+    TransactionFilter:
+      properties:
+        merchantId:
+          type: string
+      type: object
+
+    TransactionReport:
+      allOf:
+        - $ref: '../api-merchant.yaml#/components/schemas/TransactionResponse'
+        - type: object
+
+    TransactionList:
+      items:
+        $ref:  '#/components/schemas/TransactionReport'
+      type: array

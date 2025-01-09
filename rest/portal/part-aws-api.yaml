@@ -1,0 +1,26 @@
+paths:
+  /company/{companyId}:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/company/{companyId}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.path.companyId: method.request.path.companyId
+
+components:
+  securitySchemes:
+    apiKeyAuth:
+      x-amazon-apigateway-authtype: ${x-amazon-apigateway-authtype}
+      x-amazon-apigateway-authorizer:
+        ${x-amazon-apigateway-authorizer}
+
+x-amazon-apigateway-gateway-responses:
+  DEFAULT_4XX:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+      gatewayresponse.header.Access-Control-Allow-Methods: "'GET'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
