@@ -9,7 +9,37 @@ servers:
 
 paths:
   /token:
-    $ref: '../api-merchant.yaml#/paths/~1token'
+    post:
+      operationId: getToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '../api-merchant.yaml#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '../api-merchant.yaml#/components/schemas/RequestToken'
+          description: Everything works as expected.
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
 
   /user/create:
     post:
@@ -19,12 +49,24 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateUser'
-        description: User
+        required: true
       responses:
         '200':
-          description: Ok
+          description: Everything works as expected.
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
         '401':
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
@@ -40,8 +82,54 @@ paths:
       responses:
         '200':
           description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
         '401':
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /user/list/{merchantId}:
+    get:
+      operationId: getUserList
+      parameters:
+        - description: Merchant ID
+          in: path
+          name: merchantId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+          description: Everything works as expected.
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
@@ -382,6 +470,7 @@ paths:
 components:
   schemas:
     Currency:
+      type: object
       example:
         currencyCode: EUR
       properties:
@@ -406,28 +495,32 @@ components:
         - isBaseCurrency
         - limitMax
         - limitMin
-      type: object
 
     CurrencyList:
+      type: array
       items:
         $ref: '#/components/schemas/Currency'
-      type: array
 
     CreateUser:
+      type: object
       allOf:
         - $ref: '../api-merchant.yaml#/components/schemas/User'
       properties:
         email:
           type: string
-      type: object
 
     ConfirmUser:
+      type: object
       properties:
         userName:
           type: string
         confirmationCode:
           type: string
-      type: object
+
+    UserList:
+      type: array
+      items:
+        $ref: '../api-merchant.yaml#/components/schemas/User'
 
     ActiveStatus:
       type: string

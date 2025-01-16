@@ -66,8 +66,14 @@ jobs:
       - name: Validation Merchant Spec (AWS)
         run: java -jar openapi-generator-cli.jar validate -i ./docs/merchant-v1.yaml --recommend
 
+      - name: Create Portal Spec (API)
+        run: java -jar openapi-generator-cli.jar generate -i ./rest/api-portal.yaml -g openapi-yaml -o ./temp --additional-properties outputFile=./api-portal-merchant.yaml
+
+      - name: Refactor Portal Spec (AWS)
+        run: sed 's|BaseTransaction_paymentDetails|BaseTransactionPaymentDetails|g' ./temp/api-portal-merchant.yaml > ./api-portal-merchant.yaml
+
       - name: Create Portal Spec (AWS)
-        run: python3 ./rest/script/yaml-merge.py ./rest/portal/part-aws-api.yaml ./rest/api-portal.yaml x-amazon- > ./docs/portal-v1.yaml
+        run: python3 ./rest/script/yaml-merge.py ./rest/portal/part-aws-api.yaml ./api-portal-merchant.yaml x-amazon- > ./docs/portal-v1.yaml
 
       - name: Validation Portal Spec (AWS)
         run: java -jar openapi-generator-cli.jar validate -i ./docs/portal-v1.yaml --recommend
