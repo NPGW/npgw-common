@@ -9,7 +9,7 @@ externalDocs:
     description: View our full Technical Documentation here
 
 servers:
-  - url: https://api.npgw.xyz/merchant-v1
+  - url: https://npgw.xyz/merchant-v1
     description: Production server
 
 tags:
@@ -139,16 +139,17 @@ paths:
       operationId: getToken
       requestBody:
         content:
-          application/json:
+          text/plain:
             schema:
-              $ref: '#/components/schemas/User'
+              type: string
         required: true
+        description: Secret token.
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RequestToken'
+                $ref: '#/components/schemas/ResponseToken'
           description: Everything works as expected.
         '400':
           $ref: '#/components/responses/BadRequest'
@@ -261,18 +262,7 @@ components:
         id:
           type: string
 
-    User:
-      type: object
-      required:
-        - name
-        - password
-      properties:
-        name:
-          type: string
-        password:
-          type: string
-
-    RequestToken:
+    ResponseToken:
       type: object
       properties:
         accessToken:
