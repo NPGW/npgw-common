@@ -1,15 +1,325 @@
 paths:
-  /company/{companyId}:
+  /user/token:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/user/token'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+
+  /user/create:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/user/create'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+
+  /user/challenge:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/user/challenge'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+
+  /user/list/{companyName}:
     get:
       x-amazon-apigateway-integration:
         connectionType: ${connectionType}
         connectionId: ${connectionId}
         type: ${type}
         httpMethod: GET
-        uri: '${uri}/company/{companyId}'
+        uri: '${uri}/user/list/{companyName}'
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
-          integration.request.path.companyId: method.request.path.companyId
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+          integration.request.path.companyName: method.request.path.companyName
+
+  /user:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/user'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+          integration.request.querystring.companyName: "method.request.querystring.companyName"
+          integration.request.querystring.userName: "method.request.querystring.userName"
+
+    delete:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: DELETE
+        uri: '${uri}/user'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+          integration.request.querystring.companyName: "method.request.querystring.companyName"
+          integration.request.querystring.userName: "method.request.querystring.userName"
+
+    patch:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: PATCH
+        uri: '${uri}/user'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+          integration.request.querystring.companyName: "method.request.querystring.companyName"
+          integration.request.querystring.userName: "method.request.querystring.userName"
+          integration.request.querystring.action: "integration.request.querystring.action"
+
+  /company/{companyName}:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/company/{companyName}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+          integration.request.path.companyName: method.request.path.companyName
+
+    delete:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: DELETE
+        uri: '${uri}/company/{companyName}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+          integration.request.path.companyName: method.request.path.companyName
+
+  /company:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/company'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/company'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+
+    put:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: PUT
+        uri: '${uri}/company'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+
+  /currency/{currencyCode}:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/currency/{currencyCode}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+          integration.request.path.currencyCode: method.request.path.currencyCode
+
+    delete:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: DELETE
+        uri: '${uri}/currency/{currencyCode}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+          integration.request.path.currencyCode: method.request.path.currencyCode
+
+  /currency:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/currency'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/currency'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+
+  /merchant-acquirer:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/merchant-acquirer'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+
+    delete:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: DELETE
+        uri: '${uri}/merchant-acquirer'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/merchant-acquirer'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+
+  /acquirer/{acquirerId}:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/acquirer/{acquirerId}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+          integration.request.path.acquirerId: method.request.path.acquirerId
+
+    delete:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: DELETE
+        uri: '${uri}/acquirer/{acquirerId}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+          integration.request.path.acquirerId: method.request.path.acquirerId
+
+  /acquirer:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/acquirer'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/acquirer'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+
+  /transaction:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/transaction'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.header.Authorization: "method.request.header.Authorization"
+          integration.request.header.x-page-limit: "method.request.header.x-page-limit"
+          integration.request.header.x-page-start-id: "method.request.header.x-page-start-id"
+
+components:
+  securitySchemes:
+    apiKeyAuth:
+      x-amazon-apigateway-authtype: ${x-amazon-apigateway-authtype}
+      x-amazon-apigateway-authorizer:
+        ${x-amazon-apigateway-authorizer}
 
 x-amazon-apigateway-gateway-responses:
   DEFAULT_4XX:
