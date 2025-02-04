@@ -44,6 +44,8 @@ paths:
   /user/create:
     post:
       operationId: createUser
+      security:
+        - apiKeyAuth: []
       requestBody:
         content:
           application/json:
@@ -100,7 +102,9 @@ paths:
 
   /user/list/{companyName}:
     get:
-      operationId: getUserList
+      operationId: getAllUser
+      security:
+        - apiKeyAuth: []
       parameters:
         - description: Company name
           in: path
@@ -134,7 +138,9 @@ paths:
 
   /user:
     get:
-      operationId: getUser
+      operationId: getOneUser
+      security:
+        - apiKeyAuth: []
       parameters:
         - description: Company name
           in: query
@@ -171,6 +177,8 @@ paths:
 
     delete:
       operationId: deleteUser
+      security:
+        - apiKeyAuth: []
       parameters:
         - description: Company name
           in: query
@@ -206,6 +214,8 @@ paths:
 
     patch:
       operationId: changeUser
+      security:
+        - apiKeyAuth: []
       parameters:
         - description: Company name
           in: query
@@ -246,7 +256,9 @@ paths:
 
   /company/{companyName}:
     get:
-      operationId: getCompany
+      operationId: getOneCompany
+      security:
+        - apiKeyAuth: []
       parameters:
         - description: The company name
           in: path
@@ -280,6 +292,8 @@ paths:
 
     delete:
       operationId: deleteCompany
+      security:
+        - apiKeyAuth: []
       parameters:
         - description: The company name
           in: path
@@ -313,7 +327,9 @@ paths:
 
   /company:
     get:
-      operationId: getCompanyList
+      operationId: getAllCompany
+      security:
+        - apiKeyAuth: []
       responses:
         '200':
           content:
@@ -340,6 +356,8 @@ paths:
 
     post:
       operationId: createCompany
+      security:
+        - apiKeyAuth: []
       requestBody:
         content:
           application/json:
@@ -369,8 +387,11 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
+
     put:
       operationId: updateCompany
+      security:
+        - apiKeyAuth: []
       requestBody:
         content:
           application/json:
@@ -402,29 +423,6 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
   /currency/{currencyCode}:
-    delete:
-      operationId: deleteCurrency
-      parameters:
-        - description: The currency code
-          in: path
-          name: currencyCode
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Currency'
-          description: Ok
-        '401':
-          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
-        '404':
-          $ref: '../api-merchant.yaml#/components/responses/NotFound'
-        '500':
-          $ref: '../api-merchant.yaml#/components/responses/Error'
-
     get:
       operationId: getOneCurrency
       parameters:
@@ -441,6 +439,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/Currency'
           description: Get currency by code
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    delete:
+      operationId: deleteCurrency
+      parameters:
+        - description: The currency code
+          in: path
+          name: currencyCode
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Currency'
+          description: Ok
         '401':
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
         '404':
@@ -484,6 +505,20 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
   /merchant-acquirer:
+    get:
+      operationId: getAllMerchantAcquirer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MerchantAcquirerList'
+          description: Ok
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
     delete:
       operationId: deleteMerchantAcquirer
       requestBody:
@@ -502,20 +537,6 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
         '404':
           $ref: '../api-merchant.yaml#/components/responses/NotFound'
-        '500':
-          $ref: '../api-merchant.yaml#/components/responses/Error'
-
-    get:
-      operationId: getAllMerchantAcquirer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MerchantAcquirerList'
-          description: Ok
-        '401':
-          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
@@ -654,6 +675,13 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
 components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: JWT-based authentication where the token is passed in the Authorization header.
+
   schemas:
     UserChallengeType:
       type: string
