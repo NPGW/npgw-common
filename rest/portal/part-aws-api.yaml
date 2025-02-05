@@ -22,7 +22,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
 
   /user/challenge:
     post:
@@ -47,7 +46,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
           integration.request.path.companyName: method.request.path.companyName
 
   /user:
@@ -61,9 +59,8 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
-          integration.request.querystring.companyName: "method.request.querystring.companyName"
-          integration.request.querystring.userName: "method.request.querystring.userName"
+          integration.request.querystring.companyName: method.request.querystring.companyName
+          integration.request.querystring.userName: method.request.querystring.userName
 
     delete:
       x-amazon-apigateway-integration:
@@ -75,9 +72,8 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
-          integration.request.querystring.companyName: "method.request.querystring.companyName"
-          integration.request.querystring.userName: "method.request.querystring.userName"
+          integration.request.querystring.companyName: method.request.querystring.companyName
+          integration.request.querystring.userName: method.request.querystring.userName
 
     patch:
       x-amazon-apigateway-integration:
@@ -89,10 +85,9 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
-          integration.request.querystring.companyName: "method.request.querystring.companyName"
-          integration.request.querystring.userName: "method.request.querystring.userName"
-          integration.request.querystring.action: "integration.request.querystring.action"
+          integration.request.querystring.companyName: method.request.querystring.companyName
+          integration.request.querystring.userName: method.request.querystring.userName
+          integration.request.querystring.action: integration.request.querystring.action
 
   /company/{companyName}:
     get:
@@ -105,7 +100,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
           integration.request.path.companyName: method.request.path.companyName
 
     delete:
@@ -118,7 +112,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
           integration.request.path.companyName: method.request.path.companyName
 
   /company:
@@ -132,7 +125,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
 
     post:
       x-amazon-apigateway-integration:
@@ -144,7 +136,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
 
     put:
       x-amazon-apigateway-integration:
@@ -156,7 +147,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
 
   /currency/{currencyCode}:
     get:
@@ -169,7 +159,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
           integration.request.path.currencyCode: method.request.path.currencyCode
 
     delete:
@@ -182,7 +171,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
           integration.request.path.currencyCode: method.request.path.currencyCode
 
   /currency:
@@ -196,7 +184,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
 
     post:
       x-amazon-apigateway-integration:
@@ -208,7 +195,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
 
   /merchant-acquirer:
     get:
@@ -221,7 +207,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
 
     delete:
       x-amazon-apigateway-integration:
@@ -233,7 +218,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
 
     post:
       x-amazon-apigateway-integration:
@@ -245,7 +229,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
 
   /acquirer/{acquirerId}:
     get:
@@ -258,7 +241,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
           integration.request.path.acquirerId: method.request.path.acquirerId
 
     delete:
@@ -271,7 +253,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
           integration.request.path.acquirerId: method.request.path.acquirerId
 
   /acquirer:
@@ -285,7 +266,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
 
     post:
       x-amazon-apigateway-integration:
@@ -297,7 +277,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
 
   /transaction:
     post:
@@ -310,9 +289,8 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.header.Authorization: "method.request.header.Authorization"
-          integration.request.header.x-page-limit: "method.request.header.x-page-limit"
-          integration.request.header.x-page-start-id: "method.request.header.x-page-start-id"
+          integration.request.header.x-page-limit: method.request.header.x-page-limit
+          integration.request.header.x-page-start-id: method.request.header.x-page-start-id
 
 components:
   securitySchemes:
