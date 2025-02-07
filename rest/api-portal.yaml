@@ -229,7 +229,8 @@ paths:
           required: true
           schema:
             type: string
-        - in: query
+        - description: Action
+          in: query
           name: action
           required: true
           schema:
@@ -777,7 +778,7 @@ components:
             email:
               type: string
             userRole:
-              type: UserRole
+              $ref: '#/components/schemas/UserRole'
             merchantList:
               type: array
               items:
