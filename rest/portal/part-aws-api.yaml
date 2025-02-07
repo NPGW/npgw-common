@@ -87,7 +87,8 @@ paths:
           integration.request.header.Accept: "' '"
           integration.request.querystring.companyName: method.request.querystring.companyName
           integration.request.querystring.userName: method.request.querystring.userName
-          integration.request.querystring.action: integration.request.querystring.action
+          # error if uncommented
+          #integration.request.querystring.action: integration.request.querystring.action
 
   /company/{companyName}:
     get:
