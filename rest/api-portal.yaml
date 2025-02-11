@@ -755,7 +755,7 @@ components:
       properties:
         companyName:
           type: string
-        name:
+        userName:
           type: string
 
     UserAuthorization:
@@ -779,7 +779,7 @@ components:
               type: string
             userRole:
               $ref: '#/components/schemas/UserRole'
-            merchantList:
+            merchantIds:
               type: array
               items:
                 type: string
