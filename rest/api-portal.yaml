@@ -102,7 +102,7 @@ paths:
 
   /user/list/{companyName}:
     get:
-      operationId: getAllUser
+      operationId: getAllUsers
       security:
         - apiKeyAuth: []
       parameters:
@@ -117,7 +117,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserList'
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDetails'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -156,7 +158,10 @@ paths:
             type: string
       responses:
         '200':
-          $ref: '#/components/responses/UserDetails'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -328,7 +333,7 @@ paths:
 
   /company:
     get:
-      operationId: getAllCompany
+      operationId: getAllCompanies
       security:
         - apiKeyAuth: []
       responses:
@@ -336,7 +341,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CompanyList'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Company'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -478,7 +485,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CurrencyList'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Currency'
           description: Ok
         '401':
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
@@ -507,13 +516,15 @@ paths:
 
   /merchant-acquirer:
     get:
-      operationId: getAllMerchantAcquirer
+      operationId: getAllMerchantAcquirers
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MerchantAcquirerList'
+                type: array
+                items:
+                  $ref: '#/components/schemas/MerchantAcquirer'
           description: Ok
         '401':
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
@@ -610,13 +621,15 @@ paths:
 
   /acquirer:
     get:
-      operationId: getAllAcquirer
+      operationId: getAllAcquirers
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AcquirerList'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Acquirer'
           description: Ok
         '401':
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
@@ -666,7 +679,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionList'
+                type: array
+                items:
+                  $ref:  '#/components/schemas/TransactionReport'
           description: Ok
         '401':
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
@@ -696,19 +711,20 @@ components:
     ResponseUserChallenge:
       type: object
       required:
-        - challengeType
+        - userChallengeType
       properties:
         userChallengeType:
           $ref: '#/components/schemas/UserChallengeType'
         sessionId:
           type: string
-          description: Session id.
+          description: Challenge session id.
 
     UserChallenge:
       allOf:
         - $ref: '#/components/schemas/ResponseUserChallenge'
         - type: object
           required:
+            - sessionId
             - companyName
           properties:
             companyName:
@@ -792,11 +808,6 @@ components:
             enabled:
               type: boolean
 
-    UserList:
-      type: array
-      items:
-        $ref: '#/components/schemas/UserDetails'
-
     Currency:
       type: object
       required:
@@ -821,11 +832,6 @@ components:
         updatedOn:
           format: date-time
           type: string
-
-    CurrencyList:
-      type: array
-      items:
-        $ref: '#/components/schemas/Currency'
 
     ActiveStatus:
       type: string
@@ -860,46 +866,17 @@ components:
         acquirerConfig:
           type: string
 
-    MerchantAcquirerList:
-      type: array
-      items:
-        $ref: '#/components/schemas/MerchantAcquirer'
-
     Merchant:
       type: object
       properties:
-        name:
-          type: string
         merchantId:
           type: string
-        createdOn:
-          format: date-time
+        merchantTitle:
           type: string
-          description: Created time.
-          example: 2022-04-08T11:11:59.711Z
-        updatedOn:
-          format: date-time
-          type: string
-          description: Updated time.
-          example: 2022-04-08T11:11:59.711Z
-        currencyCodeList:
-          type: array
-          items:
-            $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
-        activeStatus:
-          $ref: '#/components/schemas/ActiveStatus'
 
-    Company:
+    CompanyAddress:
       type: object
       properties:
-        companyName:
-          type: string
-        companyTitle:
-          type: string
-        companyType:
-          type: string
-        companyAddress:
-          type: string
         city:
           type: string
         state:
@@ -914,6 +891,20 @@ components:
           type: string
         fax:
           type: string
+
+    Company:
+      type: object
+      required:
+        - companyName
+      properties:
+        companyName:
+          type: string
+        companyTitle:
+          type: string
+        companyType:
+          type: string
+        companyAddress:
+          $ref: '#/components/schemas/CompanyAddress'
         description:
           type: string
         website:
@@ -922,27 +913,12 @@ components:
           type: string
         email:
           type: string
-        createdOn:
-          format: date-time
-          type: string
-          description: Created time.
-          example: 2022-04-08T11:11:59.711Z
-        updatedOn:
-          format: date-time
-          type: string
-          description: Updated time.
-          example: 2022-04-08T11:11:59.711Z
         activeStatus:
           $ref: '#/components/schemas/ActiveStatus'
         merchantList:
           type: array
           items:
             $ref: '#/components/schemas/Merchant'
-
-    CompanyList:
-      type: array
-      items:
-        $ref: '#/components/schemas/Company'
 
     Acquirer:
       type: object
@@ -957,23 +933,8 @@ components:
           type: string
         priority:
           type: integer
-        createdOn:
-          format: date-time
-          type: string
-          description: Created time.
-          example: 2022-04-08T11:11:59.711Z
-        updatedOn:
-          format: date-time
-          type: string
-          description: Updated time.
-          example: 2022-04-08T11:11:59.711Z
         activeStatus:
           $ref: '#/components/schemas/ActiveStatus'
-
-    AcquirerList:
-      type: array
-      items:
-        $ref: '#/components/schemas/Acquirer'
 
     TransactionFilter:
       type: object
@@ -985,8 +946,3 @@ components:
       allOf:
         - $ref: '../api-merchant.yaml#/components/schemas/TransactionResponse'
         - type: object
-
-    TransactionList:
-      type: array
-      items:
-        $ref:  '#/components/schemas/TransactionReport'
