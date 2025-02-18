@@ -23,7 +23,7 @@ paths:
             application/json:
               schema:
                 $ref: '../api-merchant.yaml#/components/schemas/ResponseToken'
-          description: Everything works as expected.
+          description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
         '401':
@@ -54,7 +54,7 @@ paths:
         required: true
       responses:
         '204':
-          description: Everything works as expected.
+          description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
         '401':
@@ -378,7 +378,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Company'
-          description: Created company
+          description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
         '401':
@@ -412,7 +412,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Company'
-          description: Created company
+          description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
         '401':
@@ -659,21 +659,24 @@ paths:
   /transaction:
     post:
       operationId: getTransactionList
+      security:
+        - apiKeyAuth: []
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/TransactionFilter'
       parameters:
-        - in: header
-          name: x-page-limit
+        - in: query
+          name: from
           schema:
             type: integer
-            default: 20
-        - in: header
-          name: x-page-start-id
+            default: 1
+        - in: query
+          name: size
           schema:
-            type: string
+            type: integer
+            default: 30
       responses:
         '200':
           content:
@@ -681,12 +684,22 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref:  '#/components/schemas/TransactionReport'
+                  $ref:  '../api-merchant.yaml#/components/schemas/TransactionResponse'
           description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
         '401':
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
-        '404':
-          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
@@ -767,7 +780,7 @@ components:
       type: object
       required:
         - companyName
-        - name
+        - userName
       properties:
         companyName:
           type: string
@@ -938,11 +951,8 @@ components:
 
     TransactionFilter:
       type: object
+      required:
+        - merchantId
       properties:
         merchantId:
           type: string
-
-    TransactionReport:
-      allOf:
-        - $ref: '../api-merchant.yaml#/components/schemas/TransactionResponse'
-        - type: object
