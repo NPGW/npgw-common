@@ -22,7 +22,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../api-merchant.yaml#/components/schemas/ResponseToken'
+                $ref: '#/components/schemas/ResponseUserToken'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -715,10 +715,10 @@ components:
     UserChallengeType:
       type: string
       description: |
-        SUCCESS - authorized.
+        NONE - none.
         NEW_PASSWORD_REQUIRED - you need to change your password.
       enum:
-        - SUCCESS
+        - NONE
         - NEW_PASSWORD_REQUIRED
 
     ResponseUserChallenge:
@@ -732,6 +732,17 @@ components:
           type: string
           description: Challenge session id.
 
+    UserChallengeDataNewPassword:
+      type: object
+      required:
+        - userName
+        - newPassword
+      properties:
+        userName:
+          type: string
+        newPassword:
+          type: string
+
     UserChallenge:
       allOf:
         - $ref: '#/components/schemas/ResponseUserChallenge'
@@ -743,8 +754,10 @@ components:
             companyName:
               type: string
             data:
-              type: string
+              type: object
               description: Data to support a specific challenge.
+              oneOf:
+                - $ref: "#/components/schemas/UserChallengeDataNewPassword"
 
     ResponseUserToken:
       allOf:
