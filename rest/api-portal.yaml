@@ -79,7 +79,35 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserChallenge'
+              $ref: '#/components/schemas/RequestUserChallenge'
+      responses:
+        '200':
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /user/reset:
+    post:
+      operationId: resetUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAuthorization'
       responses:
         '200':
           description: Ok
@@ -144,15 +172,9 @@ paths:
       security:
         - apiKeyAuth: []
       parameters:
-        - description: Company name
+        - description: Email
           in: query
-          name: companyName
-          required: true
-          schema:
-            type: string
-        - description: Username
-          in: query
-          name: userName
+          name: email
           required: true
           schema:
             type: string
@@ -185,15 +207,9 @@ paths:
       security:
         - apiKeyAuth: []
       parameters:
-        - description: Company name
+        - description: Email
           in: query
-          name: companyName
-          required: true
-          schema:
-            type: string
-        - description: Username
-          in: query
-          name: userName
+          name: email
           required: true
           schema:
             type: string
@@ -218,28 +234,22 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
     patch:
-      operationId: changeUser
+      operationId: enableUser
       security:
         - apiKeyAuth: []
       parameters:
-        - description: Company name
+        - description: Email
           in: query
-          name: companyName
+          name: email
           required: true
           schema:
             type: string
-        - description: Username
+        - description: Enable
           in: query
-          name: userName
+          name: enable
           required: true
           schema:
-            type: string
-        - description: Action
-          in: query
-          name: action
-          required: true
-          schema:
-            $ref: '#/components/schemas/UserAction'
+            type: boolean
       responses:
         '200':
           description: Ok
@@ -721,7 +731,7 @@ components:
         - NONE
         - NEW_PASSWORD_REQUIRED
 
-    ResponseUserChallenge:
+    UserChallenge:
       type: object
       required:
         - userChallengeType
@@ -732,20 +742,9 @@ components:
           type: string
           description: Challenge session id.
 
-    UserChallengeDataNewPassword:
-      type: object
-      required:
-        - userName
-        - newPassword
-      properties:
-        userName:
-          type: string
-        newPassword:
-          type: string
-
-    UserChallenge:
+    RequestUserChallenge:
       allOf:
-        - $ref: '#/components/schemas/ResponseUserChallenge'
+        - $ref: '#/components/schemas/UserChallenge'
         - type: object
           required:
             - sessionId
@@ -754,14 +753,11 @@ components:
             companyName:
               type: string
             data:
-              type: object
-              description: Data to support a specific challenge.
-              oneOf:
-                - $ref: "#/components/schemas/UserChallengeDataNewPassword"
+              $ref: '#/components/schemas/UserAuthorization'
 
     ResponseUserToken:
       allOf:
-        - $ref: '#/components/schemas/ResponseUserChallenge'
+        - $ref: '#/components/schemas/UserChallenge'
         - type: object
           properties:
             token:
@@ -770,54 +766,34 @@ components:
     UserRole:
       type: string
       description: |
-        SUPER_ADMIN - can control all users in the system.
+        SUPER - can control all users in the system.
         ADMIN - can control all users in the company.
         USER - has access to analytics.
       enum:
-        - SUPER_ADMIN
+        - SUPER
         - ADMIN
         - USER
 
-    UserAction:
-      type: string
-      description: |
-        disable - disable the user.
-        enable - enable the user.
-        reset - reset password.
-      enum:
-        - disable
-        - enable
-        - reset
-
-    User:
+    UserAuthorization:
       type: object
       required:
-        - companyName
-        - userName
+        - email
+        - password
       properties:
-        companyName:
+        email:
           type: string
-        userName:
+        password:
           type: string
-
-    UserAuthorization:
-      allOf:
-        - $ref: '#/components/schemas/User'
-        - type: object
-          required:
-            - password
-          properties:
-            password:
-              type: string
 
     UserCreation:
       allOf:
         - $ref: '#/components/schemas/UserAuthorization'
         - type: object
           required:
+            - companyName
             - userRole
           properties:
-            email:
+            companyName:
               type: string
             userRole:
               $ref: '#/components/schemas/UserRole'
@@ -897,8 +873,12 @@ components:
       properties:
         merchantId:
           type: string
-        merchantTitle:
+        merchantName:
           type: string
+        currencyCodeList:
+          type: array
+          items:
+            $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
 
     CompanyAddress:
       type: object
