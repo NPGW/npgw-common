@@ -59,8 +59,7 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.querystring.companyName: method.request.querystring.companyName
-          integration.request.querystring.userName: method.request.querystring.userName
+          integration.request.querystring.email: method.request.querystring.email
 
     delete:
       x-amazon-apigateway-integration:
@@ -72,8 +71,7 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.querystring.companyName: method.request.querystring.companyName
-          integration.request.querystring.userName: method.request.querystring.userName
+          integration.request.querystring.email: method.request.querystring.email
 
     patch:
       x-amazon-apigateway-integration:
@@ -85,10 +83,8 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.querystring.companyName: method.request.querystring.companyName
-          integration.request.querystring.userName: method.request.querystring.userName
-          # error if uncommented
-          #integration.request.querystring.action: integration.request.querystring.action
+          integration.request.querystring.email: method.request.querystring.email
+          integration.request.querystring.enable: integration.request.querystring.enable
 
   /company/{companyName}:
     get:
