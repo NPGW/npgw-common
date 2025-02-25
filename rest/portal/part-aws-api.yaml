@@ -35,6 +35,18 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
 
+  /user/reset:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/user/reset'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+
   /user/list/{companyName}:
     get:
       x-amazon-apigateway-integration:
