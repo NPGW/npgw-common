@@ -84,7 +84,7 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
           integration.request.querystring.email: method.request.querystring.email
-          integration.request.querystring.enable: integration.request.querystring.enable
+          #integration.request.querystring.enable: integration.request.querystring.enable
 
   /company/{companyName}:
     get:
