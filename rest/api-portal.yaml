@@ -53,7 +53,7 @@ paths:
               $ref: '#/components/schemas/UserCreation'
         required: true
       responses:
-        '204':
+        '201':
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -748,10 +748,7 @@ components:
         - type: object
           required:
             - sessionId
-            - companyName
           properties:
-            companyName:
-              type: string
             data:
               $ref: '#/components/schemas/UserAuthorization'
 
@@ -879,6 +876,8 @@ components:
           type: array
           items:
             $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
+        activeStatus:
+          $ref: '#/components/schemas/ActiveStatus'
 
     CompanyAddress:
       type: object
@@ -904,8 +903,6 @@ components:
         - companyName
       properties:
         companyName:
-          type: string
-        companyTitle:
           type: string
         companyType:
           type: string
