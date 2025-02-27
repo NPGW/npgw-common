@@ -946,3 +946,17 @@ components:
       properties:
         merchantId:
           type: string
+        date_from:
+          format: date-time
+          type: string
+        date_to:
+          format: date-time
+          type: string
+        currency:
+          type: string
+        payment_method:
+          type: string
+        amount_from:
+          type: integer
+        amount_to:
+          type: integer

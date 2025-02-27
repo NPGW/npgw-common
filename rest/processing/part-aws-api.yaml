@@ -23,8 +23,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.querystring.merchantId: method.request.querystring.merchantId
-          integration.request.querystring.externalTransactionId: method.request.querystring.externalTransactionId
 
     post:
       x-amazon-apigateway-integration:
@@ -36,7 +34,6 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
-          integration.request.querystring.async: method.request.querystring.async
 
   /token:
     post:
@@ -75,7 +72,6 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
           integration.request.path.transactionId: method.request.path.transactionId
-          integration.request.querystring.token: method.request.querystring.token
 
   /resource/frame/{transactionId}:
     get:
@@ -89,8 +85,6 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
           integration.request.path.transactionId: method.request.path.transactionId
-          integration.request.querystring.token: method.request.querystring.token
-
 
   /fingerprint/{transactionId}:
     get:
@@ -104,7 +98,6 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
           integration.request.path.transactionId: method.request.path.transactionId
-          integration.request.querystring.token: method.request.querystring.token
 
     post:
       x-amazon-apigateway-integration:
@@ -117,7 +110,6 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
           integration.request.path.transactionId: method.request.path.transactionId
-          integration.request.querystring.token: method.request.querystring.token
 
   /challenge/{transactionId}:
     get:
@@ -131,7 +123,6 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
           integration.request.path.transactionId: method.request.path.transactionId
-          integration.request.querystring.token: method.request.querystring.token
 
     post:
       x-amazon-apigateway-integration:
@@ -144,7 +135,6 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
           integration.request.path.transactionId: method.request.path.transactionId
-          integration.request.querystring.token: method.request.querystring.token
 
 components:
   securitySchemes:
