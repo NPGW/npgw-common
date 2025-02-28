@@ -35,14 +35,26 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
 
-  /user/reset:
+  /user/password/reset:
     post:
       x-amazon-apigateway-integration:
         connectionType: ${connectionType}
         connectionId: ${connectionId}
         type: ${type}
         httpMethod: POST
-        uri: '${uri}/user/reset'
+        uri: '${uri}/user/password/reset'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+
+  /user/password/change:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/user/password/change'
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
