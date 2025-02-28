@@ -106,6 +106,17 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
 
+    put:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: PATCH
+        uri: '${uri}/user'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+
   /company/{companyName}:
     get:
       x-amazon-apigateway-integration:
