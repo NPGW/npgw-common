@@ -103,6 +103,8 @@ paths:
   /user/password/reset:
     post:
       operationId: resetUserPassword
+      security:
+        - apiKeyAuth: []
       requestBody:
         content:
           application/json:
@@ -131,6 +133,8 @@ paths:
   /user/password/change:
     post:
       operationId: changeUserPassword
+      security:
+        - apiKeyAuth: []
       requestBody:
         content:
           application/json:
@@ -175,7 +179,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserDetails'
+                  $ref: '#/components/schemas/UserInfo'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -211,7 +215,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserDetails'
+                $ref: '#/components/schemas/UserInfo'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -278,6 +282,42 @@ paths:
           required: true
           schema:
             type: boolean
+      responses:
+        '200':
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    put:
+      operationId: updateUser
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - description: Email
+          in: query
+          name: email
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetails'
       responses:
         '200':
           description: Ok
@@ -810,26 +850,43 @@ components:
         password:
           type: string
 
-    UserCreation:
+    UserDetails:
+      type: object
+      properties:
+        userRole:
+          $ref: '#/components/schemas/UserRole'
+        merchantIds:
+          type: array
+          items:
+            type: string
+
+    User:
       allOf:
-        - $ref: '#/components/schemas/UserAuthorization'
+        - $ref: '#/components/schemas/UserDetails'
         - type: object
           required:
-            - companyName
             - userRole
+            - email
+            - companyName
           properties:
+            email:
+              type: string
             companyName:
               type: string
-            userRole:
-              $ref: '#/components/schemas/UserRole'
-            merchantIds:
-              type: array
-              items:
-                type: string
 
-    UserDetails:
+    UserCreation:
       allOf:
-        - $ref: '#/components/schemas/UserCreation'
+        - $ref: '#/components/schemas/User'
+        - type: object
+          required:
+            - password
+          properties:
+            password:
+              type: string
+
+    UserInfo:
+      allOf:
+        - $ref: '#/components/schemas/User'
         - type: object
           properties:
             enabled:

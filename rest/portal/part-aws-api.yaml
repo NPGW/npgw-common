@@ -316,7 +316,11 @@ components:
 
 x-amazon-apigateway-gateway-responses:
   DEFAULT_4XX:
-    responseParameters:
-      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-      gatewayresponse.header.Access-Control-Allow-Methods: "'GET'"
-      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+    responseTemplates:
+      application/json: |
+        {
+          "message": "$context.error.message",
+          "timestamp": "$context.requestTimeEpoch",
+          "path": "$context.path",
+          "status": "$context.responseOverride.status"
+        }
