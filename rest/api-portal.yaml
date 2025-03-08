@@ -111,7 +111,7 @@ paths:
             schema:
               $ref: '#/components/schemas/UserAuthorization'
       responses:
-        '200':
+        '204':
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -141,7 +141,7 @@ paths:
             schema:
               $ref: '#/components/schemas/UserAuthorization'
       responses:
-        '200':
+        '204':
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -187,6 +187,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
         '403':
           $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
         '405':
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
@@ -223,6 +225,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
         '403':
           $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
         '405':
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
@@ -246,7 +250,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        '204':
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -254,6 +258,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
         '403':
           $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
         '405':
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
@@ -265,7 +271,7 @@ paths:
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
-    patch:
+    post:
       operationId: enableUser
       security:
         - apiKeyAuth: []
@@ -283,7 +289,7 @@ paths:
           schema:
             type: boolean
       responses:
-        '200':
+        '204':
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -291,6 +297,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
         '403':
           $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
         '405':
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
@@ -302,7 +310,7 @@ paths:
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
-    put:
+    patch:
       operationId: updateUser
       security:
         - apiKeyAuth: []
@@ -319,7 +327,7 @@ paths:
             schema:
               $ref: '#/components/schemas/UserDetails'
       responses:
-        '200':
+        '204':
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -327,6 +335,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
         '403':
           $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
         '405':
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
@@ -363,6 +373,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
         '403':
           $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
         '405':
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
@@ -386,11 +398,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Company'
+        '204':
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -398,6 +406,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
         '403':
           $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
         '405':
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
@@ -1002,6 +1012,7 @@ components:
           type: string
         email:
           type: string
+# сделать 2 поля: portal access и api (merchant) access. Узнать у люка.
         activeStatus:
           $ref: '#/components/schemas/ActiveStatus'
         merchantList:
