@@ -95,17 +95,6 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
 
-    post:
-      x-amazon-apigateway-integration:
-        connectionType: ${connectionType}
-        connectionId: ${connectionId}
-        type: ${type}
-        httpMethod: POST
-        uri: '${uri}/user'
-        passthroughBehavior: ${passthroughBehavior}
-        requestParameters:
-          integration.request.header.Accept: "' '"
-
     patch:
       x-amazon-apigateway-integration:
         connectionType: ${connectionType}
