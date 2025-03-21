@@ -179,7 +179,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserInfo'
+                  $ref: '#/components/schemas/User'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -217,7 +217,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserInfo'
+                $ref: '#/components/schemas/User'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -249,45 +249,6 @@ paths:
           required: true
           schema:
             type: string
-      responses:
-        '204':
-          description: Ok
-        '400':
-          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
-        '401':
-          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
-        '403':
-          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
-        '404':
-          $ref: '../api-merchant.yaml#/components/responses/NotFound'
-        '405':
-          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
-        '406':
-          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
-        '422':
-          $ref: '../api-merchant.yaml#/components/responses/Validation'
-        '429':
-          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
-        '500':
-          $ref: '../api-merchant.yaml#/components/responses/Error'
-
-    post:
-      operationId: enableUser
-      security:
-        - apiKeyAuth: []
-      parameters:
-        - description: Email
-          in: query
-          name: email
-          required: true
-          schema:
-            type: string
-        - description: Enable
-          in: query
-          name: enable
-          required: true
-          schema:
-            type: boolean
       responses:
         '204':
           description: Ok
@@ -1190,6 +1151,8 @@ components:
           type: array
           items:
             type: string
+        enabled:
+          type: boolean
 
     User:
       allOf:
@@ -1215,14 +1178,6 @@ components:
             password:
               type: string
 
-    UserInfo:
-      allOf:
-        - $ref: '#/components/schemas/User'
-        - type: object
-          properties:
-            enabled:
-              type: boolean
-
     Currency:
       type: object
       required:
@@ -1247,13 +1202,6 @@ components:
         updatedOn:
           format: date-time
           type: string
-
-    ActiveStatus:
-      type: string
-      description: status
-      enum:
-        - ACTIVE
-        - INACTIVE
 
     MerchantAcquirerId:
       type: object
@@ -1329,7 +1277,6 @@ components:
       type: object
       required:
         - companyName
-        - activeStatus
       properties:
         companyName:
           type: string
