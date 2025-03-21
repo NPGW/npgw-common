@@ -529,7 +529,7 @@ components:
           format: date-time
           type: string
           description: |
-            Time of the transaction expiration, minimum allowed is _timestamp+30min_ (will be set by default if field is omitted). 
+            ISO 8601. Time of the transaction expiration, minimum allowed is _timestamp+30min_ (will be set by default if field is omitted). 
             If the transaction is not completed within this time, we will reject any attempt to complete it. 
             The expiration is extended each time a user (re-)submits a payment, so provided expiration date will be updated in most cases. 
             Max value is _(now)+3h_
@@ -562,12 +562,12 @@ components:
             createdOn:
               format: date-time
               type: string
-              description: Created time.
+              description: Created time (ISO 8601).
               example: 2022-04-08T11:11:59.711Z
             updatedOn:
               format: date-time
               type: string
-              description: Updated time.
+              description: Updated time (ISO 8601).
               example: 2022-04-08T11:11:59.711Z
             paymentUrl:
               type: string
