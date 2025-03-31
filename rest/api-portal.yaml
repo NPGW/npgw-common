@@ -1026,27 +1026,27 @@ paths:
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
-  /transaction:
+  /transaction/history:
     post:
-      operationId: getTransactionList
+      operationId: getTransactionHistoryList
       security:
         - apiKeyAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransactionFilter'
+              $ref: '#/components/schemas/TransactionHistoryFilter'
       parameters:
         - in: query
           name: from
           schema:
             type: integer
-            default: 1
+            default: 0
         - in: query
           name: size
           schema:
             type: integer
-            default: 30
+            default: 25
       responses:
         '200':
           content:
@@ -1055,6 +1055,42 @@ paths:
                 type: array
                 items:
                   $ref:  '../api-merchant.yaml#/components/schemas/TransactionResponse'
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /transaction/summary:
+    post:
+      operationId: getTransactionSummaryList
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionSummaryFilter'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref:  '#/components/schemas/TransactionSummary'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -1319,7 +1355,7 @@ components:
         isActive:
           type: boolean
 
-    TransactionFilter:
+    TransactionHistoryFilter:
       type: object
       required:
         - merchantId
@@ -1334,6 +1370,8 @@ components:
         dateTo:
           format: date-time
           type: string
+          description: ISO 8601
+          example: 2021-12-22T05:16:56.323Z
         currency:
           $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
         paymentMethod:
@@ -1342,3 +1380,42 @@ components:
           type: integer
         amountTo:
           type: integer
+
+    TransactionSummary:
+      type: object
+      properties:
+        merchantId:
+          type: string
+        createdOn:
+          format: date-time
+          type: string
+          description: ISO 8601
+          example: 2021-12-22T05:16:56.323Z
+        status:
+          $ref: '../api-merchant.yaml#/components/schemas/TransactionStatus'
+        currency:
+          $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
+        totalAmount:
+          type: integer
+        totalCount:
+          type: integer
+
+    TransactionSummaryFilter:
+      type: object
+      required:
+        - merchantId
+      properties:
+        merchantId:
+          type: string
+        dateFrom:
+          format: date-time
+          type: string
+          description: ISO 8601
+          example: 2021-12-22T05:16:56.323Z
+        dateTo:
+          format: date-time
+          type: string
+          description: ISO 8601
+          example: 2021-12-22T05:16:56.323Z
+        currency:
+          $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'

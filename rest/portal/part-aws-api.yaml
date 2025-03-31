@@ -374,14 +374,26 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
 
-  /transaction:
+  /transaction/history:
     post:
       x-amazon-apigateway-integration:
         connectionType: ${connectionType}
         connectionId: ${connectionId}
         type: ${type}
         httpMethod: POST
-        uri: '${uri}/transaction'
+        uri: '${uri}/transaction/history'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+
+  /transaction/summary:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/transaction/summary'
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
