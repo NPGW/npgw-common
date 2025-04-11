@@ -1047,6 +1047,11 @@ paths:
           schema:
             type: integer
             default: 25
+        - in: query
+          name: sort
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           content:
