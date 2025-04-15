@@ -292,61 +292,24 @@ paths:
           integration.request.header.Accept: "' '"
           integration.request.path.acquirerName: method.request.path.acquirerName
 
-  /currency/{currencyCode}:
-    get:
-      x-amazon-apigateway-integration:
-        connectionType: ${connectionType}
-        connectionId: ${connectionId}
-        type: ${type}
-        httpMethod: GET
-        uri: '${uri}/currency/{currencyCode}'
-        passthroughBehavior: ${passthroughBehavior}
-        requestParameters:
-          integration.request.header.Accept: "' '"
-          integration.request.path.currencyCode: method.request.path.currencyCode
-
-    delete:
-      x-amazon-apigateway-integration:
-        connectionType: ${connectionType}
-        connectionId: ${connectionId}
-        type: ${type}
-        httpMethod: DELETE
-        uri: '${uri}/currency/{currencyCode}'
-        passthroughBehavior: ${passthroughBehavior}
-        requestParameters:
-          integration.request.header.Accept: "' '"
-          integration.request.path.currencyCode: method.request.path.currencyCode
-
-  /currency:
-    get:
-      x-amazon-apigateway-integration:
-        connectionType: ${connectionType}
-        connectionId: ${connectionId}
-        type: ${type}
-        httpMethod: GET
-        uri: '${uri}/currency'
-        passthroughBehavior: ${passthroughBehavior}
-        requestParameters:
-          integration.request.header.Accept: "' '"
-
-    post:
-      x-amazon-apigateway-integration:
-        connectionType: ${connectionType}
-        connectionId: ${connectionId}
-        type: ${type}
-        httpMethod: POST
-        uri: '${uri}/currency'
-        passthroughBehavior: ${passthroughBehavior}
-        requestParameters:
-          integration.request.header.Accept: "' '"
-
   /merchant-acquirer:
-    get:
+    post:
       x-amazon-apigateway-integration:
         connectionType: ${connectionType}
         connectionId: ${connectionId}
         type: ${type}
-        httpMethod: GET
+        httpMethod: POST
+        uri: '${uri}/merchant-acquirer'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+
+    patch:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: PATCH
         uri: '${uri}/merchant-acquirer'
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
@@ -363,16 +326,18 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
 
-    post:
+  /merchant-acquirer/{merchantId}:
+    get:
       x-amazon-apigateway-integration:
         connectionType: ${connectionType}
         connectionId: ${connectionId}
         type: ${type}
-        httpMethod: POST
-        uri: '${uri}/merchant-acquirer'
+        httpMethod: GET
+        uri: '${uri}/merchant-acquirer/{merchantId}'
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
+          integration.request.path.merchantId: method.request.path.merchantId
 
   /transaction/history:
     post:
