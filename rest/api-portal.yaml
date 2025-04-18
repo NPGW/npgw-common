@@ -1276,6 +1276,8 @@ components:
 
     Merchant:
       type: object
+      required:
+        - merchantName
       properties:
         merchantId:
           type: string
@@ -1318,6 +1320,7 @@ components:
         - type: object
           required:
             - acquirerName
+            - currencyList
           properties:
             acquirerName:
               type: string
