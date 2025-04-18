@@ -338,6 +338,8 @@ components:
               minLength: 2
               maxLength: 150
               pattern: '^[\p{L}0-9 \_.,-:&]+$'
+            cardType:
+              $ref: '#/components/schemas/CardType'
 
     CustomerDetails:
       type: object
@@ -443,6 +445,14 @@ components:
         - EUR
         - USD
         - GBP
+
+    CardType:
+      type: string
+      description: Credit Card Type
+      enum:
+        - VISA
+        - MASTERCARD
+        - UNKNOWN
 
     ThreeDSecureStatus:
       type: string
