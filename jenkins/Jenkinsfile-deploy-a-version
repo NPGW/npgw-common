@@ -37,8 +37,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                         if (params.RELEASE_VERSION == 'latest') {
-                            def releaseList = sh(script: 'GH_TOKEN=${GH_TOKEN} gh release list --json tagName,name,isDraft,isPrerelease', returnStdout: true).trim()
-                            env.RELEASE_VERSION = sh(script: "echo '${releaseList}' | jq -r '.[0].name'", returnStdout: true).trim()
+                            env.RELEASE_VERSION = sh(script: """aws ecr describe-images --repository-name npgw/merchant --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text""", returnStdout: true).trim()
                         } else {
                             env.RELEASE_VERSION = params.RELEASE_VERSION
                         }
