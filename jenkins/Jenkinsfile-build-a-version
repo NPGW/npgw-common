@@ -1,0 +1,94 @@
+pipeline {
+    agent { label 'build-node' }
+
+    parameters {
+        string(name: 'MAJOR_VERSION', defaultValue: '0.1', description: 'Major version')
+    }
+
+    environment {
+        AWS_REGION = 'eu-central-1'
+        AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
+        AWS_ROLE = 'arn:aws:iam::214404897309:role/npgw-services-github-oidc-provider'
+
+        IMAGE_FILE = '.github/IMAGE_LIST.json'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
+            }
+        }
+
+        stage('Get Release Version') {
+            steps {
+                script {
+                    env.RELEASE_VERSION = params.MAJOR_VERSION + sh(script: "echo .\$(date -u +%y%m%d%H%M)", returnStdout: true).trim()
+                }
+            }
+        }
+
+        stage('Validate Release Version') {
+            steps {
+                script {
+                    if (!env.RELEASE_VERSION) {
+                        error("Release version is null. Exiting...")
+                    }
+                }
+            }
+        }
+
+        stage('Set version to pom.xml') {
+            steps {
+                script {
+                    sh "sed -i \"s/<revision>.*<\\/revision>/<revision>${env.RELEASE_VERSION}<\\/revision>/g\" ./pom.xml"
+                }
+            }
+        }
+
+        stage('Maven verify') {
+            steps {
+                script {
+                    sh "mvn clean verify"
+                }
+            }
+        }
+
+        stage('Assume Correct AWS Role') {
+            steps {
+                script {
+                    def credentialsJson = sh(script: """
+                        aws sts assume-role \
+                            --role-arn ${env.AWS_ROLE} \
+                            --role-session-name JenkinsUploadSession
+                        """, returnStdout: true).trim()
+
+                    env.AWS_ACCESS_KEY_ID = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.AccessKeyId'", returnStdout: true).trim()
+                    env.AWS_SECRET_ACCESS_KEY = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SecretAccessKey'", returnStdout: true).trim()
+                    env.AWS_SESSION_TOKEN = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SessionToken'", returnStdout: true).trim()
+                }
+            }
+        }
+
+        stage('Build and push Docker image') {
+            steps {
+                script {
+                    def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
+                    for (image in imageList) {
+                        def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/${image.repoName}:${env.RELEASE_VERSION}"
+
+                        sh """
+                        aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
+
+                        cd ${WORKSPACE}
+                        cd ${image.dockerContext}
+
+                        docker build -t "${imageUrl}" -f ${image.dockerFile} .
+                        docker push "${imageUrl}"
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
