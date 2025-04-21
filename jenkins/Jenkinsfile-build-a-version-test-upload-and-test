@@ -54,7 +54,7 @@ pipeline {
             }
         }
 
-        stage('Docker compose test') {
+        stage('Test in embedded environment (EE)') {
             steps {
                 withCredentials([string(credentialsId: 'localstack-auth-token', variable: 'LOCALSTACK_AUTH_TOKEN')]) {
                     script {
