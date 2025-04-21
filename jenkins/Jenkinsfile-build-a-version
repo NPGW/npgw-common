@@ -3,6 +3,7 @@ pipeline {
 
     parameters {
         string(name: 'MAJOR_VERSION', defaultValue: '0.1', description: 'Major version')
+        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'If false, API tests won't run)
     }
 
     environment {
@@ -50,6 +51,20 @@ pipeline {
             steps {
                 script {
                     sh "mvn clean verify"
+                }
+            }
+        }
+
+        stage('Docker compose test') {
+            when {
+                expression { return params.RUN_TESTS } }
+            steps {
+                script {
+                    sh """
+                    echo LOCALSTACK_AUTH_TOKEN=ls-pErUxalI-YaRO-8088-qaKE-voVUFeJA3538 > .env
+                    cd ./tests/docker/docker-compose
+                    ./run-docker-compose-test.sh
+                    """
                 }
             }
         }
