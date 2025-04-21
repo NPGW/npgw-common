@@ -56,12 +56,14 @@ pipeline {
 
         stage('Docker compose test') {
             steps {
-                script {
-                    sh """
-                    echo LOCALSTACK_AUTH_TOKEN=ls-pErUxalI-YaRO-8088-qaKE-voVUFeJA3538 > .env
-                    cd ./tests/docker/docker-compose
-                    ./run-docker-compose-test.sh
-                    """
+                withCredentials([string(credentialsId: 'localstack-auth-token', variable: 'LOCALSTACK_AUTH_TOKEN')]) {
+                    script {
+                        sh """
+                            echo LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN} > .env
+                            cd ./tests/docker/docker-compose
+                            ./run-docker-compose-test.sh
+                        """
+                    }
                 }
             }
         }
