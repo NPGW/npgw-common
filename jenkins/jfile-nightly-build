@@ -1,10 +1,6 @@
 pipeline {
     agent { label 'build-node' }
 
-    parameters {
-        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'If unchecked, API tests will be skipped')
-    }
-
     environment {
         AWS_REGION = 'eu-central-1'
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
@@ -32,7 +28,7 @@ pipeline {
                 script {
                     build job: 'this-is-a-test-deploy-a-version',
                         parameters: [
-                            booleanParam(name: 'ENVIRONMENT_NAME', value: 'dev')
+                            string(name: 'ENVIRONMENT_NAME', value: 'dev')
                         ],
                         wait: true,
                         propagate: true
