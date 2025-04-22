@@ -12,30 +12,31 @@ pipeline {
 
         IMAGE_FILE = '.github/IMAGE_LIST.json'
     }
-
-    stage('Trigger build-a-version pipeline') {
-        steps {
-            script {
-                build job: 'this-is-a-test-build-a-version',
-                    parameters: [
-                        string(name: 'MAJOR_VERSION', value: '0.1'),
-                        booleanParam(name: 'RUN_TESTS', value: true)
-                    ],
-                    wait: true,
-                    propagate: true
+    stages {
+        stage('Trigger build-a-version pipeline') {
+            steps {
+                script {
+                    build job: 'this-is-a-test-build-a-version',
+                        parameters: [
+                            string(name: 'MAJOR_VERSION', value: '0.1'),
+                            booleanParam(name: 'RUN_TESTS', value: true)
+                        ],
+                        wait: true,
+                        propagate: true
+                }
             }
         }
-    }
 
-    stage('Trigger deploy-a-version pipeline') {
-        steps {
-            script {
-                build job: 'this-is-a-test-deploy-a-version',
-                    parameters: [
-                        booleanParam(name: 'ENVIRONMENT_NAME', value: 'dev')
-                    ],
-                    wait: true,
-                    propagate: true
+        stage('Trigger deploy-a-version pipeline') {
+            steps {
+                script {
+                    build job: 'this-is-a-test-deploy-a-version',
+                        parameters: [
+                            booleanParam(name: 'ENVIRONMENT_NAME', value: 'dev')
+                        ],
+                        wait: true,
+                        propagate: true
+                }
             }
         }
     }
