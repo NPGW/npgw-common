@@ -95,6 +95,7 @@ pipeline {
                         aws ecs register-task-definition --family ${taskDefinition} --cli-input-json file://new-task.json
                         TASK_REVISION=\$(aws ecs describe-task-definition --task-definition ${taskDefinition} --query 'taskDefinition.revision' --output text)
                         aws ecs update-service --cluster ${clusterName} --service ${taskDefinition} --task-definition ${taskDefinition}:\$TASK_REVISION --force-new-deployment
+                        until aws ecs describe-services --cluster ${clusterName} --services ${taskDefinition} --query "services[0].deployments[?status=='PRIMARY'].rolloutState" --output text | grep -q "COMPLETED"; do sleep 10 done
                         """
                     }
                 }
