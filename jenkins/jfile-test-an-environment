@@ -1,8 +1,6 @@
 pipeline {
     agent { label 'build-node' }
 
-    REPLACE EVERYTHING TO TEST IN ENV
-
     parameters {
         string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Release version')
         choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'prod', 'sandbox'], description: 'Deployment environment')
@@ -34,29 +32,6 @@ pipeline {
             }
         }
 
-        stage('Get Release Version') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
-                        if (params.RELEASE_VERSION == 'latest') {
-                            env.RELEASE_VERSION = sh(script: """aws ecr describe-images --repository-name npgw/merchant --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text""", returnStdout: true).trim()
-                        } else {
-                            env.RELEASE_VERSION = params.RELEASE_VERSION
-                        }
-                    }
-                }
-            }
-        }
-
-        stage('Validate Release Version') {
-            steps {
-                script {
-                    if (!env.RELEASE_VERSION) {
-                        error("Release version is null. Exiting...")
-                    }
-                }
-            }
-        }
 
         stage('Get Service List') {
             steps {
@@ -78,27 +53,6 @@ pipeline {
                     env.AWS_ACCESS_KEY_ID = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.AccessKeyId'", returnStdout: true).trim()
                     env.AWS_SECRET_ACCESS_KEY = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SecretAccessKey'", returnStdout: true).trim()
                     env.AWS_SESSION_TOKEN = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SessionToken'", returnStdout: true).trim()
-                }
-            }
-        }
-
-        stage('Deploy Services') {
-            steps {
-                script {
-                    def services = readJSON text: env.SERVICE_LIST
-                    for (service in services) {
-                        def taskDefinition = service.serviceName
-                        def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/${service.repoName}:${env.RELEASE_VERSION}"
-                        def clusterName = service.clusterName
-
-                        sh """
-                        aws ecs describe-task-definition --task-definition ${taskDefinition} > task.json
-                        jq --arg IMAGE "${imageUrl}" '.taskDefinition | .containerDefinitions[0].image = \$IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' task.json > new-task.json
-                        aws ecs register-task-definition --family ${taskDefinition} --cli-input-json file://new-task.json
-                        TASK_REVISION=\$(aws ecs describe-task-definition --task-definition ${taskDefinition} --query 'taskDefinition.revision' --output text)
-                        aws ecs update-service --cluster ${clusterName} --service ${taskDefinition} --task-definition ${taskDefinition}:\$TASK_REVISION --force-new-deployment
-                        """
-                    }
                 }
             }
         }
