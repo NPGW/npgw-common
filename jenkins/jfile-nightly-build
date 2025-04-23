@@ -23,12 +23,27 @@ pipeline {
             }
         }
 
-        stage('Trigger deploy-a-version pipeline') {
+        stage('Trigger deploy-a-version pipeline: DEV environment') {
             steps {
                 script {
                     build job: 'deploy-a-version',
                         parameters: [
                             string(name: 'ENVIRONMENT_NAME', value: 'dev')
+                            booleanParam(name: 'RUN_TESTS', value: true)
+                        ],
+                        wait: true,
+                        propagate: true
+                }
+            }
+        }
+
+        stage('Trigger deploy-a-version pipeline: TEST environment') {
+            steps {
+                script {
+                    build job: 'deploy-a-version',
+                        parameters: [
+                            string(name: 'ENVIRONMENT_NAME', value: 'test')
+                            booleanParam(name: 'RUN_TESTS', value: true)
                         ],
                         wait: true,
                         propagate: true
