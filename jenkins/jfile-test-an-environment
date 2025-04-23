@@ -67,6 +67,7 @@ pipeline {
                         -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
                         -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
                         -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
+                        -e TEST_ENVIRONMENT=AWS \\
                         ${imageUrl}
                     """
                 }
