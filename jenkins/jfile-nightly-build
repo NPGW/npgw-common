@@ -12,7 +12,7 @@ pipeline {
         stage('Trigger build-a-version pipeline') {
             steps {
                 script {
-                    build job: 'this-is-a-test-build-a-version',
+                    build job: 'build-a-version',
                         parameters: [
                             string(name: 'MAJOR_VERSION', value: '0.1'),
                             booleanParam(name: 'RUN_TESTS', value: true)
@@ -26,7 +26,7 @@ pipeline {
         stage('Trigger deploy-a-version pipeline') {
             steps {
                 script {
-                    build job: 'this-is-a-test-deploy-a-version',
+                    build job: 'deploy-a-version',
                         parameters: [
                             string(name: 'ENVIRONMENT_NAME', value: 'dev')
                         ],
