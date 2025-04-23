@@ -62,16 +62,16 @@ pipeline {
                 }
             }
             steps {
-                    withCredentials([string(credentialsId: 'localstack-auth-token', variable: 'LOCALSTACK_AUTH_TOKEN')]) {
-                        script {
-                            sh """
-                                echo LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN} > .env
-                                cd ./tests/docker/docker-compose
-                                ./run-docker-compose-test.sh
-                            """
-                        }
+                withCredentials([string(credentialsId: 'localstack-auth-token', variable: 'LOCALSTACK_AUTH_TOKEN')]) {
+                    script {
+                        sh """
+                            echo LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN} > .env
+                            cd ./tests/docker/docker-compose
+                            ./run-docker-compose-test.sh
+                        """
                     }
                 }
+            }
         }
 
         stage('Assume Correct AWS Role') {
