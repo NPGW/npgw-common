@@ -2,7 +2,7 @@ pipeline {
     agent { label 'build-node' }
 
     parameters {
-        string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Release version')
+        string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Image version to use')
         choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'prod', 'sandbox'], description: 'Deployment environment')
     }
 
@@ -12,47 +12,63 @@ pipeline {
     }
 
     stages {
-        stage('Determine AWS Role') {
+        stage('Determine url where run tests') {
             steps {
                 script {
-                    def roles = [
-                        'test'   : 'arn:aws:iam::820242903147:role/npgw-services-github-oidc-provider',
-                        'dev'    : 'arn:aws:iam::872515291967:role/npgw-services-github-oidc-provider',
-                        'prod'   : 'arn:aws:iam::721719382766:role/npgw-services-github-oidc-provider',
-                        'sandbox': 'arn:aws:iam::225989351233:role/npgw-services-github-oidc-provider'
+                    def urls = [
+                        'test'   : 'https://test.npgw.xyz',
+                        'dev'    : 'https://dev.npgw.xyz',
+                        'prod'   : 'n/aYet',
+                        'sandbox': 'https://sandbox.npgw.xyz'
                     ]
-                    env.ROLE_TO_ASSUME = roles[params.ENVIRONMENT_NAME] ?: error("Invalid environment: ${params.ENVIRONMENT_NAME}")
+                    env.URL = urls[params.ENVIRONMENT_NAME] ?: error("Invalid environment: ${params.ENVIRONMENT_NAME}")
                 }
             }
         }
 
-        stage('Checkout') {
-            steps {
-                git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
-            }
-        }
-
-
-        stage('Get Service List') {
+        stage('Get Release Version') {
             steps {
                 script {
-                    env.SERVICE_LIST = sh(script: "cat ${WORKSPACE}/.github/SERVICE_LIST.json", returnStdout: true).trim()
+                    withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
+                        if (params.RELEASE_VERSION == 'latest') {
+                            env.RELEASE_VERSION = sh(script: """aws ecr describe-images --repository-name npgw/api-test --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text""", returnStdout: true).trim()
+                        } else {
+                            env.RELEASE_VERSION = params.RELEASE_VERSION
+                        }
+                    }
                 }
             }
         }
 
-        stage('Assume Correct AWS Role') {
+        stage('Validate Release Version') {
             steps {
                 script {
-                    def credentialsJson = sh(script: """
-                        aws sts assume-role \
-                            --role-arn ${env.ROLE_TO_ASSUME} \
-                            --role-session-name JenkinsDeploySession
-                        """, returnStdout: true).trim()
+                    if (!env.RELEASE_VERSION) {
+                        error("Release version is null. Exiting...")
+                    }
+                }
+            }
+        }
 
-                    env.AWS_ACCESS_KEY_ID = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.AccessKeyId'", returnStdout: true).trim()
-                    env.AWS_SECRET_ACCESS_KEY = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SecretAccessKey'", returnStdout: true).trim()
-                    env.AWS_SESSION_TOKEN = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SessionToken'", returnStdout: true).trim()
+        stage("Test in ${params.ENVIRONMENT_NAME}  environment") {
+            steps {
+                script {
+                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+
+                    sh """
+                    aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
+
+                    docker run --rm \\
+                        -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
+                        -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
+                        -e SERVICE_MERCHANT_USER_EMAIL=test@email.com \\
+                        -e SERVICE_MERCHANT_USER_PASSWORD=Qwerty123! \\
+                        -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
+                        -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
+                        -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
+                        -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
+                        ${imageUrl}
+                    """
                 }
             }
         }
