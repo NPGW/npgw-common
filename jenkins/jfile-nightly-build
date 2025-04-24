@@ -28,7 +28,7 @@ pipeline {
                 script {
                     build job: 'deploy-a-version',
                         parameters: [
-                            string(name: 'ENVIRONMENT_NAME', value: 'dev')
+                            string(name: 'ENVIRONMENT_NAME', value: 'dev'),
                             booleanParam(name: 'RUN_TESTS', value: true)
                         ],
                         wait: true,
@@ -42,7 +42,7 @@ pipeline {
                 script {
                     build job: 'deploy-a-version',
                         parameters: [
-                            string(name: 'ENVIRONMENT_NAME', value: 'test')
+                            string(name: 'ENVIRONMENT_NAME', value: 'test'),
                             booleanParam(name: 'RUN_TESTS', value: true)
                         ],
                         wait: true,
