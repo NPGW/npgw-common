@@ -23,7 +23,7 @@ pipeline {
                     if (buildResult.result != 'SUCCESS') {
                         slackSend channel: '#npgw-notification-jenkins',
                                   color: 'danger',
-                                  message: "❌ *build-a-version* failed – see <${buildRes.absoluteUrl}|#${buildRes.number}>"
+                                  message: "❌ *build-a-version* failed – see <${buildResult.absoluteUrl}|#${buildResult.number}>"
                         error("Downstream pipeline failed")
                     }
                 }
@@ -43,7 +43,7 @@ pipeline {
                     if (devResult.result != 'SUCCESS') {
                         slackSend channel: '#npgw-notification-jenkins',
                                   color: 'danger',
-                                  message: "❌ *deploy-a-version (DEV)* failed – see <${devRes.absoluteUrl}|#${devRes.number}>"
+                                  message: "❌ *deploy-a-version (DEV)* failed – see <${devResult.absoluteUrl}|#${devResult.number}>"
                         error("DEV deploy failed")
                     }
                 }
@@ -64,7 +64,7 @@ pipeline {
                         slackSend channel: '#npgw-notification-jenkins',
                                   /*tokenCredentialId: 'slack-token',*/
                                   color: 'danger',
-                                  message: "❌ *deploy-a-version (TEST)* failed – see <${testRes.absoluteUrl}|#${testRes.number}>"
+                                  message: "❌ *deploy-a-version (TEST)* failed – see <${testResult.absoluteUrl}|#${testResult.number}>"
                         error("TEST deploy failed")
                     }
                 }
