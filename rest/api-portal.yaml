@@ -613,6 +613,49 @@ paths:
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
+    post:
+      operationId: createSecretToken
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - description: The company name
+          in: path
+          name: companyName
+          required: true
+          schema:
+            type: string
+        - description: The merchant id
+          in: path
+          name: merchantId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
     patch:
       operationId: updateMerchant
       security:
@@ -859,11 +902,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Acquirer'
+        '204':
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -926,6 +965,16 @@ paths:
         - apiKeyAuth: []
       parameters:
         - in: query
+          name: merchantId
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: priority
+          schema:
+            type: integer
+          required: true
+        - in: query
           name: up
           schema:
             type: string
@@ -933,11 +982,6 @@ paths:
           name: down
           schema:
             type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IdMerchantAcquirer'
       responses:
         '200':
           content:
@@ -968,17 +1012,19 @@ paths:
       operationId: deleteMerchantAcquirer
       security:
         - apiKeyAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IdMerchantAcquirer'
+      parameters:
+        - in: query
+          name: merchantId
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: priority
+          schema:
+            type: integer
+          required: true
       responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MerchantAcquirer'
+        '204':
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -1001,7 +1047,7 @@ paths:
 
   /merchant-acquirer/{merchantId}:
     get:
-      operationId: getMerchantAcquirers
+      operationId: getAllMerchantAcquirers
       security:
         - apiKeyAuth: []
       parameters:
@@ -1072,7 +1118,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref:  '../api-merchant.yaml#/components/schemas/TransactionResponse'
+                  $ref: '../api-merchant.yaml#/components/schemas/TransactionResponse'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -1108,7 +1154,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref:  '#/components/schemas/TransactionSummary'
+                  $ref: '#/components/schemas/TransactionSummary'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -1286,6 +1332,11 @@ components:
 
     SystemConfig:
       type: object
+      required:
+        - challengeUrl
+        - fingerprintUrl
+        - resourceUrl
+        - notificationQueue
       properties:
         challengeUrl:
           type: string
@@ -1306,6 +1357,7 @@ components:
       type: object
       required:
         - acquirerCode
+        - systemConfig
       properties:
         acquirerCode:
           $ref: '#/components/schemas/AcquirerCode'
