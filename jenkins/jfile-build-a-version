@@ -111,4 +111,21 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            slackSend(
+                channel: '#npgw-notification-jenkins',
+                color: 'good',
+                message: "✅ *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> completed successfully."
+            )
+        }
+        failure {
+            slackSend(
+                channel: '#npgw-notification-jenkins',
+                color: 'danger',
+                message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> failed."
+            )
+        }
+    }
 }
