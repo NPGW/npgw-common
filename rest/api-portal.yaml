@@ -1101,11 +1101,13 @@ paths:
           schema:
             type: integer
             default: 25
-        - in: query
+        - description: Comma-separated string of fields to sort by. For descending order put a minus sign prefix (-)
+          in: query
           name: sort
           required: false
           schema:
             type: string
+          example: currency,-createdOn
       requestBody:
         content:
           application/json:
