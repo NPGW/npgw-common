@@ -15,7 +15,7 @@ pipeline {
         stage('Trigger build-a-version pipeline') {
             steps {
                 script {
-                    def buildResult = build job: 'build-a-version',
+                    def downstream = build job: 'build-a-version',
                                         parameters: [
                                             string(name: 'MAJOR_VERSION', value: '0.1'),
                                             booleanParam(name: 'RUN_TESTS', value: true)
@@ -23,7 +23,9 @@ pipeline {
                                         wait: true,
                                         propagate: false
                     if (buildResult.result != 'SUCCESS') {
-                        downstream = "❌ *build-a-version* failed – see <${buildResult.absoluteUrl}|#${buildResult.number}>"
+                        slackSend channel: '#npgw-notification-jenkins',
+                        color: 'danger',
+                        message = ":x: *build-a-version* failed – see <${buildResult.absoluteUrl}|#${buildResult.number}>"
                         error("Downstream pipeline failed")
                     }
                 }
@@ -41,8 +43,13 @@ pipeline {
                         wait: true,
                         propagate: false
                         if (devResult.result != 'SUCCESS') {
-                            downstream = "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" +
-                            "Stage '${stageName}' failed (*deploy-a-version (DEV)*) – see <${devResult.absoluteUrl}|#${devResult.number}>"
+                            def upstreamBuildNumber = currentBuild.number
+                            def downstreamBuildNumber = downstream.getNumber()
+                            def failedStage = "deploy-a-version (DEV)"
+                            def reason = downstream.getDescription() ?: "See downstream logs"
+                            slackSend(
+                              color: '#danger',
+                              message: ":x: FAILURE: nightly-run #${upstreamBuildNumber} at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see #${downstreamBuildNumber}"
                     }
                 }
             }
@@ -59,8 +66,14 @@ pipeline {
                         wait: true,
                         propagate: false
                     if (testResult.result != 'SUCCESS') {
-                        message = "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" +
-                        "Stage '${stageName}' failed (*deploy-a-version (TEST)*) – see <${testResult.absoluteUrl}|#${testResult.number}>"
+                            def upstreamBuildNumber = currentBuild.number
+                            def downstreamBuildNumber = downstream.getNumber()
+                            def failedStage = "deploy-a-version (TEST)"
+                            def reason = downstream.getDescription() ?: "See downstream logs"
+                            slackSend(
+                              color: 'danger',
+                              message: ":x: FAILURE: nightly-run #${upstreamBuildNumber} at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see #${downstreamBuildNumber}"
+
                     }
                 }
             }
