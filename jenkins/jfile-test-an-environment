@@ -54,22 +54,37 @@ pipeline {
             steps {
                 script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                    def testOutputFile = "api-test-output.log"
 
-                    sh """
-                    aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
+                    try {
+                        sh """
+                        aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
 
-                    docker run --rm \\
-                        -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
-                        -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
-                        -e SERVICE_MERCHANT_USER_EMAIL=test@email.com \\
-                        -e SERVICE_MERCHANT_USER_PASSWORD=Qwerty123! \\
-                        -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
-                        -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
-                        -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
-                        -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
-                        -e TEST_ENVIRONMENT=AWS \\
-                        ${imageUrl}
-                    """
+                        docker run --rm \\
+                            -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
+                            -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
+                            -e SERVICE_MERCHANT_USER_EMAIL=test@email.com \\
+                            -e SERVICE_MERCHANT_USER_PASSWORD=Qwerty123! \\
+                            -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
+                            -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
+                            -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
+                            -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
+                            -e TEST_ENVIRONMENT=AWS \\
+                            ${imageUrl}
+                        """
+                        }
+                        catch (err) {
+                            writeFile file: 'failed-info.txt', text: 'Run Api Tests'
+
+                            def failedTests = sh(
+                                script: "grep -a '\\[0;31mxyz.npgw.test' ${testOutputFile} | sed 's/.*\\[0;31m//' | sed 's/\\x1b\\[[0-9;]*m//' || true",
+                                returnStdout: true
+                            ).trim()
+
+                            writeFile file: 'test-summary.txt', text: failedTests
+                            archiveArtifacts artifacts: 'failed-info.txt, test-summary.txt', allowEmptyArchive: true
+                            error("API tests failed")
+                        }
                 }
             }
         }

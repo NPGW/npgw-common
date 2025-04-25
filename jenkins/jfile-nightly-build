@@ -41,10 +41,27 @@ pipeline {
                                         wait: true,
                                         propagate: false
                     if (devResult.result != 'SUCCESS') {
-                        slackSend channel: '#npgw-notification-jenkins',
-                                  color: 'danger',
-                                  message: "❌ *deploy-a-version (DEV)* failed – see <${devResult.absoluteUrl}|#${devResult.number}>"
-                        error("DEV deploy failed")
+                    def stageName = '(unknown stage)'
+                    def testFailures = '(no failure details)'
+
+                    try {
+                        stageName = sh(script: "curl -s ${devResult.absoluteUrl}artifact/failed-info.txt", returnStdout: true).trim()
+                    } catch (ignored) {}
+
+                    try {
+                        testFailures = sh(script: "curl -s ${devResult.absoluteUrl}artifact/test-summary.txt", returnStdout: true).trim()
+                    } catch (ignored) {}
+
+                    slackSend channel: '#npgw-notification-jenkins',
+                        color: 'danger',
+                        message: """❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>
+                    Stage '${stageName}' failed (*deploy-a-version (DEV)*) – see <${devResult.absoluteUrl}|#${devResult.number}>
+                    *These tests failed:*
+                    \`\`\`
+                    ${testFailures}
+                    \`\`\`
+                    """
+                    error("DEV deploy failed")
                     }
                 }
             }
@@ -60,12 +77,28 @@ pipeline {
                                         ],
                                         wait: true,
                                         propagate: false
-                    if (testRes.result != 'SUCCESS') {
-                        slackSend channel: '#npgw-notification-jenkins',
-                                  /*tokenCredentialId: 'slack-token',*/
-                                  color: 'danger',
-                                  message: "❌ *deploy-a-version (TEST)* failed – see <${testResult.absoluteUrl}|#${testResult.number}>"
-                        error("TEST deploy failed")
+                    if (testResult.result != 'SUCCESS') {
+                    def stageName = '(unknown stage)'
+                    def testFailures = '(no failure details)'
+
+                    try {
+                        stageName = sh(script: "curl -s ${testResult.absoluteUrl}artifact/failed-info.txt", returnStdout: true).trim()
+                    } catch (ignored) {}
+
+                    try {
+                        testFailures = sh(script: "curl -s ${testResult.absoluteUrl}artifact/test-summary.txt", returnStdout: true).trim()
+                    } catch (ignored) {}
+
+                    slackSend channel: '#npgw-notification-jenkins',
+                        color: 'danger',
+                        message: """❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>
+                    Stage '${stageName}' failed (*deploy-a-version (TEST)*) – see <${testResult.absoluteUrl}|#${testResult.number}>
+                    *These tests failed:*
+                    \`\`\`
+                    ${testFailures}
+                    \`\`\`
+                    """
+                    error("TEST deploy failed")
                     }
                 }
             }
@@ -84,5 +117,4 @@ pipeline {
                       message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
         }
     }
-
 }
