@@ -40,18 +40,24 @@ pipeline {
                                         ],
                                         wait: true,
                                         propagate: false
-                    if (devResult.result != 'SUCCESS') {
-                    def stageName = '(unknown stage)'
-                    def testFailures = '(no failure details)'
+                                        if (devResult.result != 'SUCCESS') {
+                        def stageName = '(unknown stage)'
+                        def testFailures = '(no failure details)'
 
-                    try {
-                        stageName = sh(script: "curl -s ${devResult.absoluteUrl}artifact/failed-info.txt", returnStdout: true).trim()
-                    } catch (ignored) {}
+                        step([
+                            $class: 'CopyArtifact',
+                            projectName: 'deploy-a-version',
+                            selector: specific("${devResult.number}"),
+                            filter: 'failed-info.txt, test-summary.txt',
+                            flatten: true
+                        ])
 
-                    try {
-                        testFailures = sh(script: "curl -s ${devResult.absoluteUrl}artifact/test-summary.txt", returnStdout: true).trim()
-                    } catch (ignored) {}
-
+                        if (fileExists('failed-info.txt')) {
+                            stageName = readFile('failed-info.txt').trim()
+                        }
+                        if (fileExists('test-summary.txt')) {
+                            testFailures = readFile('test-summary.txt').trim()
+                        }
                     slackSend channel: '#npgw-notification-jenkins',
                         color: 'danger',
                         message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" +
@@ -68,24 +74,30 @@ pipeline {
             steps {
                 script {
                     def testResult = build job: 'deploy-a-version',
-                                        parameters: [
-                                            string(name: 'ENVIRONMENT_NAME', value: 'test'),
-                                            booleanParam(name: 'RUN_TESTS', value: true)
-                                        ],
-                                        wait: true,
-                                        propagate: false
+                        parameters: [
+                            string(name: 'ENVIRONMENT_NAME', value: 'test'),
+                            booleanParam(name: 'RUN_TESTS', value: true)
+                        ],
+                        wait: true,
+                        propagate: false
                     if (testResult.result != 'SUCCESS') {
-                    def stageName = '(unknown stage)'
-                    def testFailures = '(no failure details)'
+                       def stageName = '(unknown stage)'
+                       def testFailures = '(no failure details)'
 
-                    try {
-                        stageName = sh(script: "curl -s ${testResult.absoluteUrl}artifact/failed-info.txt", returnStdout: true).trim()
-                    } catch (ignored) {}
+                       step([
+                           $class: 'CopyArtifact',
+                           projectName: 'deploy-a-version',
+                           selector: specific("${devResult.number}"),
+                           filter: 'failed-info.txt, test-summary.txt',
+                           flatten: true
+                       ])
 
-                    try {
-                        testFailures = sh(script: "curl -s ${testResult.absoluteUrl}artifact/test-summary.txt", returnStdout: true).trim()
-                    } catch (ignored) {}
-
+                       if (fileExists('failed-info.txt')) {
+                           stageName = readFile('failed-info.txt').trim()
+                       }
+                       if (fileExists('test-summary.txt')) {
+                           testFailures = readFile('test-summary.txt').trim()
+                       }
                     slackSend channel: '#npgw-notification-jenkins',
                         color: 'danger',
                         message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" +
