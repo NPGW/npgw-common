@@ -1,3 +1,5 @@
+def failureNotified = false
+
 pipeline {
     agent { label 'build-node' }
 
@@ -25,6 +27,7 @@ pipeline {
                         color: 'danger',
                         message = ":x: *build-a-version* failed – see <${buildResult.absoluteUrl}|#${buildResult.number}>"
                         )
+                        failureNotified = true
                         error("Downstream pipeline failed")
                     }
                 }
@@ -48,8 +51,9 @@ pipeline {
                         def reason = downstreamDev.getDescription() ?: "See downstream logs"
                         slackSend( channel: '#npgw-notification-jenkins',
                           color: '#danger',
-                          message: ":x: FAILURE: nightly-run <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${env.STAGE_NAME} - reason - ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
+                          message: ":x: FAILURE: nightly-run <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
                         )
+                        failureNotified = true
                         error("DEV deploy failed")
                     }
                 }
@@ -73,8 +77,9 @@ pipeline {
                         def reason = downstreamTest.getDescription() ?: "See downstream logs"
                         slackSend(
                           color: 'danger',
-                          message: ":x: FAILURE: nightly-run <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${env.STAGE_NAME} - reason - ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
+                          message: ":x: FAILURE: nightly-run <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
                         )
+                        failureNotified = true
                         error("Test deploy failed")
                     }
                 }
@@ -89,9 +94,13 @@ pipeline {
                       message: "✅ *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
         }
         failure {
-            slackSend channel: '#npgw-notification-jenkins',
-                      color: 'danger',
-                      message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
+            script {
+                if (!failureNotified) {
+                    slackSend channel: '#npgw-notification-jenkins',
+                              color: 'danger',
+                              message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
+                }
+            }
         }
     }
 }
