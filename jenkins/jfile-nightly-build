@@ -43,13 +43,14 @@ pipeline {
                         wait: true,
                         propagate: false
                         if (devResult.result != 'SUCCESS') {
-                            def upstreamBuildNumber = currentBuild.number
-                            def downstreamBuildNumber = downstream.getNumber()
-                            def failedStage = "deploy-a-version (DEV)"
-                            def reason = downstream.getDescription() ?: "See downstream logs"
-                            slackSend(
-                              color: '#danger',
-                              message: ":x: FAILURE: nightly-run #${upstreamBuildNumber} at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see #${downstreamBuildNumber}"
+                        def upstreamBuildNumber = currentBuild.number
+                        def downstreamBuildNumber = downstream.getNumber()
+                        def failedStage = "deploy-a-version (DEV)"
+                        def reason = downstream.getDescription() ?: "See downstream logs"
+                        slackSend(
+                          color: '#danger',
+                          message: ":x: FAILURE: nightly-run #${upstreamBuildNumber} at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see #${downstreamBuildNumber}"
+                        )
                     }
                 }
             }
@@ -66,14 +67,14 @@ pipeline {
                         wait: true,
                         propagate: false
                     if (testResult.result != 'SUCCESS') {
-                            def upstreamBuildNumber = currentBuild.number
-                            def downstreamBuildNumber = downstream.getNumber()
-                            def failedStage = "deploy-a-version (TEST)"
-                            def reason = downstream.getDescription() ?: "See downstream logs"
-                            slackSend(
-                              color: 'danger',
-                              message: ":x: FAILURE: nightly-run #${upstreamBuildNumber} at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see #${downstreamBuildNumber}"
-
+                        def upstreamBuildNumber = currentBuild.number
+                        def downstreamBuildNumber = downstream.getNumber()
+                        def failedStage = "deploy-a-version (TEST)"
+                        def reason = downstream.getDescription() ?: "See downstream logs"
+                        slackSend(
+                          color: 'danger',
+                          message: ":x: FAILURE: nightly-run #${upstreamBuildNumber} at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see #${downstreamBuildNumber}"
+                        )
                     }
                 }
             }
