@@ -24,8 +24,8 @@ pipeline {
                         slackSend( channel: '#npgw-notification-jenkins',
                         color: 'danger',
                         message = ":x: *build-a-version* failed – see <${buildResult.absoluteUrl}|#${buildResult.number}>"
-                        error("Downstream pipeline failed")
                         )
+                        error("Downstream pipeline failed")
                     }
                 }
             }
@@ -49,8 +49,8 @@ pipeline {
                         slackSend( channel: '#npgw-notification-jenkins',
                           color: '#danger',
                           message: ":x: FAILURE: nightly-run <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${env.STAGE_NAME} - reason - ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
-                          error("DEV deploy failed")
                         )
+                        error("DEV deploy failed")
                     }
                 }
             }
@@ -74,8 +74,8 @@ pipeline {
                         slackSend(
                           color: 'danger',
                           message: ":x: FAILURE: nightly-run <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${env.STAGE_NAME} - reason - ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
-                          error("Test deploy failed")
                         )
+                        error("Test deploy failed")
                     }
                 }
             }
