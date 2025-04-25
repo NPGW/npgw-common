@@ -48,6 +48,7 @@ pipeline {
                         slackSend(
                           color: '#danger',
                           message: ":x: FAILURE: nightly-run "<${env.BUILD_URL}|#${upstreamBuildNumber}>" at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see "<${env.JENKINS_URL/job/deploy-a-version/${downstreamBuildNumber}/}|#${downstreamBuildNumber}>""
+                          error("DEV deploy failed")
                         )
                     }
                 }
@@ -72,6 +73,7 @@ pipeline {
                         slackSend(
                           color: 'danger',
                           message: ":x: FAILURE: nightly-run "<${env.BUILD_URL}|#${upstreamBuildNumber}>" at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see "<${env.JENKINS_URL/job/deploy-a-version/${downstreamBuildNumber}/}|#${downstreamBuildNumber}>""
+                          error("Test deploy failed")
                         )
                     }
                 }
