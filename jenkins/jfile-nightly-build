@@ -47,7 +47,7 @@ pipeline {
                         def reason = downstreamDev.getDescription() ?: "See downstream logs"
                         slackSend(
                           color: '#danger',
-                          message: ":x: FAILURE: nightly-run "<${env.BUILD_URL}|#${upstreamBuildNumber}>" at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see "<${env.JENKINS_URL/job/deploy-a-version/${downstreamBuildNumber}/}|#${downstreamBuildNumber}>""
+                          message: ":x: FAILURE: nightly-run <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see <${env.JENKINS_URL/job/deploy-a-version/${downstreamBuildNumber}/}|#${downstreamBuildNumber}>
                           error("DEV deploy failed")
                         )
                     }
@@ -72,7 +72,7 @@ pipeline {
                         def reason = downstreamTest.getDescription() ?: "See downstream logs"
                         slackSend(
                           color: 'danger',
-                          message: ":x: FAILURE: nightly-run "<${env.BUILD_URL}|#${upstreamBuildNumber}>" at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see "<${env.JENKINS_URL/job/deploy-a-version/${downstreamBuildNumber}/}|#${downstreamBuildNumber}>""
+                          message: ":x: FAILURE: nightly-run <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${env.STAGE_NAME} - reason -${failedStage} failed – see <${env.JENKINS_URL/job/deploy-a-version/${downstreamBuildNumber}/}|#${downstreamBuildNumber}>
                           error("Test deploy failed")
                         )
                     }
