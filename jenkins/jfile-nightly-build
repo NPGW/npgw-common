@@ -1,3 +1,5 @@
+def downstream = ""
+
 pipeline {
     agent { label 'build-node' }
 
@@ -21,9 +23,7 @@ pipeline {
                                         wait: true,
                                         propagate: false
                     if (buildResult.result != 'SUCCESS') {
-                        slackSend channel: '#npgw-notification-jenkins',
-                                  color: 'danger',
-                                  message: "❌ *build-a-version* failed – see <${buildResult.absoluteUrl}|#${buildResult.number}>"
+                        downstream = "❌ *build-a-version* failed – see <${buildResult.absoluteUrl}|#${buildResult.number}>"
                         error("Downstream pipeline failed")
                     }
                 }
@@ -34,37 +34,15 @@ pipeline {
             steps {
                 script {
                     def devResult = build job: 'deploy-a-version',
-                                        parameters: [
-                                            string(name: 'ENVIRONMENT_NAME', value: 'dev'),
-                                            booleanParam(name: 'RUN_TESTS', value: true)
-                                        ],
-                                        wait: true,
-                                        propagate: false
-                                        if (devResult.result != 'SUCCESS') {
-                        def stageName = '(unknown stage)'
-                        def testFailures = '(no failure details)'
-
-                        step([
-                            $class: 'CopyArtifact',
-                            projectName: 'deploy-a-version',
-                            selector: specific("${devResult.number}"),
-                            filter: 'failed-info.txt, test-summary.txt',
-                            flatten: true
-                        ])
-
-                        if (fileExists('failed-info.txt')) {
-                            stageName = readFile('failed-info.txt').trim()
-                        }
-                        if (fileExists('test-summary.txt')) {
-                            testFailures = readFile('test-summary.txt').trim()
-                        }
-                    slackSend channel: '#npgw-notification-jenkins',
-                        color: 'danger',
-                        message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" +
-                    "Stage '${stageName}' failed (*deploy-a-version (DEV)*) – see <${devResult.absoluteUrl}|#${devResult.number}>" +
-                     "*These tests failed:*\n" +
-                     "```\n${testFailures}\n```"
-                    error("DEV deploy failed")
+                        parameters: [
+                            string(name: 'ENVIRONMENT_NAME', value: 'dev'),
+                            booleanParam(name: 'RUN_TESTS', value: true)
+                        ],
+                        wait: true,
+                        propagate: false
+                        if (devResult.result != 'SUCCESS') {
+                            downstream = "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" +
+                            "Stage '${stageName}' failed (*deploy-a-version (DEV)*) – see <${devResult.absoluteUrl}|#${devResult.number}>"
                     }
                 }
             }
@@ -81,30 +59,8 @@ pipeline {
                         wait: true,
                         propagate: false
                     if (testResult.result != 'SUCCESS') {
-                       def stageName = '(unknown stage)'
-                       def testFailures = '(no failure details)'
-
-                       step([
-                           $class: 'CopyArtifact',
-                           projectName: 'deploy-a-version',
-                           selector: specific("${devResult.number}"),
-                           filter: 'failed-info.txt, test-summary.txt',
-                           flatten: true
-                       ])
-
-                       if (fileExists('failed-info.txt')) {
-                           stageName = readFile('failed-info.txt').trim()
-                       }
-                       if (fileExists('test-summary.txt')) {
-                           testFailures = readFile('test-summary.txt').trim()
-                       }
-                    slackSend channel: '#npgw-notification-jenkins',
-                        color: 'danger',
-                        message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" +
-                    "Stage '${stageName}' failed (*deploy-a-version (TEST)*) – see <${testResult.absoluteUrl}|#${testResult.number}>" +
-                     "*These tests failed:*\n" +
-                     "```\n${testFailures}\n```"
-                    error("TEST deploy failed")
+                        message = "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" +
+                        "Stage '${stageName}' failed (*deploy-a-version (TEST)*) – see <${testResult.absoluteUrl}|#${testResult.number}>"
                     }
                 }
             }
@@ -120,7 +76,7 @@ pipeline {
         failure {
             slackSend channel: '#npgw-notification-jenkins',
                       color: 'danger',
-                      message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
+                      message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" + downstream
         }
     }
 }
