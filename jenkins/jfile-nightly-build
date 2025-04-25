@@ -54,8 +54,8 @@ pipeline {
 
                     slackSend channel: '#npgw-notification-jenkins',
                         color: 'danger',
-                        message: """❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>
-                    Stage '${stageName}' failed (*deploy-a-version (DEV)*) – see <${devResult.absoluteUrl}|#${devResult.number}> +
+                        message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" +
+                    "Stage '${stageName}' failed (*deploy-a-version (DEV)*) – see <${devResult.absoluteUrl}|#${devResult.number}>" +
                      "*These tests failed:*\n" +
                      "```\n${testFailures}\n```"
                     error("DEV deploy failed")
@@ -88,8 +88,8 @@ pipeline {
 
                     slackSend channel: '#npgw-notification-jenkins',
                         color: 'danger',
-                        message: """❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>
-                    Stage '${stageName}' failed (*deploy-a-version (TEST)*) – see <${testResult.absoluteUrl}|#${testResult.number}> +
+                        message: "❌ *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>" +
+                    "Stage '${stageName}' failed (*deploy-a-version (TEST)*) – see <${testResult.absoluteUrl}|#${testResult.number}>" +
                      "*These tests failed:*\n" +
                      "```\n${testFailures}\n```"
                     error("TEST deploy failed")
