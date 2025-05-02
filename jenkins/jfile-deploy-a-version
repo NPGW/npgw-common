@@ -127,13 +127,13 @@ pipeline {
                 script {
                     env.DISTRIBUTION_ID = sh(script: """
                         aws cloudfront list-distributions \
-                        --region us-east-1 \
+                        --region ${env.AWS_REGION}
                         --query "DistributionList.Items[0].Id" \
                         --output text
                     """, returnStdout: true).trim()
 
                     if (!env.DISTRIBUTION_ID) {
-                        error("Error: No CloudFront Distribution ID found for environment ${params.ENVIRONMENT}")
+                        error("Error: No CloudFront Distribution ID found for environment ${params.ENVIRONMENT_NAME}")
                     }
                 }
             }
@@ -142,8 +142,8 @@ pipeline {
         stage('Upload portal UI build to S3') {
             steps {
                 script {
-                    def bucketName = "${params.ENVIRONMENT}.npgw.xyz"
-                    if (params.ENVIRONMENT == 'prod') {
+                    def bucketName = "${params.ENVIRONMENT_NAME}.npgw.xyz"
+                    if (params.ENVIRONMENT_NAME == 'prod') {
                         bucketName = "npgw.xyz"
                     }
 
@@ -157,7 +157,7 @@ pipeline {
         stage('Invalidate CloudFront Cache') {
             steps {
                 sh """
-                aws cloudfront create-invalidation --distribution-id \"${env.DISTRIBUTION_ID}\" --paths \"/*\"
+                    aws cloudfront create-invalidation --distribution-id \"${env.DISTRIBUTION_ID}\" --paths \"/*\"
                 """
             }
         }
