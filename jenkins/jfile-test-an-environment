@@ -91,7 +91,7 @@ pipeline {
                     echo "Seeding AWS data for environment: ${params.ENVIRONMENT_NAME}"
                     dir('npgw-services/tests/docker/docker-compose') {
                         sh """
-                            ls -l
+                            ls -la
                             chmod +x aws-seed-script.sh
                             ./aws-seed-script.sh
                         """
