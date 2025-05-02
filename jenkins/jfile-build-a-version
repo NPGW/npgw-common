@@ -17,7 +17,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-
                 dir('npgw-services') {
                     git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
                 }
@@ -54,14 +53,6 @@ pipeline {
                         sed -i \"s/<revision>.*<\\/revision>/<revision>${env.RELEASE_VERSION}<\\/revision>/g\" ./pom.xml
                         mvn clean verify
                     """
-                }
-            }
-        }
-
-        stage('Setup Node.js') {
-            steps {
-                nodejs(nodeJSInstallationName: 'Node20') {
-                    sh 'npm --version'
                 }
             }
         }
