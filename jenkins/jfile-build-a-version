@@ -17,7 +17,17 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
+                dir('npgw-common') {
+                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-common.git', branch: 'main'
+                }
+
+                dir('npgw-services') {
+                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
+                }
+
+                dir('npgw-portal') {
+                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-portal.git', branch: 'main'
+                }
             }
         }
 
@@ -39,18 +49,26 @@ pipeline {
             }
         }
 
-        stage('Set version to pom.xml') {
+        stage('Build backend (npgw-services)') {
             steps {
                 script {
-                    sh "sed -i \"s/<revision>.*<\\/revision>/<revision>${env.RELEASE_VERSION}<\\/revision>/g\" ./pom.xml"
+                    sh """
+                        cd ./npgw-services
+                        sed -i \"s/<revision>.*<\\/revision>/<revision>${env.RELEASE_VERSION}<\\/revision>/g\" ./pom.xml
+                        mvn clean verify
+                    """
                 }
             }
         }
 
-        stage('Maven verify') {
+        stage('Build frontend (npgw-portal)') {
             steps {
                 script {
-                    sh "mvn clean verify"
+                    sh """
+                        cd ./npgw-portal
+                        npm install
+                        npm run build
+                    """
                 }
             }
         }
@@ -66,7 +84,7 @@ pipeline {
                     script {
                         sh """
                             echo LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN} > .env
-                            cd ./tests/docker/docker-compose
+                            cd ./npgw-services/tests/docker/docker-compose
                             ./run-docker-compose-test.sh
                         """
                     }
