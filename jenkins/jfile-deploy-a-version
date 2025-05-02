@@ -121,5 +121,45 @@ pipeline {
                 }
             }
         }
+
+        stage('Fetch CloudFront Distribution ID') {
+            steps {
+                script {
+                    env.DISTRIBUTION_ID = sh(script: """
+                        aws cloudfront list-distributions \
+                        --region us-east-1 \
+                        --query "DistributionList.Items[0].Id" \
+                        --output text
+                    """, returnStdout: true).trim()
+
+                    if (!env.DISTRIBUTION_ID) {
+                        error("Error: No CloudFront Distribution ID found for environment ${params.ENVIRONMENT}")
+                    }
+                }
+            }
+        }
+
+        stage('Upload portal UI build to S3') {
+            steps {
+                script {
+                    def bucketName = "${params.ENVIRONMENT}.npgw.xyz"
+                    if (params.ENVIRONMENT == 'prod') {
+                        bucketName = "npgw.xyz"
+                    }
+
+                    sh """
+                    aws s3 sync dist s3://${bucketName} --delete
+                    """
+                }
+            }
+        }
+
+        stage('Invalidate CloudFront Cache') {
+            steps {
+                sh """
+                aws cloudfront create-invalidation --distribution-id \"${env.DISTRIBUTION_ID}\" --paths \"/*\"
+                """
+            }
+        }
     }
 }
