@@ -106,6 +106,7 @@ pipeline {
 
         stage('Build and push Docker image') {
             steps {
+                script {
                     def imageList = readJSON text: sh(script: "cat npgw-services/${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
                     for (image in imageList) {
                         def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/${image.repoName}:${env.RELEASE_VERSION}"
@@ -123,4 +124,5 @@ pipeline {
                 }
             }
         }
+    }
 }
