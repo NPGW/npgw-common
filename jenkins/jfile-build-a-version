@@ -60,6 +60,14 @@ pipeline {
             }
         }
 
+        stage('Setup Node.js') {
+            steps {
+                nodejs(nodeJSInstallationName: 'Node20') {
+                    sh 'npm --version'
+                }
+            }
+        }
+
         stage('Build frontend (npgw-portal)') {
             steps {
                 script {
