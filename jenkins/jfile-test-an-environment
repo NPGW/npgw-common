@@ -61,6 +61,7 @@ pipeline {
                     env.ROLE_TO_ASSUME = roles[params.ENVIRONMENT_NAME] ?: error("Invalid environment: ${params.ENVIRONMENT_NAME}")
                 }
             }
+        }
 
         stage('Assume Correct AWS Role') {
             steps {
