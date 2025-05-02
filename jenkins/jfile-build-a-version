@@ -14,12 +14,6 @@ pipeline {
         IMAGE_FILE = '.github/IMAGE_LIST.json'
     }
 
-
-    tools {
-        nodejs 'Node20'
-    }
-
-
     stages {
         stage('Checkout') {
             steps {
