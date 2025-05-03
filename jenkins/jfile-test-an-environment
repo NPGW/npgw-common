@@ -85,22 +85,26 @@ pipeline {
             }
         }
 
+        stage('Validate Cognito Access') {
+            steps {
+                script {
+                    sh """
+                        aws cognito-idp list-user-pools --max-results 1 --region eu-central-1
+                    """
+                }
+            }
+        }
+
         stage('Seed AWS Data') {
             steps {
                 script {
                     echo "Seeding AWS data for environment: ${params.ENVIRONMENT_NAME}"
                     dir('tests/docker/docker-compose') {
-                        withEnv([
-                            "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
-                            "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
-                            "AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}",
-                            "AWS_REGION=${env.AWS_REGION}"
-                        ]) {
-                            sh '''
-                                chmod +x aws-seed-script.sh
-                                ./aws-seed-script.sh
-                            '''
-                        }
+                        sh """
+                            ls -la
+                            chmod +x aws-seed-script.sh
+                            ./aws-seed-script.sh
+                        """
                     }
                 }
             }
