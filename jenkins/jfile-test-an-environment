@@ -48,37 +48,6 @@ pipeline {
             }
         }
 
-        //need a role
-        stage('Determine AWS Role') {
-            steps {
-                script {
-                    def roles = [
-                        'test'   : 'arn:aws:iam::820242903147:role/npgw-jenkins-deploy-a-version-role',
-                        'dev'    : 'arn:aws:iam::872515291967:role/npgw-jenkins-deploy-a-version-role',
-                        'prod'   : 'arn:aws:iam::721719382766:role/npgw-jenkins-deploy-a-version-role',
-                        'sandbox': 'arn:aws:iam::225989351233:role/npgw-jenkins-deploy-a-version-role'
-                    ]
-                    env.ROLE_TO_ASSUME = roles[params.ENVIRONMENT_NAME] ?: error("Invalid environment: ${params.ENVIRONMENT_NAME}")
-                }
-            }
-        }
-
-        stage('Assume Correct AWS Role') {
-            steps {
-                script {
-                    def credentialsJson = sh(script: """
-                        aws sts assume-role \
-                            --role-arn ${env.ROLE_TO_ASSUME} \
-                            --role-session-name JenkinsUploadSession
-                        """, returnStdout: true).trim()
-
-                    env.AWS_ACCESS_KEY_ID = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.AccessKeyId'", returnStdout: true).trim()
-                    env.AWS_SECRET_ACCESS_KEY = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SecretAccessKey'", returnStdout: true).trim()
-                    env.AWS_SESSION_TOKEN = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SessionToken'", returnStdout: true).trim()
-                }
-            }
-        }
-
         stage('Checkout Code') {
             steps {
                git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'aws-scripts-data-seed-service-repo'
@@ -90,17 +59,10 @@ pipeline {
                 script {
                     echo "Seeding AWS data for environment: ${params.ENVIRONMENT_NAME}"
                     dir('tests/docker/docker-compose') {
-                        withEnv([
-                            "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
-                            "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
-                            "AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}",
-                            "AWS_REGION=${env.AWS_REGION}"
-                        ]) {
-                            sh """
-                                chmod +x aws-seed-script.sh
-                                ./aws-seed-script.sh
-                            """
-                        }
+                        sh """
+                            chmod +x aws-seed-script.sh
+                            ./aws-seed-script.sh
+                        """
                     }
                 }
             }
