@@ -95,6 +95,18 @@ pipeline {
             }
         }
 
+        stage('Validate SSM Parameter') {
+          steps {
+            script {
+              sh """
+                aws ssm get-parameter \
+                  --name "/portal/cognito/pool-id" \
+                  --region eu-central-1
+              """
+            }
+          }
+        }
+
         stage('Seed AWS Data') {
             steps {
                 script {
