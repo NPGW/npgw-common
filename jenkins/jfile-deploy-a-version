@@ -127,7 +127,7 @@ pipeline {
                 script {
                     env.DISTRIBUTION_ID = sh(script: """
                         aws cloudfront list-distributions \
-                        --region ${env.AWS_REGION}
+                        --region us-east-1
                         --query "DistributionList.Items[0].Id" \
                         --output text
                     """, returnStdout: true).trim()
