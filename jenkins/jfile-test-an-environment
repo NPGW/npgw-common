@@ -85,28 +85,6 @@ pipeline {
             }
         }
 
-        stage('Validate Cognito Access') {
-            steps {
-                script {
-                    sh """
-                        aws cognito-idp list-user-pools --max-results 1 --region eu-central-1
-                    """
-                }
-            }
-        }
-
-        stage('Validate SSM Parameter') {
-          steps {
-            script {
-              sh """
-                aws ssm get-parameter \
-                  --name "/portal/cognito/pool-id" \
-                  --region eu-central-1
-              """
-            }
-          }
-        }
-
         stage('Seed AWS Data') {
             steps {
                 script {
@@ -134,6 +112,7 @@ pipeline {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
                     sh """
+                    aws sts get-caller-identity
                     aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
 
                     docker run --rm \\
