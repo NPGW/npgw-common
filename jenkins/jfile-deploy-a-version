@@ -139,16 +139,18 @@ pipeline {
             }
         }
 
-        stage('Upload portal UI build to S3') {
+        stage('Fetch UI build') {
             steps {
                 script {
-                    def bucketName = "${params.ENVIRONMENT_NAME}.npgw.xyz"
+                    def releaseFolder = "build_${env.RELEASE_VERSION}"
+                    def sourceBucketName = "root.npgw.xyz"
+                    def targetBucketName = "${params.ENVIRONMENT_NAME}.npgw.xyz"
                     if (params.ENVIRONMENT_NAME == 'prod') {
-                        bucketName = "npgw.xyz"
+                        targetBucketName = "npgw.xyz"
                     }
 
                     sh """
-                    aws s3 sync dist s3://${bucketName} --delete
+                    aws s3 sync s3://${sourceBucketName}/${releaseFolder} s3://${targetBucketName} --delete
                     """
                 }
             }
