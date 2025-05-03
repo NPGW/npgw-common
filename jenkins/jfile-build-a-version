@@ -130,7 +130,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                    aws s3 sync dist s3://${env.AWS_BUCKET_NAME}/build_${env.RELEASE_VERSION}
+                    aws s3 sync npgw-portal/dist s3://${env.AWS_BUCKET_NAME}/build_${env.RELEASE_VERSION}
                     """
                 }
             }
