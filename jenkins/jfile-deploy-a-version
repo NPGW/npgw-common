@@ -139,7 +139,7 @@ pipeline {
             }
         }
 
-        stage('Fetch UI build') {
+        stage('Fetch portal UI build') {
             steps {
                 script {
                     def releaseFolder = "build_${env.RELEASE_VERSION}"
