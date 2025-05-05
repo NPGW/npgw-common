@@ -54,7 +54,6 @@ pipeline {
             }
         }
 
-        //need a role
         stage('Determine AWS Role') {
             steps {
                 script {
@@ -115,7 +114,6 @@ pipeline {
                     unset AWS_ACCESS_KEY_ID
                     unset AWS_SECRET_ACCESS_KEY
                     unset AWS_SESSION_TOKEN
-                    aws sts get-caller-identity
                     aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
 
                     docker run --rm \\
