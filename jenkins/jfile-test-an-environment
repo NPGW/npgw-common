@@ -109,9 +109,18 @@ pipeline {
         stage('Run Api Tests') {
             steps {
                 script {
+                    echo "🔄 Reverting to instance role (unsetting temporary credentials)..."
+                    env.remove('AWS_ACCESS_KEY_ID')
+                    env.remove('AWS_SECRET_ACCESS_KEY')
+                    env.remove('AWS_SESSION_TOKEN')
+                }
+                script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
                     sh """
+                    unset AWS_ACCESS_KEY_ID
+                    unset AWS_SECRET_ACCESS_KEY
+                    unset AWS_SESSION_TOKEN
                     aws sts get-caller-identity
                     aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
 
