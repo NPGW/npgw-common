@@ -57,7 +57,6 @@ pipeline {
 
                         sh """
                             echo "Run trigger github workflow..."
-                            gh auth login --with-token <<< "${GH_TOKEN}"
                             gh workflow run build-and-release.yml \
                             --repo ${owner}/${repo} \
                             --ref ${ref} \
