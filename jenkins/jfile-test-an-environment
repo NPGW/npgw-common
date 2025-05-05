@@ -109,12 +109,6 @@ pipeline {
         stage('Run Api Tests') {
             steps {
                 script {
-                    echo "🔄 Reverting to instance role (unsetting temporary credentials)..."
-                    env.remove('AWS_ACCESS_KEY_ID')
-                    env.remove('AWS_SECRET_ACCESS_KEY')
-                    env.remove('AWS_SESSION_TOKEN')
-                }
-                script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
                     sh """
