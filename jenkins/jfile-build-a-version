@@ -48,7 +48,7 @@ pipeline {
 
         stage('Trigger GitHub Actions Release') {
             steps {
-                withCredentials([string(credentialsId: 'github-pat', variable: 'GH_TOKEN')]) {
+                withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
                         def owner        = 'NPGW'
                         def repo         = 'npgw-portal'
