@@ -48,18 +48,15 @@ pipeline {
 
         stage('Trigger GitHub Actions Release') {
             steps {
-            // assuming you’ve stored a GitHub PAT in Jenkins as “github-pat”
                 withCredentials([string(credentialsId: 'github-pat', variable: 'GH_TOKEN')]) {
                     script {
-                        // repo you want to trigger
                         def owner        = 'NPGW'
                         def repo         = 'npgw-portal'
-                        // the exact filename (or workflow ID) of your GitHub Actions workflow
                         def workflowFile = 'build-and-release.yml'
-                        // branch or ref you want the workflow to run on
                         def ref          = 'feature/dockerize-ui'
 
                         sh """
+                            echo "Run trigger github workflow..."
                             gh auth login --with-token <<< "${GH_TOKEN}"
                             gh workflow run build-and-release.yml \
                             --repo ${owner}/${repo} \
