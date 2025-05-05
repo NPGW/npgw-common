@@ -6,7 +6,6 @@ pipeline {
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
         AWS_ROLE = 'arn:aws:iam::214404897309:role/npgw-jenkins-build-a-version-role'
         IMAGE_FILE = '.github/IMAGE_LIST.json'
-        FAILURE_NOTIFIED = 'false'
     }
 
     stages {
@@ -26,7 +25,7 @@ pipeline {
                             color: 'danger',
                             message: ":x: *build-a-version* failed – see <${downstream.absoluteUrl}|#${downstream.number}>"
                         )
-                        env.FAILURE_NOTIFIED = 'true'
+                        currentBuild.description = 'FAILURE_NOTIFIED'
                         error("Downstream pipeline failed")
                     }
                 }
@@ -53,7 +52,7 @@ pipeline {
                             color: '#danger',
                             message: ":x: FAILURE: nightly-run <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
                         )
-                        env.FAILURE_NOTIFIED = 'true'
+                        currentBuild.description = 'FAILURE_NOTIFIED'
                         error("DEV deploy failed")
                     }
                 }
@@ -79,7 +78,7 @@ pipeline {
                             color: 'danger',
                             message: ":x: FAILURE: nightly-run <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
                         )
-                        env.FAILURE_NOTIFIED = 'true'
+                        currentBuild.description = 'FAILURE_NOTIFIED'
                         error("Test deploy failed")
                     }
                 }
@@ -95,7 +94,7 @@ pipeline {
         }
         failure {
             script {
-                if (env.FAILURE_NOTIFIED != 'true') {
+                if (currentBuild.description != 'FAILURE_NOTIFIED') {
                     slackSend channel: '#npgw-notification-jenkins',
                               color: 'danger',
                               message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
