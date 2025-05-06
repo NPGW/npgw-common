@@ -178,7 +178,8 @@ pipeline {
                     def targetDir   = "${WORKSPACE}/npgw-portal/dist"
 
                     sh """
-                        mkdir -p ${sourceDir}
+                        rm -rf ${targetDir}
+                        mkdir -p ${targetDir}
                         unzip -o ${sourceDir}/${sourceFile} -d ${targetDir}
                     """
                     echo ' → ${sourceFile} unpacked into ${targetDir}'
