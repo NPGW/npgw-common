@@ -120,7 +120,6 @@ pipeline {
             }
         }
 
-
         stage('Download UI build from Draft Release') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
