@@ -112,7 +112,7 @@ pipeline {
                                       ).trim()
                                     try {
                                       // 1) Grab up to 100 releases (drafts included)
-                                      def raw = sh(
+                                      def ra2w = sh(
                                         script: """\
                                           gh release list \\
                                             --repo ${owner}/${repo} \\
