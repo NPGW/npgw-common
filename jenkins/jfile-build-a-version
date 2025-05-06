@@ -100,41 +100,50 @@ pipeline {
 
                         timeout(time: 5, unit: 'MINUTES') {
                           waitUntil {
-                                        def assetCount = 0
-                                                    try {
-                                                      // 1) Grab up to 100 releases (drafts included)
-                                                      def raw = sh(
-                                                        script: """\
-                                                          gh release list \\
-                                                            --repo ${owner}/${repo} \\
-                                                            --limit 100 \\
-                                                            --json tagName,assets
-                                                        """.stripIndent(),
-                                                        returnStdout: true
-                                                      ).trim()
+                                      def assetCount = 0
+                                      def raw = sh(
+                                        script: """\
+                                          gh release list \\
+                                            --repo ${owner}/${repo} \\
+                                            --limit 100 \\
+                                            --json tagName,assets
+                                        """.stripIndent(),
+                                        returnStdout: true
+                                      ).trim()
+                                    try {
+                                      // 1) Grab up to 100 releases (drafts included)
+                                      def raw = sh(
+                                        script: """\
+                                          gh release list \\
+                                            --repo ${owner}/${repo} \\
+                                            --limit 100 \\
+                                            --json tagName,assets
+                                        """.stripIndent(),
+                                        returnStdout: true
+                                      ).trim()
 
-                                                      // 2) parse it as JSON
-                                                      def releases = readJSON text: raw
+                                      // 2) parse it as JSON
+                                      def releases = readJSON text: raw
 
-                                                      // 3) find the one matching our tag
-                                                      def rel = releases.find { it.tagName == version }
+                                      // 3) find the one matching our tag
+                                      def rel = releases.find { it.tagName == version }
 
-                                                      // 4) count its assets (or stay at zero)
-                                                      assetCount = rel?.assets?.size() ?: 0
-                                                    } catch (e) {
-                                                      echo "→ still waiting (got: ${e.message})"
-                                                      echo "${raw}"
-                                                      echo "${raw}"
-                                                      echo "${raw}"
-                                                    }
+                                      // 4) count its assets (or stay at zero)
+                                      assetCount = rel?.assets?.size() ?: 0
+                                    } catch (e) {
+                                      echo "→ still waiting (got: ${e.message})"
+                                      echo "${raw}"
+                                      echo "${raw}"
+                                      echo "${raw}"
+                                    }
 
-                                                    echo "→ Release ${version} has ${assetCount} asset(s)"
-                                                    if (assetCount > 0) {
-                                                      return true
-                                                    } else {
-                                                      sleep time: 10, unit: 'SECONDS'
-                                                      return false
-                                                    }
+                                    echo "→ Release ${version} has ${assetCount} asset(s)"
+                                    if (assetCount > 0) {
+                                      return true
+                                    } else {
+                                      sleep time: 10, unit: 'SECONDS'
+                                      return false
+                                    }
                           }
                     }
                 }
