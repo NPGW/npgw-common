@@ -101,23 +101,14 @@ pipeline {
                         timeout(time: 5, unit: 'MINUTES') {
                           waitUntil {
                                       def assetCount = 0
+                                    try {
+                                      // 1) Grab up to 100 releases (drafts included)
                                       def raw = sh(
                                         script: """\
                                           gh release list \\
                                             --repo ${owner}/${repo} \\
                                             --limit 100 \\
                                             --json tagName
-                                        """.stripIndent(),
-                                        returnStdout: true
-                                      ).trim()
-                                    try {
-                                      // 1) Grab up to 100 releases (drafts included)
-                                      def ra2w = sh(
-                                        script: """\
-                                          gh release list \\
-                                            --repo ${owner}/${repo} \\
-                                            --limit 100 \\
-                                            --json tagName,assets
                                         """.stripIndent(),
                                         returnStdout: true
                                       ).trim()
@@ -132,9 +123,6 @@ pipeline {
                                       assetCount = rel?.assets?.size() ?: 0
                                     } catch (e) {
                                       echo "→ still waiting (got: ${e.message})"
-                                      echo "${raw}"
-                                      echo "${raw}"
-                                      echo "${raw}"
                                     }
 
                                     echo "→ Release ${version} has ${assetCount} asset(s)"
