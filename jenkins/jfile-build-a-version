@@ -56,16 +56,33 @@ pipeline {
                         def ref          = 'feature/dockerize-ui'
                         def version      = env.RELEASE_VERSION
 
-                        def runId = sh(
-                          script:  "gh workflow run ${workflow} --repo ${owner}/${repo} --ref ${ref} -f version=${version}  --json databaseId -q .databaseId",
-                          returnStdout: true
-                        ).trim()
+                        // 1) kick off the workflow (no --json, it just prints a confirmation)
+                        sh """
+                          gh workflow run ${WORKFLOW} \\
+                            --repo ${OWNER}/${REPO} \\
+                            --ref ${REF} \\
+                            -f version=${VERSION}
+                        """
                         echo ' → Started GitHub workflow ${workflow} run with ID: ${runId}'
 
-                        sh """
-                            gh run watch ${runId} --repo ${OWNER}/${REPO}"
-                            echo ' → GH Actions run #${runId} completed'
-                        """
+                        // 2) grab the most recent run ID for that workflow+branch
+                        def runId = sh(
+                          script:  """\
+                            gh run list \
+                              --repo ${OWNER}/${REPO} \
+                              --workflow ${WORKFLOW} \
+                              --branch ${REF} \
+                              --limit 1 \
+                              --json databaseId,createdAt \
+                              -q '.[0].databaseId'
+                          """.stripIndent(),
+                          returnStdout: true
+                        ).trim()
+                        echo "→ watching run #${runId}"
+
+                        // 3) now block until it finishes
+                        sh "gh run watch ${runId} --repo ${OWNER}/${REPO}"
+                        echo "→ run #${runId} completed"
 
                         env.GH_RUN_ID = runId
                     }
