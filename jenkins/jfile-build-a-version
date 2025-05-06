@@ -90,6 +90,30 @@ pipeline {
             }
         }
 
+            stage('Wait for Draft Release to be Ready') {
+              steps {
+                script {
+                  timeout(time: 2, unit: 'MINUTES') {
+                    waitUntil {
+                      def owner = 'NPGW'
+                      def repo = 'npgw-portal'
+                      def assetCount = sh(
+                        script: """
+                          gh release view ${env.RELEASE_VERSION} \\
+                            --repo ${owner}/${repo} \\
+                            --json assets -q '.assets | length'
+                        """.stripIndent(),
+                        returnStdout: true
+                      ).trim()
+                      // continue looping until there's at least one asset
+                      return (assetCount ?: '0').toInteger() > 0
+                    }
+                  }
+                  echo "→ Draft release ${VERSION} is now published and has assets"
+                }
+              }
+            }
+
 
         stage('Download UI build from Draft Release') {
             steps {
