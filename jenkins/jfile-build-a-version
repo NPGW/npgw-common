@@ -65,7 +65,6 @@ pipeline {
                             --ref ${ref} \\
                             -f version=${version}
                         """
-                        echo ' ---→ Started GitHub workflow ${workflow} run.'
                     }
                 }
             }
@@ -76,8 +75,6 @@ pipeline {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
                         def version = env.RELEASE_VERSION
-
-                        echo "Searching for draft release ${version}..."
 
                         timeout(time: 5, unit: 'MINUTES') {
                             waitUntil {
@@ -95,6 +92,7 @@ pipeline {
 
                                 def rel = releases.find { it.tagName == version }
                                 if (rel) {
+                                    echo "Draft release ${version} is ready!"
                                     return true
                                 } else {
                                     sleep time: 10, unit: 'SECONDS'
@@ -102,7 +100,6 @@ pipeline {
                                 }
                             }
                         }
-                        echo " ---→ Draft release ${version} is ready!"
                     }
                 }
             }
