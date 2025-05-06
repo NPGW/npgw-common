@@ -101,13 +101,15 @@ pipeline {
                         timeout(time: 5, unit: 'MINUTES') {
                           waitUntil {
                             // 1) Fetch the release JSON, extract number of assets
+                            // Note the double quotes for --jq, and escaped inner quotes around ${version}
                             def assetCount = sh(
                               script: """\
                                 gh api /repos/${owner}/${repo}/releases \\
-                                  --jq 'map(select(.tag_name=="${version}")) | if length>0 then .[0].assets|length else 0 end'
+                                  --jq "map(select(.tag_name==\\"${version}\\")) \\
+                                         | if length>0 then .[0].assets|length else 0 end"
                               """.stripIndent(),
                               returnStdout: true
-                            ).trim()
+                            ).trim().toInteger()
                             assetCount = assetCountJson.isInteger() ? assetCountJson.toInteger() : 0
 
                             echo "→ Release ${version} has ${assetCount} asset(s) so far."
