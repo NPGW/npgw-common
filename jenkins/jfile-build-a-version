@@ -103,15 +103,15 @@ pipeline {
                           script: """
                             gh release view ${env.RELEASE_VERSION} \\
                               --repo ${owner}/${repo} \\
-                              --json assets -q '.assets | length'
+                              --json assets
                           """.stripIndent(),
                           returnStdout: true
-                        ).trim().toInteger()
+                        ).trim()
                       } catch (err) {
                         // release not found yet → assetCount remains 0
                       }
-                      echo "→ draft release ${env.RELEASE_VERSION} has ${assetCount} assets"
-                      return assetCount > 0
+                      echo "what we got: ${assetCount}"
+                      return 0
                     }
                   }
                   echo "→ Draft release ${env.RELEASE_VERSION} is now published and has at least 1 asset"
