@@ -50,7 +50,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-               git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'aws-scripts-data-seed-service-repo'
+               git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
             }
         }
 
