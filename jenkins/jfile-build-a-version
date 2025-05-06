@@ -78,34 +78,24 @@ pipeline {
 
                         timeout(time: 5, unit: 'MINUTES') {
                             waitUntil {
-                                def found = false
-                                try {
-                                    def raw = sh(
-                                        script: """\
-                                            gh release list \\
-                                                --repo ${owner}/${repo} \\
-                                                --limit 100 \\
-                                                --json tagName
-                                        """.stripIndent(),
-                                        returnStdout: true
-                                    ).trim()
+                                def raw = sh(
+                                    script: """\
+                                        gh release list \\
+                                            --repo ${owner}/${repo} \\
+                                            --limit 100 \\
+                                            --json tagName
+                                    """.stripIndent(),
+                                    returnStdout: true
+                                ).trim()
 
-                                    def releases = readJSON text: raw
+                                def releases = readJSON text: raw
 
-                                    def rel = releases.find { it.tagName == version }
-                                    if (rel) {
-                                        echo " ---→ Found draft release with tag ${version}"
-                                        found = true
-                                    } else {
-                                        echo " ---→ Still waiting for tag ${version}…"
-                                    }
-                                } catch (e) {
-                                    echo " ---→ Waiting, error occurred: ${e.message}"
-                                }
-
-                                if (found) {
+                                def rel = releases.find { it.tagName == version }
+                                if (rel) {
+                                    echo " ---→ Found draft release with tag ${version}"
                                     return true
                                 } else {
+                                    echo " ---→ Still waiting for tag ${version}…"
                                     sleep time: 10, unit: 'SECONDS'
                                     return false
                                 }
