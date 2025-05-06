@@ -101,31 +101,37 @@ pipeline {
                         timeout(time: 5, unit: 'MINUTES') {
                           waitUntil {
                                         def assetCount = 0
-                                        try {
-                                          // list up to 100 releases (draft & published), filter by tag, then count assets
-                                          def raw = sh(
-                                            script: """
-                                              gh release list \\
-                                                --repo ${owner}/${repo} \\
-                                                --limit 100 \\
-                                                --jq 'map(select(.tag_name=="${version}"))[0].assets | length'
-                                            """.stripIndent(),
-                                            returnStdout: true
-                                          ).trim()
+                                                    try {
+                                                      // 1) Grab up to 100 releases (drafts included)
+                                                      def raw = sh(
+                                                        script: """\
+                                                          gh release list \\
+                                                            --repo ${owner}/${repo} \\
+                                                            --limit 100 \\
+                                                            --json tagName,assets
+                                                        """.stripIndent(),
+                                                        returnStdout: true
+                                                      ).trim()
 
-                                          echo "→ raw asset-length for ${version}: '${raw}'"
-                                          assetCount = raw.toInteger()
-                                        } catch (e) {
-                                          // if jq didn’t match anything or parsing failed, assetCount stays 0
-                                          echo "→ still waiting for release ${version} (got error: ${e.message})"
-                                        }
+                                                      // 2) parse it as JSON
+                                                      def releases = readJSON text: raw
 
-                                        echo "→ current assetCount = ${assetCount}"
-                                        if (assetCount > 0) {
-                                          return true    // release + at least one asset found → break out
-                                        }
-                                        sleep time: 10, unit: 'SECONDS'
-                                        return false     // keep polling
+                                                      // 3) find the one matching our tag
+                                                      def rel = releases.find { it.tagName == version }
+
+                                                      // 4) count its assets (or stay at zero)
+                                                      assetCount = rel?.assets?.size() ?: 0
+                                                    } catch (e) {
+                                                      echo "→ still waiting (got: ${e.message})"
+                                                    }
+
+                                                    echo "→ Release ${version} has ${assetCount} asset(s)"
+                                                    if (assetCount > 0) {
+                                                      return true
+                                                    } else {
+                                                      sleep time: 10, unit: 'SECONDS'
+                                                      return false
+                                                    }
                           }
                     }
                 }
