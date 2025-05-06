@@ -125,7 +125,6 @@ pipeline {
                                 exit 1
                             fi
                         """
-
                     }
                 }
             }
@@ -219,7 +218,17 @@ pipeline {
             steps {
                 script {
                     sh """
-                    aws s3 sync npgw-portal/dist s3://${env.AWS_BUCKET_NAME}/npgw-portal/build_${env.RELEASE_VERSION}
+                        # list what’s already in the bucket under npgw-portal/
+                        echo "→ Existing files in s3://${AWS_BUCKET_NAME}/npgw-portal/:"
+                        aws s3 ls s3://${AWS_BUCKET_NAME}/npgw-portal/ --recursive
+
+                        # upload the new build
+                        echo "→ Syncing npgw-portal/dist → s3://${AWS_BUCKET_NAME}/npgw-portal/build_${RELEASE_VERSION}/"
+                        aws s3 sync npgw-portal/dist s3://${AWS_BUCKET_NAME}/npgw-portal/build_${RELEASE_VERSION}/
+
+                        # list again to confirm
+                        echo "→ Files now in s3://${AWS_BUCKET_NAME}/npgw-portal/build_${RELEASE_VERSION}/:"
+                        aws s3 ls s3://${AWS_BUCKET_NAME}/npgw-portal/build_${RELEASE_VERSION}/ --recursive
                     """
                 }
             }
