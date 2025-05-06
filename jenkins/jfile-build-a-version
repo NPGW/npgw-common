@@ -81,7 +81,7 @@ pipeline {
                         echo "→ watching run #${runId}"
 
                         // 3) now block until it finishes
-                        sh "gh run watch ${runId} --repo ${owner}/${repo}"
+                        sh "gh run watch ${runId} --repo ${owner}/${repo} --exit-status"
                         echo "→ run #${runId} completed"
 
                         env.GH_RUN_ID = runId
@@ -90,15 +90,18 @@ pipeline {
             }
         }
 
+
         stage('Download UI build from Draft Release') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
+                        def owner = 'NPGW'
+                        def repo = 'npgw-portal'
                         def targetDir = "${WORKSPACE}/npgw-portal"
                         def targetFile = "dist.zip"
                         sh """
                             gh release download ${env.RELEASE_VERSION} \
-                            --repo ${OWNER}/${REPO} \
+                            --repo ${owner}/${repo} \
                             --pattern ${targetFile} \
                             --dir ${targetDir}
 
