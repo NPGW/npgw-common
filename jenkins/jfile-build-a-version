@@ -198,18 +198,6 @@ pipeline {
             }
         }
 
-        stage('Build frontend (npgw-portal)') {
-            steps {
-                script {
-                    sh """
-                        cd ./npgw-portal
-                        npm install
-                        npm run build
-                    """
-                }
-            }
-        }
-
         stage('Test in embedded environment (EE)') {
             when {
                 expression {
