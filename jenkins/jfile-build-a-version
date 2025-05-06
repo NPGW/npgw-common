@@ -92,6 +92,7 @@ pipeline {
 
             stage('Wait for Draft Release to be Ready') {
               steps {
+              withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                 script {
                   timeout(time: 2, unit: 'MINUTES') {
                     waitUntil {
@@ -110,6 +111,7 @@ pipeline {
                     }
                   }
                   echo "→ Draft release ${VERSION} is now published and has assets"
+                }
                 }
               }
             }
