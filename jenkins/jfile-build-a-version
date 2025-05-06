@@ -155,7 +155,7 @@ pipeline {
                             gh release download ${env.RELEASE_VERSION} \
                             --repo ${owner}/${repo} \
                             --pattern ${targetFile} \
-                            --dir ${targetDir}
+                            --dir ${targetDir} --clobber
 
                             if [ ! -f "${targetDir}/${targetFile}" ]; then
                                 echo "ERROR: ${targetFile} not found in ${targetDir}" >&2
