@@ -103,11 +103,15 @@ pipeline {
                             // 1) Fetch the release JSON, extract number of assets
                             def assetCount = sh(
                               script: """\
-                                gh api repos/${owner}/${repo}/releases/tags/${version} \\
-                                  --jq '.assets | length'
-                                """.stripIndent(),
+                                gh api /repos/${owner}/${repo}/releases \\
+                                  --jq 'map(select(.tag_name=="${version}")) \\
+                                         | if length>0 then .[0].assets|length else 0 end'
+                              """.stripIndent(),
                               returnStdout: true
-                            ).trim().toInteger()
+                            ).trim()
+                            def assetCount = assetCountJson.isInteger() ? assetCountJson.toInteger() : 0
+
+                            echo "→ Release ${version} has ${assetCount} asset(s) so far."
 
                             echo "→ Release ${version} has ${assetCount} asset(s) so far."
 
