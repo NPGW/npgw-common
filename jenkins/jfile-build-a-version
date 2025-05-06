@@ -90,56 +90,57 @@ pipeline {
             }
         }
 
-            stage('Wait for Draft Release to be Ready') {
-              steps {
-              withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
-                script {
+        stage('Wait for Draft Release to be Ready') {
+            steps {
+                withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
+                    script {
                         def owner   = 'NPGW'
                         def repo    = 'npgw-portal'
                         def version = env.RELEASE_VERSION
 
                         timeout(time: 5, unit: 'MINUTES') {
-                          waitUntil {
-                                      def assetCount = 0
-                                    try {
-                                      // 1) Grab up to 100 releases (drafts included)
-                                      def raw = sh(
+                            waitUntil {
+                                def found = false
+                                try {
+                                    // 1) List up to 100 releases (drafts included), but only need tagName
+                                    def raw = sh(
                                         script: """\
-                                          gh release list \\
-                                            --repo ${owner}/${repo} \\
-                                            --limit 100 \\
-                                            --json tagName
+                                            gh release list \\
+                                                --repo ${owner}/${repo} \\
+                                                --limit 100 \\
+                                                --json tagName
                                         """.stripIndent(),
                                         returnStdout: true
-                                      ).trim()
+                                    ).trim()
 
-                                      // 2) parse it as JSON
-                                      def releases = readJSON text: raw
+                                    // 2) Parse the JSON array
+                                    def releases = readJSON text: raw
 
-                                      // 3) find the one matching our tag
-                                      def rel = releases.find { it.tagName == version }
-                                      echo "${rel}"
-                                      echo "→ rel = " + JsonOutput.toJson(rel)
-
-                                      // 4) count its assets (or stay at zero)
-                                      assetCount = rel?.assets?.size() ?: 0
-                                    } catch (e) {
-                                      echo "→ still waiting (got: ${e.message})"
-                                    }
-
-                                    echo "→ Release ${version} has ${assetCount} asset(s)"
-                                    if (assetCount > 0) {
-                                      return true
+                                    // 3) Check if our tag is present
+                                    def rel = releases.find { it.tagName == version }
+                                    if (rel) {
+                                        echo "→ Found draft release with tag ${version}"
+                                        found = true
                                     } else {
-                                      sleep time: 10, unit: 'SECONDS'
-                                      return false
+                                        echo "→ Still waiting for tag ${version}…"
                                     }
-                          }
+                                } catch (e) {
+                                    echo "→ Waiting: ${e.message}"
+                                }
+
+                                if (found) {
+                                    return true
+                                } else {
+                                    sleep time: 10, unit: 'SECONDS'
+                                    return false
+                                }
+                            }
+                        }
+                        echo "→ ✓ Draft release ${version} is now visible!"
                     }
                 }
             }
-            }
-            }
+        }
 
 
         stage('Download UI build from Draft Release') {
