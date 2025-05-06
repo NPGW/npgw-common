@@ -60,22 +60,59 @@ pipeline {
                           script:  "gh workflow run ${workflow} --repo ${owner}/${repo} --ref ${ref} -f version=${version}  --json databaseId -q .databaseId",
                           returnStdout: true
                         ).trim()
-                        echo ' → started workflow ${workflow} run: ${runId}'
+                        echo ' → Started GitHub workflow ${workflow} run with ID: ${runId}'
 
                         sh """
-                            gh run watch ${runId} --repo ${owner}/${repo}
-                            echo ' → ${workflow} workflow run ${runId} has completed'
-                            gh release download ${version} \
-                            --repo ${owner}/${repo} \
-                            --pattern dist.zip \
-                            --dir ${WORKSPACE}/artifacts
-                            echo ' → dist.zip is now in ${WORKSPACE}/artifacts'
+                            gh run watch ${runId} --repo ${OWNER}/${REPO}"
+                            echo ' → GH Actions run #${runId} completed'
                         """
+
+                        env.GH_RUN_ID = runId
                     }
                 }
             }
         }
 
+        stage('Download UI build from Draft Release') {
+            steps {
+                withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
+                    script {
+                        def targetDir = "${WORKSPACE}/npgw-portal"
+                        def targetFile = "dist.zip"
+                        sh """
+                            gh release download ${env.RELEASE_VERSION} \
+                            --repo ${OWNER}/${REPO} \
+                            --pattern ${targetFile} \
+                            --dir ${targetDir}
+
+                            if [ ! -f "${targetDir}/${targetFile}" ]; then
+                                echo "ERROR: ${targetFile} not found in ${targetDir}" >&2
+                                exit 1
+                            fi
+
+                            echo ' → ${targetFile} downloaded to ${targetDir}'
+                        """
+
+                    }
+                }
+            }
+        }
+
+        stage('Unzip UI build into dist/') {
+            steps {
+                script {
+                    def sourceFile = "dist.zip"
+                    def sourceDir = "${WORKSPACE}/npgw-portal"
+                    def targetDir   = "${WORKSPACE}/npgw-portal/dist"
+
+                    sh """
+                        mkdir -p ${sourceDir}
+                        unzip -o ${sourceDir}/${sourceFile} -d ${targetDir}
+                    """
+                    echo ' → ${sourceFile} unpacked into ${targetDir}'
+                }
+            }
+        }
 
         stage('Build backend (npgw-services)') {
             steps {
