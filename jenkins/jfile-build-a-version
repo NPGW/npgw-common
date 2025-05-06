@@ -123,6 +123,9 @@ pipeline {
                                                       assetCount = rel?.assets?.size() ?: 0
                                                     } catch (e) {
                                                       echo "→ still waiting (got: ${e.message})"
+                                                      echo "${raw}"
+                                                      echo "${raw}"
+                                                      echo "${raw}"
                                                     }
 
                                                     echo "→ Release ${version} has ${assetCount} asset(s)"
