@@ -104,7 +104,7 @@ pipeline {
                             def assetCount = sh(
                               script: """\
                                 gh api /repos/${owner}/${repo}/releases \\
-                                  --jq 'map(select(.tag_name=="${version}")) \\
+                                  --jq 'map(select(.tag_name=="${version}")) \
                                          | if length>0 then .[0].assets|length else 0 end'
                               """.stripIndent(),
                               returnStdout: true
