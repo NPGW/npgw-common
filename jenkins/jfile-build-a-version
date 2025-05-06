@@ -53,7 +53,7 @@ pipeline {
                         def owner        = 'NPGW'
                         def repo         = 'npgw-portal'
                         def workflow     = 'build-draft-release.yml'
-                        def ref          = 'feature/dockerize-ui'
+                        def ref          = 'main'
                         def version      = env.RELEASE_VERSION
 
                         // 1) kick off the workflow (no --json, it just prints a confirmation)
