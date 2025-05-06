@@ -62,13 +62,13 @@ pipeline {
                             --ref ${ref} \\
                             -f version=${version}
                         """
-                        echo ' → Started GitHub workflow ${workflow} run.'
+                        echo ' ---→ Started GitHub workflow ${workflow} run.'
                     }
                 }
             }
         }
 
-        stage('Wait for Draft Release to be Ready') {
+        stage('Get Draft Release') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
@@ -80,7 +80,6 @@ pipeline {
                             waitUntil {
                                 def found = false
                                 try {
-                                    // 1) List up to 100 releases (drafts included), but only need tagName
                                     def raw = sh(
                                         script: """\
                                             gh release list \\
@@ -91,19 +90,17 @@ pipeline {
                                         returnStdout: true
                                     ).trim()
 
-                                    // 2) Parse the JSON array
                                     def releases = readJSON text: raw
 
-                                    // 3) Check if our tag is present
                                     def rel = releases.find { it.tagName == version }
                                     if (rel) {
-                                        echo "→ Found draft release with tag ${version}"
+                                        echo " ---→ Found draft release with tag ${version}"
                                         found = true
                                     } else {
-                                        echo "→ Still waiting for tag ${version}…"
+                                        echo " ---→ Still waiting for tag ${version}…"
                                     }
                                 } catch (e) {
-                                    echo "→ Waiting: ${e.message}"
+                                    echo " ---→ Waiting, error occurred: ${e.message}"
                                 }
 
                                 if (found) {
@@ -114,7 +111,7 @@ pipeline {
                                 }
                             }
                         }
-                        echo "→ ✓ Draft release ${version} is now visible!"
+                        echo " ---→ Draft release ${version} is ready!"
                     }
                 }
             }
@@ -139,7 +136,7 @@ pipeline {
                                 exit 1
                             fi
 
-                            echo ' → ${targetFile} downloaded to ${targetDir}'
+                            echo ' ---→ ${targetFile} downloaded to ${targetDir}'
                         """
 
                     }
@@ -159,7 +156,7 @@ pipeline {
                         mkdir -p ${targetDir}
                         unzip -o ${sourceDir}/${sourceFile} -d ${targetDir}
                     """
-                    echo ' → ${sourceFile} unpacked into ${targetDir}'
+                    echo ' ---→ ${sourceFile} unpacked into ${targetDir}'
                 }
             }
         }
