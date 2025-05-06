@@ -118,6 +118,8 @@ pipeline {
 
                                       // 3) find the one matching our tag
                                       def rel = releases.find { it.tagName == version }
+                                      echo "${rel}"
+                                      echo "→ rel = " + JsonOutput.toJson(rel)
 
                                       // 4) count its assets (or stay at zero)
                                       assetCount = rel?.assets?.size() ?: 0
