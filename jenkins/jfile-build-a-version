@@ -52,20 +52,30 @@ pipeline {
                     script {
                         def owner        = 'NPGW'
                         def repo         = 'npgw-portal'
-                        def workflowFile = 'build-and-release.yml'
+                        def workflow     = 'build-draft-release.yml'
                         def ref          = 'feature/dockerize-ui'
+                        def version      = env.RELEASE_VERSION
+
+                        def runId = sh(
+                          script:  "gh workflow run ${workflow} --repo ${owner}/${repo} --ref ${ref} -f version=${version}  --json databaseId -q .databaseId",
+                          returnStdout: true
+                        ).trim()
+                        echo ' → started workflow ${workflow} run: ${runId}'
 
                         sh """
-                            echo "Run trigger github workflow..."
-                            gh workflow run build-and-release.yml \
+                            gh run watch ${runId} --repo ${owner}/${repo}
+                            echo ' → ${workflow} workflow run ${runId} has completed'
+                            gh release download ${version} \
                             --repo ${owner}/${repo} \
-                            --ref ${ref} \
-                            -f version=${env.RELEASE_VERSION}
+                            --pattern dist.zip \
+                            --dir ${WORKSPACE}/artifacts
+                            echo ' → dist.zip is now in ${WORKSPACE}/artifacts'
                         """
                     }
                 }
             }
         }
+
 
         stage('Build backend (npgw-services)') {
             steps {
