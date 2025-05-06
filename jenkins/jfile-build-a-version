@@ -106,7 +106,7 @@ pipeline {
                                           gh release list \\
                                             --repo ${owner}/${repo} \\
                                             --limit 100 \\
-                                            --json tagName,assets
+                                            --json tagName
                                         """.stripIndent(),
                                         returnStdout: true
                                       ).trim()
