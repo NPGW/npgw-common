@@ -134,6 +134,8 @@ pipeline {
                     }
                 }
             }
+            }
+            }
 
 
         stage('Download UI build from Draft Release') {
