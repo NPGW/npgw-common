@@ -56,35 +56,13 @@ pipeline {
                         def ref          = 'main'
                         def version      = env.RELEASE_VERSION
 
-                        // 1) kick off the workflow (no --json, it just prints a confirmation)
                         sh """
                           gh workflow run ${workflow} \\
                             --repo ${owner}/${repo} \\
                             --ref ${ref} \\
                             -f version=${version}
                         """
-                        echo ' → Started GitHub workflow ${workflow} run with ID: ${runId}'
-
-                        // 2) grab the most recent run ID for that workflow+branch
-                        def runId = sh(
-                          script:  """
-                            gh run list \\
-                              --repo ${owner}/${repo} \\
-                              --workflow ${workflow} \\
-                              --branch ${ref} \\
-                              --limit 1 \\
-                              --json databaseId,createdAt \\
-                              -q '.[0].databaseId'
-                          """.stripIndent(),
-                          returnStdout: true
-                        ).trim()
-                        echo "→ watching run #${runId}"
-
-                        // 3) now block until it finishes
-                        sh "gh run watch ${runId} --repo ${owner}/${repo} --exit-status"
-                        echo "→ run #${runId} completed"
-
-                        env.GH_RUN_ID = runId
+                        echo ' → Started GitHub workflow ${workflow} run.'
                     }
                 }
             }
