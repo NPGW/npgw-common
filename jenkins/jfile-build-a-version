@@ -100,34 +100,37 @@ pipeline {
 
                         timeout(time: 5, unit: 'MINUTES') {
                           waitUntil {
-                            // 1) Fetch the release JSON, extract number of assets
-                            // Note the double quotes for --jq, and escaped inner quotes around ${version}
-                            def assetCountJson = sh(
-                              script: """\
-                                gh api /repos/${owner}/${repo}/releases \\
-                                  --jq "map(select(.tag_name==\\"${version}\\")) \\
-                                         | if length>0 then .[0].assets|length else 0 end"
-                              """.stripIndent(),
-                              returnStdout: true
-                            ).trim().toInteger()
-                            def assetCount = assetCountJson.isInteger() ? assetCountJson.toInteger() : 0
+                            // default to zero
+                            def assetCount = 0
 
-                            echo "→ Release ${version} has ${assetCount} asset(s) so far."
+                            try {
+                              // this will return e.g. "0" or "2"
+                              def raw = sh(
+                                script: """\
+                                  gh release view ${version} \\
+                                    --repo ${owner}/${repo} \\
+                                    --include-drafts \\
+                                    --json assets \\
+                                    -q ".assets | length"
+                                """.stripIndent(),
+                                returnStdout: true
+                              ).trim()
 
-                            echo "→ Release ${version} has ${assetCount} asset(s) so far."
+                              // parse to integer; if it fails, we stay at 0
+                              assetCount = raw.toInteger()
+                            } catch (err) {
+                              // could be “not found” or a parse error → leave assetCount at 0
+                            }
 
-                            // 2) Return true if we found at least one asset
+                            echo "→ Release ${version} currently has ${assetCount} asset(s)."
+
                             if (assetCount > 0) {
-                              return true
+                              return true   // success, break out of waitUntil
                             } else {
-                              // 3) Otherwise sleep briefly and try again
                               sleep time: 10, unit: 'SECONDS'
-                              return false
+                              return false  // keep waiting
                             }
                           }
-                        }
-                        echo "→ Draft release ${version} is now available with assets."
-                      }
                     }
                 }
             }
