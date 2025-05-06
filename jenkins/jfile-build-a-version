@@ -94,28 +94,37 @@ pipeline {
               steps {
               withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                 script {
-                  timeout(time: 5, unit: 'MINUTES') {
-                    waitUntil {
-                      // assume zero unless we can successfully query the release
-                      def assetCount = 0
-                      try {
-                        assetCount = sh(
-                          script: """
-                            gh release view ${env.RELEASE_VERSION} \\
-                              --repo ${owner}/${repo} \\
-                              --json assets
-                          """.stripIndent(),
-                          returnStdout: true
-                        ).trim()
-                      } catch (err) {
-                        // release not found yet → assetCount remains 0
+                        def owner   = 'NPGW'
+                        def repo    = 'npgw-portal'
+                        def version = env.RELEASE_VERSION
+
+                        timeout(time: 5, unit: 'MINUTES') {
+                          waitUntil {
+                            // 1) Fetch the release JSON, extract number of assets
+                            def assetCount = sh(
+                              script: """\
+                                gh api repos/${owner}/${repo}/releases/tags/${version} \\
+                                  --repo ${owner}/${repo} \\
+                                  --jq '.assets | length'
+                                """.stripIndent(),
+                              returnStdout: true
+                            ).trim().toInteger()
+
+                            echo "→ Release ${version} has ${assetCount} asset(s) so far."
+
+                            // 2) Return true if we found at least one asset
+                            if (assetCount > 0) {
+                              return true
+                            } else {
+                              // 3) Otherwise sleep briefly and try again
+                              sleep time: 10, unit: 'SECONDS'
+                              return false
+                            }
+                          }
+                        }
+                        echo "→ Draft release ${version} is now available with assets."
                       }
-                      echo "what we got: ${assetCount}"
-                      return false
                     }
-                  }
-                  echo "→ Draft release ${env.RELEASE_VERSION} is now published and has at least 1 asset"
-                }
                 }
               }
             }
