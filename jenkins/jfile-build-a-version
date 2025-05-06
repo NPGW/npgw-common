@@ -104,7 +104,6 @@ pipeline {
                             def assetCount = sh(
                               script: """\
                                 gh api repos/${owner}/${repo}/releases/tags/${version} \\
-                                  --repo ${owner}/${repo} \\
                                   --jq '.assets | length'
                                 """.stripIndent(),
                               returnStdout: true
