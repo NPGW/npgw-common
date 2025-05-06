@@ -102,7 +102,7 @@ pipeline {
                           waitUntil {
                             // 1) Fetch the release JSON, extract number of assets
                             // Note the double quotes for --jq, and escaped inner quotes around ${version}
-                            def assetCount = sh(
+                            def assetCountJson = sh(
                               script: """\
                                 gh api /repos/${owner}/${repo}/releases \\
                                   --jq "map(select(.tag_name==\\"${version}\\")) \\
@@ -110,7 +110,7 @@ pipeline {
                               """.stripIndent(),
                               returnStdout: true
                             ).trim().toInteger()
-                            assetCount = assetCountJson.isInteger() ? assetCountJson.toInteger() : 0
+                            def assetCount = assetCountJson.isInteger() ? assetCountJson.toInteger() : 0
 
                             echo "→ Release ${version} has ${assetCount} asset(s) so far."
 
