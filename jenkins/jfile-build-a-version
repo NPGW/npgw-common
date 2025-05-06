@@ -76,6 +76,8 @@ pipeline {
                         def repo    = 'npgw-portal'
                         def version = env.RELEASE_VERSION
 
+                        echo "Searching for draft release ${version}..."
+
                         timeout(time: 5, unit: 'MINUTES') {
                             waitUntil {
                                 def raw = sh(
@@ -92,10 +94,8 @@ pipeline {
 
                                 def rel = releases.find { it.tagName == version }
                                 if (rel) {
-                                    echo " ---→ Found draft release with tag ${version}"
                                     return true
                                 } else {
-                                    echo " ---→ Still waiting for tag ${version}…"
                                     sleep time: 10, unit: 'SECONDS'
                                     return false
                                 }
