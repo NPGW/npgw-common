@@ -109,7 +109,7 @@ pipeline {
                               """.stripIndent(),
                               returnStdout: true
                             ).trim()
-                            def assetCount = assetCountJson.isInteger() ? assetCountJson.toInteger() : 0
+                            assetCount = assetCountJson.isInteger() ? assetCountJson.toInteger() : 0
 
                             echo "→ Release ${version} has ${assetCount} asset(s) so far."
 
