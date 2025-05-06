@@ -94,23 +94,27 @@ pipeline {
               steps {
               withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                 script {
-                  timeout(time: 2, unit: 'MINUTES') {
+                  timeout(time: 5, unit: 'MINUTES') {
                     waitUntil {
-                      def owner = 'NPGW'
-                      def repo = 'npgw-portal'
-                      def assetCount = sh(
-                        script: """
-                          gh release view ${env.RELEASE_VERSION} \\
-                            --repo ${owner}/${repo} \\
-                            --json assets -q '.assets | length'
-                        """.stripIndent(),
-                        returnStdout: true
-                      ).trim()
-                      // continue looping until there's at least one asset
-                      return (assetCount ?: '0').toInteger() > 0
+                      // assume zero unless we can successfully query the release
+                      def assetCount = 0
+                      try {
+                        assetCount = sh(
+                          script: """
+                            gh release view ${env.RELEASE_VERSION} \\
+                              --repo ${owner}/${repo} \\
+                              --json assets -q '.assets | length'
+                          """.stripIndent(),
+                          returnStdout: true
+                        ).trim().toInteger()
+                      } catch (err) {
+                        // release not found yet → assetCount remains 0
+                      }
+                      echo "→ draft release ${env.RELEASE_VERSION} has ${assetCount} assets"
+                      return assetCount > 0
                     }
                   }
-                  echo "→ Draft release ${VERSION} is now published and has assets"
+                  echo "→ Draft release ${env.RELEASE_VERSION} is now published and has at least 1 asset"
                 }
                 }
               }
