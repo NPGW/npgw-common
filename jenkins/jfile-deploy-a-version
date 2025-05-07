@@ -142,7 +142,7 @@ pipeline {
         stage('Fetch portal UI build') {
             steps {
                 script {
-                    def releaseFolder = "npgw-portal/build_${env.RELEASE_VERSION}"
+                    def releaseFolder = "npgw-portal/build_${env.RELEASE_VERSION}/dist"
                     def sourceBucketName = "npgw-versions"
                     def targetBucketName = "${params.ENVIRONMENT_NAME}.npgw.xyz"
                     if (params.ENVIRONMENT_NAME == 'prod') {
