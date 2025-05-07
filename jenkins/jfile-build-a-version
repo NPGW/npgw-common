@@ -53,15 +53,13 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
-                        def owner        = 'NPGW'
-                        def repo         = 'npgw-portal'
                         def workflow     = 'build-draft-release.yml'
                         def ref          = 'main'
                         def version      = env.RELEASE_VERSION
 
                         sh """
                           gh workflow run ${workflow} \\
-                            --repo ${owner}/${repo} \\
+                            --repo ${env.GH_PORTAL_UI_REPO} \\
                             --ref ${ref} \\
                             -f version=${version}
                         """
