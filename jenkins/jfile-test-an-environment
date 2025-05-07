@@ -1,6 +1,10 @@
 pipeline {
     agent { label 'build-node' }
 
+    tools {
+        allure 'allure'
+    }
+
     parameters {
         string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Image version to use')
         choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'prod', 'sandbox'], description: 'Deployment environment')
@@ -117,6 +121,8 @@ pipeline {
                     unset AWS_SESSION_TOKEN
                     aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
 
+                    mkdir -p allure-results
+
                     docker run --rm \\
                         -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
                         -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
@@ -127,8 +133,18 @@ pipeline {
                         -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
                         -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
                         -e TEST_ENVIRONMENT=AWS \\
+                        -v `pwd`/allure-results:/app/target/allure-results \\
                         ${imageUrl}
                     """
+                }
+            }
+        }
+
+        stage('Generate and Upload Allure Report') {
+            steps {
+                withEnv(["PATH+ALLURE=${tool 'allure'}/bin"]) {
+                    sh 'allure generate allure-results --clean -o allure-report'
+                    //step for s3
                 }
             }
         }
@@ -136,6 +152,11 @@ pipeline {
 
     post {
         always {
+            allure([
+                includeProperties: false,
+                jdk: '',
+                results: [[path: 'allure-results']]
+            ])
             cleanWs()
         }
     }
