@@ -66,7 +66,7 @@ pipeline {
         stage('Get Service List') {
             steps {
                 script {
-                    env.SERVICE_LIST = sh(script: "cat ${WORKSPACE}/npgw-services/.github/SERVICE_LIST.json", returnStdout: true).trim()
+                    env.SERVICE_LIST = sh(script: "cat ${WORKSPACE}/.github/SERVICE_LIST.json", returnStdout: true).trim()
                 }
             }
         }
