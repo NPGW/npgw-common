@@ -12,9 +12,6 @@ pipeline {
         AWS_ROLE = 'arn:aws:iam::214404897309:role/npgw-jenkins-build-a-version-role'
 
         IMAGE_FILE = '.github/IMAGE_LIST.json'
-
-        GH_PORTAL_UI_REPO = 'NPGW/npgw-portal'
-        GH_PORTAL_UI_ASSET_FILE = 'dist.zip'
     }
 
     stages {
@@ -54,7 +51,7 @@ pipeline {
                     script {
                         sh """
                           gh workflow run build-draft-release.yml \\
-                            --repo ${env.GH_PORTAL_UI_REPO} \\
+                            --repo NPGW/npgw-portal \\
                             --ref main \\
                             -f version=${env.RELEASE_VERSION}
                         """
@@ -74,7 +71,7 @@ pipeline {
                                 def raw = sh(
                                     script: """\
                                         gh release list \\
-                                            --repo ${env.GH_PORTAL_UI_REPO} \\
+                                            --repo NPGW/npgw-portal \\
                                             --json tagName
                                     """.stripIndent(),
                                     returnStdout: true
@@ -102,17 +99,18 @@ pipeline {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
                         def targetDir = "${WORKSPACE}/npgw-portal"
-                        def targetFile = "${GH_PORTAL_UI_ASSET_FILE}"
                         sh """
                             gh release download ${env.RELEASE_VERSION} \
                             --repo ${env.GH_PORTAL_UI_REPO} \
-                            --pattern ${targetFile} \
+                            --pattern dist.zip \
                             --dir ${targetDir} --clobber
 
-                            if [ ! -f "${targetDir}/${targetFile}" ]; then
-                                echo "ERROR: ${targetFile} not found in ${targetDir}" >&2
+                            cd ${targetDir}
+                            if [ ! -f "dist.zip" ]; then
+                                echo "ERROR: Portal UI build file not found in ${targetDir}" >&2
                                 exit 1
                             fi
+                            mv dist.zip portal-web.zip
                         """
                     }
                 }
