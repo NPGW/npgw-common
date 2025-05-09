@@ -21,7 +21,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 dir('npgw-services') {
-                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
+                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'feature/correct-paths-in-imagelist'
                 }
 
                 dir('npgw-portal') {
