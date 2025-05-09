@@ -101,7 +101,7 @@ pipeline {
                         def targetDir = "${WORKSPACE}/npgw-portal"
                         sh """
                             gh release download ${env.RELEASE_VERSION} \
-                            --repo ${env.GH_PORTAL_UI_REPO} \
+                            --repo NPGW/npgw-portal \
                             --pattern dist.zip \
                             --dir ${targetDir} --clobber
 
