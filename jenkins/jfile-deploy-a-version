@@ -29,7 +29,13 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
+                dir('npgw-services') {
+                   git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
+                }
+
+                dir('npgw-portal') {
+                   git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-portal.git', branch: 'main'
+                }
             }
         }
 
@@ -60,7 +66,7 @@ pipeline {
         stage('Get Service List') {
             steps {
                 script {
-                    env.SERVICE_LIST = sh(script: "cat ${WORKSPACE}/.github/SERVICE_LIST.json", returnStdout: true).trim()
+                    env.SERVICE_LIST = sh(script: "cat ${WORKSPACE}/npgw-services/.github/SERVICE_LIST.json", returnStdout: true).trim()
                 }
             }
         }

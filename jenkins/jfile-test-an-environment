@@ -50,7 +50,13 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-               git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
+                dir('npgw-services') {
+                   git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
+                }
+
+                dir('npgw-portal') {
+                   git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-portal.git', branch: 'main'
+                }
             }
         }
 
@@ -88,7 +94,7 @@ pipeline {
             steps {
                 script {
                     echo "Seeding AWS data for environment: ${params.ENVIRONMENT_NAME}"
-                    dir('tests/docker/docker-compose') {
+                    dir('npgw-services/tests/docker/docker-compose') {
                         withEnv([
                             "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
                             "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
