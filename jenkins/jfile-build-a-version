@@ -146,7 +146,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'localstack-auth-token', variable: 'LOCALSTACK_AUTH_TOKEN')]) {
                     script {
                         sh """
-                            echo LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN} > .env
+                            echo LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN} > npgw-services/.env
                             cd ./npgw-services/tests/docker/docker-compose
                             ./run-docker-compose-test.sh
                         """
