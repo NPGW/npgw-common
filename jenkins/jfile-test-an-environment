@@ -53,10 +53,6 @@ pipeline {
                 dir('npgw-services') {
                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
                 }
-
-                dir('npgw-portal') {
-                   git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-portal.git', branch: 'main'
-                }
             }
         }
 
