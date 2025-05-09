@@ -21,7 +21,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 dir('npgw-services') {
-                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'feature/correct-paths-in-imagelist'
+                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
                 }
 
                 dir('npgw-portal') {
@@ -52,15 +52,11 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
-                        def workflow     = 'build-draft-release.yml'
-                        def ref          = 'main'
-                        def version      = env.RELEASE_VERSION
-
                         sh """
-                          gh workflow run ${workflow} \\
+                          gh workflow run build-draft-release.yml \\
                             --repo ${env.GH_PORTAL_UI_REPO} \\
-                            --ref ${ref} \\
-                            -f version=${version}
+                            --ref main \\
+                            -f version=${env.RELEASE_VERSION}
                         """
                     }
                 }
