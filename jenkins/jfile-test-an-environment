@@ -29,12 +29,10 @@ pipeline {
         stage('Get Release Version') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
-                        if (params.RELEASE_VERSION == 'latest') {
-                            env.RELEASE_VERSION = sh(script: """aws ecr describe-images --repository-name npgw/api-test --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text""", returnStdout: true).trim()
-                        } else {
-                            env.RELEASE_VERSION = params.RELEASE_VERSION
-                        }
+                    if (params.RELEASE_VERSION == 'latest') {
+                        env.RELEASE_VERSION = sh(script: """aws ecr describe-images --repository-name npgw/api-test --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text""", returnStdout: true).trim()
+                    } else {
+                        env.RELEASE_VERSION = params.RELEASE_VERSION
                     }
                 }
             }
@@ -50,12 +48,75 @@ pipeline {
             }
         }
 
+        stage('Checkout Code') {
+            steps {
+                dir('npgw-services') {
+                   git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
+                }
+            }
+        }
+
+        stage('Determine AWS Role') {
+            steps {
+                script {
+                    def roles = [
+                        'test'   : 'arn:aws:iam::820242903147:role/npgw-jenkins-deploy-a-version-role',
+                        'dev'    : 'arn:aws:iam::872515291967:role/npgw-jenkins-deploy-a-version-role',
+                        'prod'   : 'arn:aws:iam::721719382766:role/npgw-jenkins-deploy-a-version-role',
+                        'sandbox': 'arn:aws:iam::225989351233:role/npgw-jenkins-deploy-a-version-role'
+                    ]
+                    env.ROLE_TO_ASSUME = roles[params.ENVIRONMENT_NAME] ?: error("Invalid environment: ${params.ENVIRONMENT_NAME}")
+                }
+            }
+        }
+
+        stage('Assume Correct AWS Role') {
+            steps {
+                script {
+                    def credentialsJson = sh(script: """
+                        aws sts assume-role \
+                            --role-arn ${env.ROLE_TO_ASSUME} \
+                            --role-session-name JenkinsUploadSession
+                        """, returnStdout: true).trim()
+
+                    env.AWS_ACCESS_KEY_ID = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.AccessKeyId'", returnStdout: true).trim()
+                    env.AWS_SECRET_ACCESS_KEY = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SecretAccessKey'", returnStdout: true).trim()
+                    env.AWS_SESSION_TOKEN = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SessionToken'", returnStdout: true).trim()
+                }
+            }
+        }
+
+        stage('Seed AWS Data') {
+            steps {
+                script {
+                    echo "Seeding AWS data for environment: ${params.ENVIRONMENT_NAME}"
+                    dir('npgw-services/tests/docker/docker-compose') {
+                        withEnv([
+                            "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
+                            "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
+                            "AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}",
+                            "AWS_REGION=${env.AWS_REGION}",
+                            "DEPLOY_ENV=${params.ENVIRONMENT_NAME}"
+                        ]) {
+                            sh """
+                                chmod +x aws-seed-script.sh
+                                ./aws-seed-script.sh
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Run Api Tests') {
             steps {
                 script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
                     sh """
+                    unset AWS_ACCESS_KEY_ID
+                    unset AWS_SECRET_ACCESS_KEY
+                    unset AWS_SESSION_TOKEN
                     aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
 
                     docker run --rm \\
@@ -72,6 +133,12 @@ pipeline {
                     """
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }

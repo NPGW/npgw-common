@@ -10,23 +10,19 @@ pipeline {
         AWS_REGION = 'eu-central-1'
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
         AWS_ROLE = 'arn:aws:iam::214404897309:role/npgw-jenkins-build-a-version-role'
-        AWS_BUCKET_NAME = 'npgw-versions'
 
-        IMAGE_FILE = 'npgw-services/.github/IMAGE_LIST.json'
-
-        GH_PORTAL_UI_REPO = 'NPGW/npgw-portal'
-        GH_PORTAL_UI_ASSET_FILE = 'dist.zip'
+        IMAGE_FILE = '.github/IMAGE_LIST.json'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 dir('npgw-services') {
-                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'feature/new-image-in-list'
+                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
                 }
 
                 dir('npgw-portal') {
-                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-portal.git', branch: 'feature/dockerize-ui'
+                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-portal.git', branch: 'main'
                 }
             }
         }
@@ -49,26 +45,22 @@ pipeline {
             }
         }
 
-        stage('Trigger GitHub Actions Release') {
+        stage('Trigger portal UI build workflow') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
-                        def workflow     = 'build-draft-release.yml'
-                        def ref          = 'main'
-                        def version      = env.RELEASE_VERSION
-
                         sh """
-                          gh workflow run ${workflow} \\
-                            --repo ${env.GH_PORTAL_UI_REPO} \\
-                            --ref ${ref} \\
-                            -f version=${version}
+                          gh workflow run build-draft-release.yml \\
+                            --repo NPGW/npgw-portal \\
+                            --ref main \\
+                            -f version=${env.RELEASE_VERSION}
                         """
                     }
                 }
             }
         }
 
-        stage('Get Draft Release') {
+        stage('Wait for portal UI build') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
@@ -79,8 +71,7 @@ pipeline {
                                 def raw = sh(
                                     script: """\
                                         gh release list \\
-                                            --repo ${env.GH_PORTAL_UI_REPO} \\
-                                            --limit 100 \\
+                                            --repo NPGW/npgw-portal \\
                                             --json tagName
                                     """.stripIndent(),
                                     returnStdout: true
@@ -103,31 +94,37 @@ pipeline {
             }
         }
 
-        stage('Download UI build from Draft Release') {
+        stage('Download portal UI build') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
                         def targetDir = "${WORKSPACE}/npgw-portal"
-                        def targetFile = "${GH_PORTAL_UI_ASSET_FILE}"
                         sh """
                             gh release download ${env.RELEASE_VERSION} \
-                            --repo ${env.GH_PORTAL_UI_REPO} \
-                            --pattern ${targetFile} \
+                            --repo NPGW/npgw-portal \
+                            --pattern dist.zip \
                             --dir ${targetDir} --clobber
 
-                            if [ ! -f "${targetDir}/${targetFile}" ]; then
-                                echo "ERROR: ${targetFile} not found in ${targetDir}" >&2
+                            cd ${targetDir}
+                            if [ ! -f "dist.zip" ]; then
+                                echo "ERROR: Portal UI build file not found in ${targetDir}" >&2
                                 exit 1
                             fi
+                            mv dist.zip portal-web.zip
                         """
                     }
                 }
             }
         }
 
-        stage('Unzip UI build into dist/') {
+        stage('Build backend (npgw-services)') {
             steps {
                 script {
+                    sh """
+                        cd ./npgw-services
+                        sed -i \"s/<revision>.*<\\/revision>/<revision>${env.RELEASE_VERSION}<\\/revision>/g\" ./pom.xml
+                        mvn clean verify
+                    """
                     def sourceFile = "${GH_PORTAL_UI_ASSET_FILE}"
                     def sourceDir = "${WORKSPACE}/npgw-portal"
                     def targetDir   = "${WORKSPACE}/npgw-portal/dist"
@@ -163,7 +160,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'localstack-auth-token', variable: 'LOCALSTACK_AUTH_TOKEN')]) {
                     script {
                         sh """
-                            echo LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN} > .env
+                            echo LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN} > npgw-services/.env
                             cd ./npgw-services/tests/docker/docker-compose
                             ./run-docker-compose-test.sh
                         """
