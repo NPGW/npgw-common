@@ -129,6 +129,19 @@ pipeline {
             }
         }
 
+        stage('Unzip portal UI portal-web.zip') {
+            steps {
+                script {
+                    sh """
+                        cd ./npgw-portal
+                        mkdir -p ./portal-web
+                        rm -rf ./portal-web
+                        unzip -o portal-web.zip -d ./portal-web
+                    """
+                }
+            }
+        }
+
         stage('Test in embedded environment (EE)') {
             when {
                 expression {
@@ -181,6 +194,16 @@ pipeline {
                         docker push "${imageUrl}"
                         """
                     }
+                }
+            }
+        }
+
+        stage('Upload portal UI build to S3') {
+            steps {
+                script {
+                    sh """
+                    aws s3 sync npgw-portal/portal-web s3://${env.AWS_BUCKET_NAME}/npgw-portal/build_${env.RELEASE_VERSION}
+                    """
                 }
             }
         }
