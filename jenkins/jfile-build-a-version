@@ -45,22 +45,27 @@ pipeline {
             }
         }
 
-        stage('Trigger portal UI build workflow') {
+        stage('Trigger build workflows') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
                         sh """
-                          gh workflow run build-draft-release.yml \\
-                            --repo NPGW/npgw-portal \\
-                            --ref main \\
-                            -f version=${env.RELEASE_VERSION}
+                            gh workflow run build-draft-release.yml \\
+                                --repo NPGW/npgw-portal \\
+                                --ref main \\
+                                -f version=${env.RELEASE_VERSION}
+
+                            gh workflow run build-draft-release.yml \\
+                                --repo NPGW/npgw-services \\
+                                --ref main \\
+                                -f version=${env.RELEASE_VERSION}
                         """
                     }
                 }
             }
         }
 
-        stage('Wait for portal UI build') {
+        stage('Wait for build workflows') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
@@ -113,18 +118,6 @@ pipeline {
                             mv dist.zip portal-web.zip
                         """
                     }
-                }
-            }
-        }
-
-        stage('Build backend (npgw-services)') {
-            steps {
-                script {
-                    sh """
-                        cd ./npgw-services
-                        sed -i \"s/<revision>.*<\\/revision>/<revision>${env.RELEASE_VERSION}<\\/revision>/g\" ./pom.xml
-                        mvn clean verify
-                    """
                 }
             }
         }
