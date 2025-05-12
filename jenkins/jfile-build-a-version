@@ -72,32 +72,46 @@ pipeline {
                         def version = env.RELEASE_VERSION
 
                         timeout(time: 5, unit: 'MINUTES') {
-                            waitUntil {
-                                def raw = sh(
-                                    script: """\
-                                        gh release list \\
-                                            --repo NPGW/npgw-portal \\
-                                            --json tagName
-                                    """.stripIndent(),
-                                    returnStdout: true
-                                ).trim()
-
-                                def releases = readJSON text: raw
-
-                                def rel = releases.find { it.tagName == version }
-                                if (rel) {
-                                    echo "Draft release ${version} is ready!"
-                                    return true
-                                } else {
-                                    sleep time: 10, unit: 'SECONDS'
-                                    return false
+                            parallel(
+                                portal: {
+                                    waitUntil {
+                                        def raw = sh(
+                                            script: "gh release list --repo NPGW/npgw-portal --json tagName",
+                                            returnStdout: true
+                                        ).trim()
+                                        def found = readJSON(text: raw).any { it.tagName == version }
+                                        if (found) {
+                                            echo "npgw-portal draft ${version} is ready!"
+                                            return true
+                                        } else {
+                                            sleep time: 10, unit: 'SECONDS'
+                                            return false
+                                        }
+                                    }
+                                },
+                                services: {
+                                    waitUntil {
+                                        def raw = sh(
+                                            script: "gh release list --repo NPGW/npgw-services --json tagName",
+                                            returnStdout: true
+                                        ).trim()
+                                        def found = readJSON(text: raw).any { it.tagName == version }
+                                        if (found) {
+                                            echo "npgw-services draft ${version} is ready!"
+                                            return true
+                                        } else {
+                                            sleep time: 10, unit: 'SECONDS'
+                                            return false
+                                        }
+                                    }
                                 }
-                            }
+                            )
                         }
                     }
                 }
             }
         }
+
 
         stage('Download portal UI build') {
             steps {
