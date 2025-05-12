@@ -63,5 +63,10 @@
       "tests/http-service-mock-acquirer-ngenius/Dockerfile"
     ],
     "repoName": "mock-acquirer-ngenius"
+  },
+  {
+    "dockerContext": "npgw-portal/docker",
+    "dockerFile": "Dockerfile",
+    "repoName": "portal-web"
   }
 ]
