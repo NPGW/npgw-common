@@ -218,9 +218,8 @@ pipeline {
             steps {
                 script {
                     def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
-                    def rcVersion = env.RELEASE_VERSION.replace("-nightly", "-rc")
                     for (image in imageList) {
-                        def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/${image.repoName}:${rcVersion}"
+                        def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/${image.repoName}:${env.RELEASE_VERSION}"
 
                         sh """
                         aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}

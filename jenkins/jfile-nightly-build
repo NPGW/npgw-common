@@ -83,6 +83,44 @@ pipeline {
                 }
             }
         }
+
+        stage('Promote docker image to RC after test runs success') {
+            steps {
+                script {
+                    def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
+
+                    for (image in imageList) {
+
+                        def nightlyTag = sh(
+                            script: """
+                            aws ecr describe-images \
+                              --repository-name "npgw/${image.repoName}" \
+                              --query 'sort_by(imageDetails,& imagePushedAt)[*].imageTags[]' \
+                              --output text | tr '\\t' '\\n' | grep -- '-nightly\$' | tail -n 1
+                            """,
+                            returnStdout: true
+                        ).trim()
+
+                        if (!nightlyTag) {
+                            error "No -nightly tag found for ${image.repoName}"
+                        }
+
+                        sh """
+                            IMAGE_DIGEST=\$(aws ecr describe-images \
+                              --repository-name "npgw/${image.repoName}" \
+                              --image-ids imageTag=${nightlyTag} \
+                              --query 'imageDetails[0].imageDigest' \
+                              --output text)
+
+                            aws ecr put-image \
+                              --repository-name "npgw/${image.repoName}" \
+                              --image-tag "${nightlyTag.replace('-nightly', '-rc')}" \
+                              --image-digest "\$IMAGE_DIGEST"
+                        """
+                    }
+                }
+            }
+        }
     }
 
     post {
