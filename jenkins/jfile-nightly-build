@@ -14,7 +14,8 @@ pipeline {
                     def downstream = build job: 'build-a-version',
                         parameters: [
                             string(name: 'MAJOR_VERSION', value: '0.1'),
-                            booleanParam(name: 'RUN_TESTS', value: true)
+                            booleanParam(name: 'RUN_TESTS', value: true),
+                            string(name: 'TAG_VERSION', value: 'nightly')
                         ],
                         wait: true,
                         propagate: false
@@ -84,7 +85,7 @@ pipeline {
             }
         }
 
-        stage('Promote docker image to RC after test runs success') {
+        stage('Promote version to RC') {
             steps {
                 script {
                     def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()

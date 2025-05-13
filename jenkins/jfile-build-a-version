@@ -4,6 +4,7 @@ pipeline {
     parameters {
         string(name: 'MAJOR_VERSION', defaultValue: '0.1', description: 'Major version')
         booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'If unchecked, API tests will be skipped')
+        string(name: 'TAG_VERSION', defaultValue: 'draft', description: 'Tag version, ex. nightly, rc')
     }
 
     environment {
@@ -31,7 +32,7 @@ pipeline {
         stage('Get Release Version') {
             steps {
                 script {
-                    env.RELEASE_VERSION = params.MAJOR_VERSION + sh(script: "echo .\$(date -u +%y%m%d%H%M)-nightly", returnStdout: true).trim()
+                    env.RELEASE_VERSION = params.MAJOR_VERSION + sh(script: "echo .\$(date -u +%y%m%d%H%M)-${params.TAG_VERSION}", returnStdout: true).trim()
                 }
             }
         }
