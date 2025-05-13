@@ -65,8 +65,8 @@
     "repoName": "mock-acquirer-ngenius"
   },
   {
-    "dockerContext": "npgw-portal/docker",
-    "dockerFile": "Dockerfile",
+    "dockerContext": "npgw-portal",
+    "dockerFile": "docker/Dockerfile",
     "repoName": "portal-web"
   }
 ]
