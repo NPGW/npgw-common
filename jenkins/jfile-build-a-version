@@ -113,7 +113,7 @@ pipeline {
         }
 
 
-        stage('Download portal UI build') {
+        stage('Download builds') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
