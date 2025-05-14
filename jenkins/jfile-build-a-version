@@ -113,6 +113,32 @@ pipeline {
             }
         }
 
+stage('Wait for all service tars') {
+  steps {
+    withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
+      script {
+        def expectedCount = 7
+        timeout(time: 5, unit: 'MINUTES') {
+          waitUntil {
+            def out = sh(
+              script: "gh release view ${env.RELEASE_VERSION} --repo NPGW/npgw-services --json assets --jq '.assets[].name'",
+              returnStdout: true
+            ).trim()
+            def assets = out ? out.split('\\n') : []
+            if (assets.size() >= expectedCount) {
+              echo "✅ found ${assets.size()} service tars (>= ${expectedCount})"
+              return true
+            } else {
+              echo "⏳ only ${assets.size()} of ${expectedCount} tars uploaded, waiting..."
+              sleep time: 10, unit: 'SECONDS'
+              return false
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
         stage('Download builds') {
             steps {
