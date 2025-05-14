@@ -187,7 +187,7 @@ stage('Wait for all service tars') {
                     def servicesDir = "${WORKSPACE}/npgw-services"
                     def list = readJSON file: "${WORKSPACE}/${IMAGE_FILE}"
                     list.each { image ->
-                      def tarName = "${image.repoName}-${env.RELEASE_VERSION}.tar"
+                      def tarName = "${image.repoName}.tar"
                       sh """
                         tar --overwrite -xvf ${servicesDir}/${tarName} -C ${servicesDir}
                       """
