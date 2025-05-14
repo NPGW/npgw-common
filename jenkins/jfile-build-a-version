@@ -148,7 +148,7 @@ pipeline {
             }
         }
 
-        stage('Unzip portal UI portal-web.zip') {
+        stage('Unzip builds') {
             steps {
                 script {
                     sh """
@@ -157,6 +157,15 @@ pipeline {
                         rm -rf ./portal-web
                         unzip -o portal-web.zip -d ./portal-web
                     """
+
+                    def servicesDir = "${WORKSPACE}/npgw-services"
+                    def list = readJSON file: "${WORKSPACE}/${IMAGE_FILE}"
+                    list.each { image ->
+                      def tarName = "${image.repoName}-${env.RELEASE_VERSION}.tar"
+                      sh """
+                        tar --overwrite -xvf ${servicesDir}/${tarName} -C ${servicesDir}
+                      """
+                    }
                 }
             }
         }
