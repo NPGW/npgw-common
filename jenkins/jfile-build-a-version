@@ -167,13 +167,12 @@ pipeline {
                         unzip -o portal-web.zip -d ./portal-web
                     """
 
-                    def servicesDir = "${WORKSPACE}/npgw-services"
                     def allImages   = readJSON file: "${WORKSPACE}/${IMAGE_FILE}"
                     def backends    = allImages.findAll { it.repoName != 'portal-web' }
 
                     backends.each { image ->
                         sh """
-                            tar --overwrite -xvf ${servicesDir}/${image.repoName}.tar -C ${servicesDir}
+                            tar --overwrite -xvf ${WORKSPACE}/npgw-services/${image.repoName}.tar -C ${WORKSPACE}/npgw-services
                         """
                     }
                 }
