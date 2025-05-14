@@ -81,7 +81,27 @@ pipeline {
             }
         }
 
+        stage('Deploy Services') {
+            steps {
+                script {
+                    def services = readJSON text: env.SERVICE_LIST
+                    for (service in services) {
+                        def taskDefinition = service.serviceName
+                        def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/${service.repoName}:${env.RELEASE_VERSION}"
+                        def clusterName = service.clusterName
 
+                        sh """
+                        aws ecs describe-task-definition --task-definition ${taskDefinition} > task.json
+                        jq --arg IMAGE "${imageUrl}" '.taskDefinition | .containerDefinitions[0].image = \$IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' task.json > new-task.json
+                        aws ecs register-task-definition --family ${taskDefinition} --cli-input-json file://new-task.json
+                        TASK_REVISION=\$(aws ecs describe-task-definition --task-definition ${taskDefinition} --query 'taskDefinition.revision' --output text)
+                        aws ecs update-service --cluster ${clusterName} --service ${taskDefinition} --task-definition ${taskDefinition}:\$TASK_REVISION --force-new-deployment
+                        until aws ecs describe-services --cluster ${clusterName} --services ${taskDefinition} --query "services[0].deployments[?status=='PRIMARY'].rolloutState" --output text | grep -q "COMPLETED"; do echo "Waiting... rolloutState=\$rolloutState" sleep 10; done
+                        """
+                    }
+                }
+            }
+        }
 
         stage('Fetch CloudFront Distribution ID') {
                     steps {
