@@ -239,7 +239,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                    aws s3 sync npgw-portal/portal-web/dist s3://${env.AWS_BUCKET_NAME}/npgw-portal/build_${env.RELEASE_VERSION}
+                    aws s3 sync ${WORKSPACE}/npgw-portal/portal-web/dist s3://${env.AWS_BUCKET_NAME}/npgw-portal/build_${env.RELEASE_VERSION}
                     """
                 }
             }
