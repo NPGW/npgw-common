@@ -126,9 +126,9 @@ pipeline {
                                 --pattern dist.zip \
                                 --dir ${targetDir} --clobber
 
-                            cd ${targetDir}
+                            cd ${targetPortalDir}
                             if [ ! -f "dist.zip" ]; then
-                                echo "ERROR: Portal UI build file not found in ${targetDir}" >&2
+                                echo "ERROR: Portal UI build file not found in ${targetPortalDir}" >&2
                                 exit 1
                             fi
                             mv dist.zip portal-web.zip
