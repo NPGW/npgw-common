@@ -8,6 +8,7 @@ pipeline {
 
     environment {
         AWS_REGION = 'eu-central-1'
+        AWS_BUCKET_NAME = 'npgw-versions'
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
         AWS_ROLE = 'arn:aws:iam::214404897309:role/npgw-jenkins-build-a-version-role'
 
@@ -117,12 +118,13 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
-                        def targetDir = "${WORKSPACE}/npgw-portal"
+                        def targetPortalDir = "${WORKSPACE}/npgw-portal"
+                        def targetBackendDir = "${WORKSPACE}/npgw-services"
                         sh """
                             gh release download ${env.RELEASE_VERSION} \
-                            --repo NPGW/npgw-portal \
-                            --pattern dist.zip \
-                            --dir ${targetDir} --clobber
+                                --repo NPGW/npgw-portal \
+                                --pattern dist.zip \
+                                --dir ${targetDir} --clobber
 
                             cd ${targetDir}
                             if [ ! -f "dist.zip" ]; then
@@ -130,6 +132,16 @@ pipeline {
                                 exit 1
                             fi
                             mv dist.zip portal-web.zip
+
+                            gh release download ${env.RELEASE_VERSION} \
+                                --repo NPGW/npgw-services \
+                                --pattern '*.tar' \
+                                --dir ${targetBackendDir} --clobber
+
+                            if [ -z "\$(ls ${targetBackendDir}/*.tar 2>/dev/null)" ]; then
+                                echo "ERROR: no .tar builds found in ${targetBackendDir}" >&2
+                                exit 1
+                            fi
                         """
                     }
                 }
