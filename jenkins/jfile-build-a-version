@@ -124,7 +124,7 @@ pipeline {
                             gh release download ${env.RELEASE_VERSION} \
                                 --repo NPGW/npgw-portal \
                                 --pattern dist.zip \
-                                --dir ${targetDir} --clobber
+                                --dir ${targetPortalDir} --clobber
 
                             cd ${targetPortalDir}
                             if [ ! -f "dist.zip" ]; then
