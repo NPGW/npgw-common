@@ -148,7 +148,7 @@ pipeline {
             }
         }
 
-        stage('Unzip builds') {
+        stage('Unarchieve builds') {
             steps {
                 script {
                     sh """
