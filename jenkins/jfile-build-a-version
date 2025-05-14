@@ -103,7 +103,7 @@ pipeline {
                                                 returnStdout: true
                                             ).trim()
                                             def assets = out ? out.split('\\n') : []
-                                            if (assets.size() >= expectedCount) {
+                                            if (assets.size() >= 7) {
                                                 return true
                                             } else {
                                                 sleep time: 10, unit: 'SECONDS'
