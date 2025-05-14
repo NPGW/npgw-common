@@ -83,6 +83,7 @@ pipeline {
                                         def found = readJSON(text: raw).any { it.tagName == version }
                                         if (found) {
                                             echo "npgw-portal draft ${version} is ready!"
+                                            return true
                                         } else {
                                             sleep time: 10, unit: 'SECONDS'
                                             return false
