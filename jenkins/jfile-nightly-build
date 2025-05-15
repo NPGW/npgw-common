@@ -103,15 +103,7 @@ pipeline {
 
                     for (image in imageList) {
 
-                        def nightlyTag = sh(
-                            script: """
-                            aws ecr describe-images \
-                              --repository-name "npgw/${image.repoName}" \
-                              --query 'sort_by(imageDetails,& imagePushedAt)[*].imageTags[]' \
-                              --output text | tr '\\t' '\\n' | grep -- '-nightly\$' | tail -n 1
-                            """,
-                            returnStdout: true
-                        ).trim()
+                        def nightlyTag = env.RELEASE_VERSION
 
                         if (!nightlyTag) {
                             error "No -nightly tag found for ${image.repoName}"
