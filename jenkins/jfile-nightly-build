@@ -19,6 +19,11 @@ pipeline {
                         ],
                         wait: true,
                         propagate: false
+                        env.RELEASE_TAG = downstream.buildVariables.RELEASE_TAG
+                        if (!env.RELEASE_TAG) {
+                            error "RELEASE_TAG not found for build-a-version"
+                        }
+                        echo "RELEASE_TAG from build-a-version: ${env.RELEASE_TAG}"
                     if (downstream.result != 'SUCCESS') {
                         slackSend(
                             channel: '#npgw-notification-jenkins',
