@@ -100,25 +100,28 @@ pipeline {
             steps {
                 script {
                     def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
+                    def nightlyTag = env.RELEASE_VERSION
 
                     for (image in imageList) {
-
-                        def nightlyTag = env.RELEASE_VERSION
 
                         if (!nightlyTag) {
                             error "No -nightly tag found for ${image.repoName}"
                         }
 
                         sh """
-                            IMAGE_DIGEST=\$(aws ecr describe-images \
+                            IMAGE_DIGEST=\$(aws ecr batch-get-image \
                               --repository-name "npgw/${image.repoName}" \
                               --image-ids imageTag=${nightlyTag} \
-                              --query 'imageDetails[0].imageDigest' \
-                              --output text)
+                              --query 'images[0].{manifest: imageManifest, digest: imageId.imageDigest}' \
+                              --output json)
+
+                            IMAGE_MANIFEST=\$(echo "\$IMAGE_DATA" | jq -r '.manifest')
+                            IMAGE_DIGEST=\$(echo "\$IMAGE_DATA" | jq -r '.digest')
 
                             aws ecr put-image \
                               --repository-name "npgw/${image.repoName}" \
                               --image-tag "${nightlyTag.replace('-nightly', '-rc')}" \
+                              --image-manifest "\$IMAGE_MANIFEST" \
                               --image-digest "\$IMAGE_DIGEST"
                         """
                     }
