@@ -109,7 +109,7 @@ pipeline {
                         }
 
                         sh """
-                            IMAGE_DIGEST=\$(aws ecr batch-get-image \
+                            IMAGE_DATA=\$(aws ecr batch-get-image \
                               --repository-name "npgw/${image.repoName}" \
                               --image-ids imageTag=${nightlyTag} \
                               --query 'images[0].{manifest: imageManifest, digest: imageId.imageDigest}' \
