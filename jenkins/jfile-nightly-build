@@ -11,7 +11,8 @@ pipeline {
         stage('Trigger build-a-version pipeline') {
             steps {
                 script {
-                    def downstream = build job: 'build-a-version',
+                    def downstream = build(
+                        job: 'build-a-version',
                         parameters: [
                             string(name: 'MAJOR_VERSION', value: '0.1'),
                             booleanParam(name: 'RUN_TESTS', value: true),
@@ -19,11 +20,14 @@ pipeline {
                         ],
                         wait: true,
                         propagate: false
-                        env.RELEASE_TAG = downstream.buildVariables.RELEASE_TAG
-                        if (!env.RELEASE_TAG) {
-                            error "RELEASE_TAG not found for build-a-version"
-                        }
-                        echo "RELEASE_TAG from build-a-version: ${env.RELEASE_TAG}"
+                    )
+
+                    env.RELEASE_VERSION = downstream.buildVariables.RELEASE_VERSION
+                    if (!env.RELEASE_VERSION) {
+                        error "RELEASE_VERSION not found for build-a-version"
+                    }
+                    echo "RELEASE_TAG from build-a-version: ${env.RELEASE_VERSION}"
+
                     if (downstream.result != 'SUCCESS') {
                         slackSend(
                             channel: '#npgw-notification-jenkins',
