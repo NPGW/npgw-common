@@ -8,6 +8,7 @@ pipeline {
 
     environment {
         AWS_REGION = 'eu-central-1'
+        AWS_BUCKET_NAME = 'npgw-versions'
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
         AWS_ROLE = 'arn:aws:iam::214404897309:role/npgw-jenkins-build-a-version-role'
 
@@ -45,91 +46,118 @@ pipeline {
             }
         }
 
-        stage('Trigger portal UI build workflow') {
+        stage('Trigger build workflows') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
                         sh """
-                          gh workflow run build-draft-release.yml \\
-                            --repo NPGW/npgw-portal \\
-                            --ref main \\
-                            -f version=${env.RELEASE_VERSION}
+                            gh workflow run build-draft-release.yml \\
+                                --repo NPGW/npgw-portal \\
+                                --ref main \\
+                                -f version=${env.RELEASE_VERSION}
+
+                            gh workflow run build-draft-release.yml \\
+                                --repo NPGW/npgw-services \\
+                                --ref main \\
+                                -f version=${env.RELEASE_VERSION}
                         """
                     }
                 }
             }
         }
 
-        stage('Wait for portal UI build') {
+        stage('Wait for build workflows') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
                         def version = env.RELEASE_VERSION
 
                         timeout(time: 5, unit: 'MINUTES') {
-                            waitUntil {
-                                def raw = sh(
-                                    script: """\
-                                        gh release list \\
-                                            --repo NPGW/npgw-portal \\
-                                            --json tagName
-                                    """.stripIndent(),
-                                    returnStdout: true
-                                ).trim()
-
-                                def releases = readJSON text: raw
-
-                                def rel = releases.find { it.tagName == version }
-                                if (rel) {
-                                    echo "Draft release ${version} is ready!"
-                                    return true
-                                } else {
-                                    sleep time: 10, unit: 'SECONDS'
-                                    return false
+                            parallel(
+                                portal: {
+                                    waitUntil {
+                                        def raw = sh(
+                                            script: "gh release list --repo NPGW/npgw-portal --json tagName",
+                                            returnStdout: true
+                                        ).trim()
+                                        def found = readJSON(text: raw).any { it.tagName == version }
+                                        if (found) {
+                                            echo "npgw-portal draft ${version} is ready!"
+                                            return true
+                                        } else {
+                                            sleep time: 10, unit: 'SECONDS'
+                                            return false
+                                        }
+                                    }
+                                },
+                                services: {
+                                    waitUntil {
+                                        def raw = sh(
+                                            script: "gh release list --repo NPGW/npgw-services --json tagName",
+                                            returnStdout: true
+                                        ).trim()
+                                        def found = readJSON(text: raw).any { it.tagName == version }
+                                        if (found) {
+                                            echo "npgw-services draft ${version} is ready!"
+                                            def out = sh(
+                                                script: "gh release view ${env.RELEASE_VERSION} --repo NPGW/npgw-services --json assets --jq '.assets[].name'",
+                                                returnStdout: true
+                                            ).trim()
+                                            def assets = out ? out.split('\\n') : []
+                                            if (assets.size() >= 7) {
+                                                return true
+                                            } else {
+                                                sleep time: 10, unit: 'SECONDS'
+                                                return false
+                                            }
+                                        } else {
+                                            sleep time: 10, unit: 'SECONDS'
+                                            return false
+                                        }
+                                    }
                                 }
-                            }
+                            )
                         }
                     }
                 }
             }
         }
 
-        stage('Download portal UI build') {
+        stage('Download builds') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
-                        def targetDir = "${WORKSPACE}/npgw-portal"
+                        def targetPortalDir = "${WORKSPACE}/npgw-portal"
+                        def targetBackendDir = "${WORKSPACE}/npgw-services"
                         sh """
                             gh release download ${env.RELEASE_VERSION} \
-                            --repo NPGW/npgw-portal \
-                            --pattern dist.zip \
-                            --dir ${targetDir} --clobber
+                                --repo NPGW/npgw-portal \
+                                --pattern dist.zip \
+                                --dir ${targetPortalDir} --clobber
 
-                            cd ${targetDir}
+                            cd ${targetPortalDir}
                             if [ ! -f "dist.zip" ]; then
-                                echo "ERROR: Portal UI build file not found in ${targetDir}" >&2
+                                echo "ERROR: Portal UI build file not found in ${targetPortalDir}" >&2
                                 exit 1
                             fi
                             mv dist.zip portal-web.zip
+
+                            gh release download ${env.RELEASE_VERSION} \
+                                --repo NPGW/npgw-services \
+                                --pattern '*.tar' \
+                                --dir ${targetBackendDir} --clobber
+
+                            if [ -z "\$(ls ${targetBackendDir}/*.tar 2>/dev/null)" ]; then
+                                echo "ERROR: no .tar builds found in ${targetBackendDir}" >&2
+                                exit 1
+                            fi
                         """
                     }
                 }
             }
         }
 
-        stage('Build backend (npgw-services)') {
-            steps {
-                script {
-                    sh """
-                        cd ./npgw-services
-                        sed -i \"s/<revision>.*<\\/revision>/<revision>${env.RELEASE_VERSION}<\\/revision>/g\" ./pom.xml
-                        mvn clean verify
-                    """
-                }
-            }
-        }
-
-        stage('Unzip portal UI portal-web.zip') {
+        stage('Unarchive builds') {
             steps {
                 script {
                     sh """
@@ -138,6 +166,15 @@ pipeline {
                         rm -rf ./portal-web
                         unzip -o portal-web.zip -d ./portal-web
                     """
+
+                    def allImages   = readJSON file: "${WORKSPACE}/${IMAGE_FILE}"
+                    def backends    = allImages.findAll { it.repoName != 'portal-web' }
+
+                    backends.each { image ->
+                        sh """
+                            tar --overwrite -xvf ${WORKSPACE}/npgw-services/${image.repoName}.tar -C ${WORKSPACE}/npgw-services
+                        """
+                    }
                 }
             }
         }
@@ -202,7 +239,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                    aws s3 sync npgw-portal/portal-web s3://${env.AWS_BUCKET_NAME}/npgw-portal/build_${env.RELEASE_VERSION}
+                    aws s3 sync ${WORKSPACE}/npgw-portal/portal-web/dist s3://${env.AWS_BUCKET_NAME}/npgw-portal/build_${env.RELEASE_VERSION}
                     """
                 }
             }
