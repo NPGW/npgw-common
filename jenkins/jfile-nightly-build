@@ -28,7 +28,6 @@ pipeline {
                     if (!env.RELEASE_VERSION) {
                         error "RELEASE_VERSION not found for build-a-version"
                     }
-                    echo "RELEASE_TAG from build-a-version: ${env.RELEASE_VERSION}"
 
                     if (downstream.result != 'SUCCESS') {
                         slackSend(
@@ -105,7 +104,7 @@ pipeline {
                     for (image in imageList) {
 
                         if (!nightlyTag) {
-                            error "No -nightly tag found for ${image.repoName}"
+                            error "No nightly tag found for ${image.repoName}"
                         }
 
                         sh """

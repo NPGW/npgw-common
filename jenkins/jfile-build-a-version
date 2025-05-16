@@ -29,19 +29,10 @@ pipeline {
             }
         }
 
-        stage('Debug Params') {
-            steps {
-                script {
-                    echo "MAJOR_VERSION = ${params.MAJOR_VERSION}"
-                    echo "TAG_VERSION = ${params.TAG_VERSION}"
-                }
-            }
-        }
-
         stage('Get Release Version') {
             steps {
                 script {
-                    env.RELEASE_VERSION = params.MAJOR_VERSION + sh(script: "echo .\$(date -u +%y%m%d%H%M)-" + params.TAG_VERSION, returnStdout: true).trim()
+                    env.RELEASE_VERSION = params.MAJOR_VERSION + sh(script: "echo .\$(date -u +%y%m%d%H%M)-${params.TAG_VERSION}", returnStdout: true).trim()
                 }
             }
         }
