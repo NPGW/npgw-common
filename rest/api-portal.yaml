@@ -1325,11 +1325,11 @@ components:
     Merchant:
       type: object
       required:
-        - merchantName
+        - merchantTitle
       properties:
         merchantId:
           type: string
-        merchantName:
+        merchantTitle:
           type: string
 
     SystemConfig:
@@ -1404,6 +1404,7 @@ components:
     AddMerchantAcquirer:
       type: object
       required:
+        - merchantId
         - acquirerName
       properties:
         merchantId:
