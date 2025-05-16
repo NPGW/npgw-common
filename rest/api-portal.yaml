@@ -1451,6 +1451,8 @@ components:
           type: integer
         amountTo:
           type: integer
+        cardType:
+          $ref: '../api-merchant.yaml#/components/schemas/CardType'
 
     TransactionSummary:
       type: object
