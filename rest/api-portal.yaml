@@ -1452,7 +1452,7 @@ components:
         amountTo:
           type: integer
         cardType:
-          $ref: '../api-merchant.yaml#/components/schemas/СardType'
+          $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
 
     TransactionSummary:
       type: object
