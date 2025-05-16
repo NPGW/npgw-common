@@ -290,6 +290,10 @@ components:
       properties:
         paymentMethod:
           $ref: '#/components/schemas/PaymentMethod'
+      discriminator:
+        propertyName: paymentMethod
+        mapping:
+          CreditCard: CreditCardDetails
 
     CreditCardDetails:
       allOf:
