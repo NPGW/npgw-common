@@ -1305,6 +1305,8 @@ components:
       properties:
         companyName:
           type: string
+        companyTitle:
+          type: string
         companyType:
           type: string
         companyAddress:
@@ -1338,7 +1340,6 @@ components:
         - challengeUrl
         - fingerprintUrl
         - resourceUrl
-        - notificationQueue
       properties:
         challengeUrl:
           type: string
