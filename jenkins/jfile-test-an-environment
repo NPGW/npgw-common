@@ -142,7 +142,7 @@ pipeline {
                         -e TEST_ENVIRONMENT=AWS \\
                         -v `pwd`/allure-results:/app/target/allure-results \\
                         --entrypoint /bin/sh \
-                        ${imageUrl} -c "java -Dallure.results.directory=/app/target/allure-results -jar merchant-api-test-jar-with-dependencies.jar && java -Dallure.results.directory=/app/target/allure-results -jar portal-api-test-jar-with-dependencies.jar && ls -lah /app/target/allure-results"
+                        ${imageUrl}
                     """
                 }
             }
@@ -158,10 +158,10 @@ pipeline {
         stage('Download Previous Allure History from S3') {
             steps {
                 withAWSCreds {
-                    sh '''
+                    sh """
                         mkdir -p allure-results/history
                         aws s3 cp s3://npgw-testing/allure-history/${ENVIRONMENT_NAME}/history/ allure-results/history/ --recursive || true
-                    '''
+                    """
                 }
             }
         }
