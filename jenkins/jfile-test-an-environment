@@ -182,10 +182,10 @@ pipeline {
             steps {
                 script {
                     withAWSCreds {
-                        sh '''
+                        sh """
                             aws s3 cp allure-report/ s3://npgw-testing/allure-history/${params.ENVIRONMENT_NAME}/report/ --recursive
                             aws s3 cp allure-report/history/ s3://npgw-testing/allure-history/${params.ENVIRONMENT_NAME}/history/ --recursive
-                        '''
+                        """
                     }
                 }
             }
