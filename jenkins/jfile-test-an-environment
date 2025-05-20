@@ -171,8 +171,8 @@ pipeline {
                 script {
                     withAWSCreds {
                         sh '''
-                            aws s3 cp allure-report/ s3://npgw-testing/allure-history/${ENVIRONMENT_NAME}/report/ --recursive --acl public-read
-                            aws s3 cp allure-report/history/ s3://npgw-testing/allure-history/${ENVIRONMENT_NAME}/history/ --recursive --acl public-read
+                            aws s3 cp allure-report/ s3://npgw-testing/allure-history/${ENVIRONMENT_NAME}/report/ --recursive
+                            aws s3 cp allure-report/history/ s3://npgw-testing/allure-history/${ENVIRONMENT_NAME}/history/ --recursive
                         '''
                     }
                 }
