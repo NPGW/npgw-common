@@ -1460,7 +1460,7 @@ components:
       properties:
         merchantId:
           type: string
-        createdOn:
+        updatedOn:
           format: date-time
           type: string
           description: ISO 8601
