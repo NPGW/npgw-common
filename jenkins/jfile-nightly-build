@@ -119,7 +119,7 @@ pipeline {
 
                             aws ecr put-image \
                               --repository-name "npgw/${image.repoName}" \
-                              --image-tag "${nightlyTag.replace('-nightly', '-rc')}" \
+                              --image-tag "${nightlyTag.replace('-nightly', '-rc1')}" \
                               --image-manifest "\$IMAGE_MANIFEST" \
                               --image-digest "\$IMAGE_DIGEST"
                         """
