@@ -143,7 +143,6 @@ pipeline {
                         -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
                         -e TEST_ENVIRONMENT=AWS \\
                         -v `pwd`/allure-results:/app/target/allure-results \\
-                        --entrypoint /bin/sh \
                         ${imageUrl}
                     """
                 }
