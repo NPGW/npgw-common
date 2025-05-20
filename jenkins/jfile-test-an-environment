@@ -141,7 +141,8 @@ pipeline {
                         -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
                         -e TEST_ENVIRONMENT=AWS \\
                         -v `pwd`/allure-results:/app/target/allure-results \\
-                        ${imageUrl}
+                        --entrypoint /bin/sh \
+                        ${imageUrl} -c "java -Dallure.results.directory=/app/target/allure-results -jar merchant-api-test-jar-with-dependencies.jar && java -Dallure.results.directory=/app/target/allure-results -jar portal-api-test-jar-with-dependencies.jar && ls -lah /app/target/allure-results"
                     """
                 }
             }
