@@ -150,16 +150,44 @@ pipeline {
             }
         }
 
-        stage('Debug Allure in Image') {
+        stage('Search for Allure Logs') {
             steps {
                 script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-                    echo "Using Docker image: ${imageUrl}"
+
+                    echo "Re-running container to inspect logs and Allure output..."
+
                     sh """
-                    docker run -i --rm \
+                    docker run --rm \
                       --entrypoint /bin/sh \
                       ${imageUrl} \
-                      -c "find / -type d -name '*allure*' 2>/dev/null"
+                      -c "
+                          echo '--- All files under /app ---';
+                          ls -R /app || true;
+
+                          echo '\\n--- Any .log files ---';
+                          find / -type f -name '*.log' 2>/dev/null || true;
+
+                          echo '\\n--- Allure or Listener mentions in /app ---';
+                          grep -i -r allure /app 2>/dev/null || true;
+
+                          echo '\\n--- All TestNG classes loaded ---';
+                          find /app -type f -name '*.class' 2>/dev/null | grep -i testng || true
+                      "
+                    """
+                }
+            }
+        }
+
+        stage('Debug Allure Output in New Image') {
+            steps {
+                script {
+                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                    sh """
+                    docker run --rm \
+                      --entrypoint /bin/sh \
+                      ${imageUrl} \
+                      -c "find / -type f -name '*result.json' -o -name 'executor.json' -o -name '*container.json' 2>/dev/null"
                     """
                 }
             }
