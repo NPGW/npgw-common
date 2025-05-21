@@ -151,6 +151,7 @@ pipeline {
 
         stage('Debug Allure in Image') {
             steps {
+                def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
                 sh """
                 docker run -i --rm \
                   ${imageUrl} \
