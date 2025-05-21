@@ -157,11 +157,12 @@ pipeline {
                     docker run -i --rm \
                       --entrypoint /bin/sh \
                       ${imageUrl} \
-                      -c "find / -name allure-results 2>/dev/null"
+                      -c "find / -type d -name '*allure*' 2>/dev/null"
                     """
                 }
             }
         }
+
 
         stage('Download Previous Allure History from S3') {
             steps {
