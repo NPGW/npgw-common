@@ -155,8 +155,9 @@ pipeline {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
                     sh """
                     docker run -i --rm \
+                      --entrypoint /bin/sh \
                       ${imageUrl} \
-                      /bin/sh -c "find / -name allure-results 2>/dev/null"
+                      -c "find / -name allure-results 2>/dev/null"
                     """
                 }
             }
