@@ -143,7 +143,7 @@ pipeline {
                         -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
                         -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
                         -e TEST_ENVIRONMENT=AWS \\
-                        -v `pwd`/allure-results:/app/target/allure-results \\
+                        -v `pwd`/allure-results:/tmp/allure-results \\
                         ${imageUrl}
                     """
                 }
@@ -160,11 +160,11 @@ pipeline {
 
                     docker run --rm \
                       --entrypoint /bin/sh \
-                      -v `pwd`/allure-results:/app/target/allure-results \
+                      -v `pwd`/allure-results:/tmp/allure-results \
                       ${imageUrl} \
                       -c '
-                        echo "--- Inspecting inside mounted /app/target/allure-results ---";
-                        ls -lahR /app/target/allure-results || echo "❌ Not found";
+                        echo "--- Inspecting inside mounted /tmp/allure-results ---";
+                        ls -lahR /tmp/allure-results || echo "❌ Not found";
 
                         echo "\\n--- Checking alternate locations ---";
                         find / -type d -name "*allure*" 2>/dev/null
