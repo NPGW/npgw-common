@@ -123,7 +123,7 @@ pipeline {
             steps {
                 script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-                    echo "Using Docker image: ${imageUrl}"
+                    echo "DEBUG - Using Docker image: ${imageUrl}"
 
                     sh """
                     unset AWS_ACCESS_KEY_ID
@@ -150,49 +150,15 @@ pipeline {
             }
         }
 
-        stage('Search for Allure Logs') {
+        stage('DEBUG - Inspect Allure Results in Jenkins') {
             steps {
-                script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-
-                    echo "Re-running container to inspect logs and Allure output..."
-
-                    sh """
-                    docker run --rm \
-                      --entrypoint /bin/sh \
-                      ${imageUrl} \
-                      -c "
-                          echo '--- All files under /app ---';
-                          ls -R /app || true;
-
-                          echo '\\n--- Any .log files ---';
-                          find / -type f -name '*.log' 2>/dev/null || true;
-
-                          echo '\\n--- Allure or Listener mentions in /app ---';
-                          grep -i -r allure /app 2>/dev/null || true;
-
-                          echo '\\n--- All TestNG classes loaded ---';
-                          find /app -type f -name '*.class' 2>/dev/null | grep -i testng || true
-                      "
-                    """
-                }
+                sh """
+                echo "--- Allure Results After Test Run ---"
+                find allure-results -type f
+                ls -lahR allure-results
+                """
             }
         }
-
-        stage('Debug Allure Output in New Image') {
-            steps {
-                script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-                    sh """
-                    docker run --rm \
-                      --entrypoint /bin/sh \
-                      ${imageUrl} \
-                      -c "find / -type f -name '*result.json' -o -name 'executor.json' -o -name '*container.json' 2>/dev/null"
-                    """
-                }
-            }
-        }
-
 
         stage('Download Previous Allure History from S3') {
             steps {
@@ -209,7 +175,7 @@ pipeline {
             steps {
                 withEnv(["PATH+ALLURE=${tool 'allure'}/bin"]) {
 
-                    echo "Contents of allure-results:"
+                    echo "DEBUG - Contents of allure-results:"
                     sh 'ls -R allure-results'
 
                     sh 'allure generate allure-results --clean -o allure-report'
