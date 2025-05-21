@@ -150,17 +150,30 @@ pipeline {
             }
         }
 
-        stage('DEBUG - Inspect Local Allure Result Files') {
+        stage('DEBUG - Inspect Inside Container After Test Run') {
             steps {
-                sh """
-                echo '🔍 Checking allure-results directory on Jenkins host:'
-                find allure-results -type f || echo '❌ No Allure result files found'
+                script {
+                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
-                echo '\\n📂 Full contents:'
-                ls -lahR allure-results || true
-                """
+                    sh """
+                    echo "Re-running container to inspect inside after test execution..."
+
+                    docker run --rm \
+                      --entrypoint /bin/sh \
+                      -v `pwd`/allure-results:/app/target/allure-results \
+                      ${imageUrl} \
+                      -c '
+                        echo "--- Inspecting inside mounted /app/target/allure-results ---";
+                        ls -lahR /app/target/allure-results || echo "❌ Not found";
+
+                        echo "\\n--- Checking alternate locations ---";
+                        find / -type d -name "*allure*" 2>/dev/null
+                      '
+                    """
+                }
             }
         }
+
 
         stage('Download Previous Allure History from S3') {
             steps {
