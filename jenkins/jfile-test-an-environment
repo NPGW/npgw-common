@@ -149,10 +149,13 @@ pipeline {
             }
         }
 
-        stage('Debug Allure Results') {
+        stage('Debug Allure in Image') {
             steps {
-                sh 'ls -lahR allure-results'
-                sh 'find allure-results -type f -exec head -n 10 {} \\;'
+                sh """
+                docker run -i --rm \
+                  ${imageUrl} \
+                  /bin/sh -c "find / -name allure-results 2>/dev/null"
+                """
             }
         }
 
