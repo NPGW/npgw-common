@@ -1305,6 +1305,8 @@ components:
       properties:
         companyName:
           type: string
+        companyTitle:
+          type: string
         companyType:
           type: string
         companyAddress:
@@ -1338,7 +1340,6 @@ components:
         - challengeUrl
         - fingerprintUrl
         - resourceUrl
-        - notificationQueue
       properties:
         challengeUrl:
           type: string
@@ -1459,7 +1460,7 @@ components:
       properties:
         merchantId:
           type: string
-        createdOn:
+        updatedOn:
           format: date-time
           type: string
           description: ISO 8601

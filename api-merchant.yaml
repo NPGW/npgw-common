@@ -23,37 +23,6 @@ tags:
     description: Query the status of a Transaction on the NPGW Gateway.
 
 paths:
-  /transaction/{transactionId}:
-    get:
-      tags:
-        - status
-      summary: Get Transaction by ID
-      description: Retrieve transaction details using the NPGW Transaction ID
-      operationId: getTransactionById
-      security:
-        - apiKeyAuth: []
-      parameters:
-        - in: path
-          name: transactionId
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          $ref: '#/components/responses/TransactionResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '405':
-          $ref: '#/components/responses/NotAllowed'
-        '406':
-          $ref: '#/components/responses/NotAcceptable'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/Error'
-
   /transaction:
     get:
       tags:
@@ -105,6 +74,142 @@ paths:
           schema:
             type: boolean
           description: Indicates whether the transaction should be processed asynchronously from our downstream CreditCard Acquirers. When set to true, the request will return immediately with a status indicating that processing is ongoing.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        '201':
+          $ref: '#/components/responses/TransactionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /transaction/{transactionId}:
+    get:
+      tags:
+        - status
+      summary: Get Transaction by ID
+      description: Retrieve transaction details using the NPGW Transaction ID
+      operationId: getTransactionById
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/TransactionResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /transaction/{transactionId}/capture:
+    post:
+      operationId: captureTransaction
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        '201':
+          $ref: '#/components/responses/TransactionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /transaction/{transactionId}/refund:
+    post:
+      operationId: refundTransaction
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+        required: true
+      responses:
+        '201':
+          $ref: '#/components/responses/TransactionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /transaction/{transactionId}/cancel:
+    post:
+      operationId: cancelTransaction
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -476,22 +581,14 @@ components:
         status:
           $ref: '#/components/schemas/ThreeDSecureStatus'
 
-    TransactionStatus:
+    TransactionType:
       type: string
       description: |
-        INITIATED - submitted to NPGW.
-        PENDING - submitted to an acquirer.
-        SUCCESS - confirmed success/captured at acquirer, customer has paid.
-        FAILED - confirmed failed at acquirer; the customer has not paid and must try again via a new transaction.
-        CANCELLED - cancelled by customer (generally a UI cancel button), must try again via a new transaction.
-        EXPIRED - unsuccessful transaction after the time specified in the "expires At" field, must try again via a new transaction.
+        PURCHASE - purchase order is a document issued by a buyer to a supplier for goods or services.
+        AUTH - authorization refers to the process of verifying a cardholder's ability to make a purchase.
       enum:
-        - INITIATED
-        - PENDING
-        - SUCCESS
-        - FAILED
-        - CANCELLED
-        - EXPIRED
+        - PURCHASE
+        - AUTH
 
     BaseTransaction:
       type: object
@@ -515,6 +612,9 @@ components:
           minLength: 1
           maxLength: 30
           pattern: '^[a-zA-Z0-9]*$'
+        type:
+          $ref: '#/components/schemas/TransactionType'
+          default: PURCHASE
         amount:
           type: integer
           minimum: 1
@@ -551,6 +651,23 @@ components:
         paymentDetails:
           oneOf:
             - $ref: '#/components/schemas/CreditCardDetails'
+
+    TransactionStatus:
+      type: string
+      description: |
+        INITIATED - submitted to NPGW.
+        PENDING - submitted to an acquirer.
+        SUCCESS - confirmed success/captured at acquirer, customer has paid.
+        FAILED - confirmed failed at acquirer; the customer has not paid and must try again via a new transaction.
+        CANCELLED - cancelled by customer (generally a UI cancel button), must try again via a new transaction.
+        EXPIRED - unsuccessful transaction after the time specified in the "expires At" field, must try again via a new transaction.
+      enum:
+        - INITIATED
+        - PENDING
+        - SUCCESS
+        - FAILED
+        - CANCELLED
+        - EXPIRED
 
     TransactionError:
       type: object
