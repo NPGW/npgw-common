@@ -150,12 +150,14 @@ pipeline {
             }
         }
 
-        stage('DEBUG - Inspect Allure Results in Jenkins') {
+        stage('DEBUG - Inspect Local Allure Result Files') {
             steps {
                 sh """
-                echo "--- Allure Results After Test Run ---"
-                find allure-results -type f
-                ls -lahR allure-results
+                echo '🔍 Checking allure-results directory on Jenkins host:'
+                find allure-results -type f || echo '❌ No Allure result files found'
+
+                echo '\\n📂 Full contents:'
+                ls -lahR allure-results || true
                 """
             }
         }
