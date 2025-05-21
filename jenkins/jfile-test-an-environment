@@ -123,6 +123,7 @@ pipeline {
             steps {
                 script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                    echo "Using Docker image: ${imageUrl}"
 
                     sh """
                     unset AWS_ACCESS_KEY_ID
@@ -153,6 +154,7 @@ pipeline {
             steps {
                 script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                    echo "Using Docker image: ${imageUrl}"
                     sh """
                     docker run -i --rm \
                       --entrypoint /bin/sh \
