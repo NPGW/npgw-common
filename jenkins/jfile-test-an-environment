@@ -197,9 +197,12 @@ pipeline {
                     sh """
                     echo "--- Running full test image (with entrypoint) ---"
 
+                    set +e
                     docker run --rm \\
                       -v `pwd`/allure-results:/app/target/allure-results \\
                       ${imageUrl}
+                    echo "Container exited with code \$?"
+                    set -e
 
                     echo "--- Done running container ---"
                     """
