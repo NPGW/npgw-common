@@ -150,25 +150,20 @@ pipeline {
             }
         }
 
-        stage('DEBUG - Inspect Inside Container After Test Run') {
+        stage('DEBUG - step to debug') {
             steps {
                 script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
                     sh """
-                    echo "Re-running container to inspect inside after test execution..."
+                    echo "Running container to check if results are produced..."
 
                     docker run --rm \\
-                      --entrypoint /bin/sh \\
-                      -v `pwd`/allure-results:/app/target/allure-results \\
-                      ${imageUrl} \\
-                      -c '
-                        echo "--- Inspecting /app/target/allure-results ---";
-                        ls -lahR /app/target/allure-results || echo "❌ Not found";
+                      -v `pwd`/debug-out:/app/target/allure-results \\
+                      ${imageUrl}
 
-                        echo "\\n--- Checking alternate locations ---";
-                        find / -type d -name "*allure*" 2>/dev/null
-                      '
+                    echo "--- Listing contents of debug-out ---"
+                    ls -lahR debug-out
                     """
                 }
             }
