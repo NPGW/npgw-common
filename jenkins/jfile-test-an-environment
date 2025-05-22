@@ -150,22 +150,124 @@ pipeline {
             }
         }
 
-        stage('DEBUG - step to debug') {
+        stage('DEBUG 1 - Pre-Run: Host Directory Check') {
+            steps {
+                sh '''
+                echo "--- Checking local allure-results before container ---"
+                mkdir -p allure-results
+                ls -lah allure-results
+                echo "test" > allure-results/host-write-check.txt
+                '''
+            }
+        }
+
+        stage('DEBUG 2 - Volume Mount Write Test') {
+            steps {
+                sh '''
+                echo "--- Spawning temp container to write test file ---"
+
+                docker run --rm \
+                  -v `pwd`/allure-results:/app/target/allure-results \
+                  alpine \
+                  sh -c 'echo "container-test" > /app/target/allure-results/container-write-check.txt'
+                '''
+            }
+        }
+
+        stage('DEBUG 3 - Post-Write Check') {
+            steps {
+                sh '''
+                echo "--- Checking content in host allure-results ---"
+                ls -lah allure-results
+
+                echo "--- Showing content of write check files ---"
+                cat allure-results/host-write-check.txt || echo "❌ host-write-check.txt missing"
+                cat allure-results/container-write-check.txt || echo "❌ container-write-check.txt missing"
+                '''
+            }
+        }
+
+        stage('DEBUG 4 - Run Image and Inspect Inside') {
             steps {
                 script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
                     sh """
-                    echo "Running container to check if results are produced..."
+                    echo "--- Running full test image (with entrypoint) ---"
 
                     docker run --rm \\
-                      -v `pwd`/debug-out:/app/target/allure-results \\
+                      -v `pwd`/allure-results:/app/target/allure-results \\
                       ${imageUrl}
 
-                    echo "--- Listing contents of debug-out ---"
-                    ls -lahR debug-out
+                    echo "--- Done running container ---"
                     """
                 }
+            }
+        }
+
+        stage('DEBUG 5 - Final Allure Result Check') {
+            steps {
+                sh '''
+                echo "--- Final state of allure-results directory ---"
+                ls -lahR allure-results
+                '''
+            }
+        }
+
+        stage('DEBUG 6 - Check for Allure Listeners in JAR') {
+            steps {
+                script {
+                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+
+                    sh """
+                    echo "--- Checking JAR contents inside the container ---"
+
+                    docker run --rm \\
+                      --entrypoint /bin/sh \\
+                      ${imageUrl} \\
+                      -c '
+                        echo "--- Looking for Allure-related files in merchant-api-test-jar ---"
+                        unzip -l merchant-api-test-jar-with-dependencies.jar | grep -i allure || echo "❌ No allure-related classes found"
+
+                        echo "--- Looking for META-INF/services in portal-api-test-jar ---"
+                        unzip -l portal-api-test-jar-with-dependencies.jar | grep META-INF/services || echo "❌ No service registration found"
+
+                        echo "--- Looking for allure.properties ---"
+                        unzip -l portal-api-test-jar-with-dependencies.jar | grep allure.properties || echo "❌ No allure.properties"
+                      '
+                    """
+                }
+            }
+        }
+
+        stage('DEBUG - Inspect Container Internally After Test Run') {
+            steps {
+                script {
+                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+
+                    sh """
+                    docker run --rm \\
+                      --entrypoint /bin/sh \\
+                      -v `pwd`/debug-out:/app/target/allure-results \\
+                      ${imageUrl} \\
+                      -c '
+                        echo "--- Inside container: /app/target/allure-results ---"
+                        ls -lahR /app/target/allure-results || echo "❌ Not found"
+
+                        echo "--- Check filesystem write permissions ---"
+                        touch /app/target/allure-results/test.touch && echo "✅ Writable" || echo "❌ Not writable"
+                      '
+                    """
+                }
+            }
+        }
+
+        stage('DEBUG - Host Volume Check') {
+            steps {
+                sh '''
+                echo "--- On Jenkins host, show debug-out contents ---"
+                ls -lahR debug-out || echo "❌ debug-out missing"
+                '''
             }
         }
 
