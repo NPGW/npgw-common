@@ -152,74 +152,7 @@ pipeline {
             }
         }
 
-        stage('DEBUG 1 - Pre-Run: Host Directory Check') {
-            steps {
-                sh '''
-                echo "--- Checking local allure-results before container ---"
-                mkdir -p allure-results
-                ls -lah allure-results
-                echo "test" > allure-results/host-write-check.txt
-                '''
-            }
-        }
-
-        stage('DEBUG 2 - Volume Mount Write Test') {
-            steps {
-                sh '''
-                echo "--- Spawning temp container to write test file ---"
-
-                docker run --rm \
-                  -v `pwd`/allure-results:/app/target/allure-results \
-                  alpine \
-                  sh -c 'echo "container-test" > /app/target/allure-results/container-write-check.txt'
-                '''
-            }
-        }
-
-        stage('DEBUG 3 - Post-Write Check') {
-            steps {
-                sh '''
-                echo "--- Checking content in host allure-results ---"
-                ls -lah allure-results
-
-                echo "--- Showing content of write check files ---"
-                cat allure-results/host-write-check.txt || echo "❌ host-write-check.txt missing"
-                cat allure-results/container-write-check.txt || echo "❌ container-write-check.txt missing"
-                '''
-            }
-        }
-
-        stage('DEBUG 4 - Run Image and Inspect Inside') {
-            steps {
-                script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-
-                    sh """
-                    echo "--- Running full test image (with entrypoint) ---"
-
-                    set +e
-                    docker run --rm \\
-                      -v `pwd`/allure-results:/app/target/allure-results \\
-                      ${imageUrl}
-                    echo "Container exited with code \$?"
-                    set -e
-
-                    echo "--- Done running container ---"
-                    """
-                }
-            }
-        }
-
-        stage('DEBUG 5 - Final Allure Result Check') {
-            steps {
-                sh '''
-                echo "--- Final state of allure-results directory ---"
-                ls -lahR allure-results
-                '''
-            }
-        }
-
-        stage('DEBUG 6 - Check for Allure Listeners in JAR') {
+        stage('DEBUG 1 - Check for Allure Listeners in JAR') {
             steps {
                 script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
@@ -245,37 +178,12 @@ pipeline {
             }
         }
 
-        stage('DEBUG - Inspect Container Internally After Test Run') {
+        stage('DEBUG 7 - Check Allure Listener Registration') {
             steps {
-                script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-
-                    sh """
-                    docker run --rm \\
-                      --entrypoint /bin/sh \\
-                      -v `pwd`/debug-out:/app/target/allure-results \\
-                      ${imageUrl} \\
-                      -c '
-                        echo "--- Inside container: /app/target/allure-results ---"
-                        ls -lahR /app/target/allure-results || echo "❌ Not found"
-
-                        echo "--- Check filesystem write permissions ---"
-                        touch /app/target/allure-results/test.touch && echo "✅ Writable" || echo "❌ Not writable"
-                      '
-                    """
-                }
+                sh 'unzip -l merchant-api-test-jar-with-dependencies.jar | grep -i "allure" || echo "No allure classes found"'
+                sh 'unzip -l merchant-api-test-jar-with-dependencies.jar | grep "META-INF/services/org.testng.ITestNGListener" || echo "❌ Listener missing"'
             }
         }
-
-        stage('DEBUG - Host Volume Check') {
-            steps {
-                sh '''
-                echo "--- On Jenkins host, show debug-out contents ---"
-                ls -lahR debug-out || echo "❌ debug-out missing"
-                '''
-            }
-        }
-
 
         stage('Download Previous Allure History from S3') {
             steps {
@@ -316,9 +224,10 @@ pipeline {
 
     post {
         always {
+            archiveArtifacts artifacts: 'allure-results/**/*', allowEmptyArchive: true
             allure([
                 includeProperties: false,
-                jdk: '',
+                reportBuildPolicy: 'ALWAYS',
                 results: [[path: 'allure-results']]
             ])
             cleanWs()
