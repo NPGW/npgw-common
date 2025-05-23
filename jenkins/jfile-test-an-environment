@@ -156,29 +156,49 @@ pipeline {
             steps {
                 script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                    def merchantJar = sh(script: "ls merchant-api-test/target/merchant-api-test-*-test-jar-with-dependencies.jar", returnStdout: true).trim()
+                    def portalJar   = sh(script: "ls portal-api-test/target/portal-api-test-*-test-jar-with-dependencies.jar", returnStdout: true).trim()
 
                     sh """
-                    echo "--- Checking JAR contents (mounted from host) ---"
                     docker run --rm \\
                       --entrypoint /bin/sh \\
-                      -v \$(pwd)/merchant-api-test/target:/mnt/merchant \\
-                      -v \$(pwd)/portal-api-test/target:/mnt/portal \\
+                      -v $(pwd)/merchant-api-test/target:/mnt/merchant \\
+                      -v $(pwd)/portal-api-test/target:/mnt/portal \\
                       ${imageUrl} \\
                       -c '
-                        echo "--- Looking for Allure-related files in merchant JAR ---"
-                        unzip -l /mnt/merchant/merchant-api-test-*-test-jar-with-dependencies.jar | grep -i allure || echo "❌ No allure-related classes found"
+                        echo "--- Allure-related files in merchant JAR ---"
+                        unzip -l /mnt/merchant/${merchantJar.split("/")[-1]} | grep -i allure || echo "❌ No allure-related classes found"
 
-                        echo "--- Looking for META-INF/services in portal JAR ---"
-                        unzip -l /mnt/portal/portal-api-test-*-test-jar-with-dependencies.jar | grep META-INF/services || echo "❌ No service registration found"
+                        echo "--- META-INF/services in portal JAR ---"
+                        unzip -l /mnt/portal/${portalJar.split("/")[-1]} | grep META-INF/services || echo "❌ No service registration found"
 
-                        echo "--- Looking for allure.properties ---"
-                        unzip -l /mnt/portal/portal-api-test-*-test-jar-with-dependencies.jar | grep allure.properties || echo "❌ No allure.properties"
+                        echo "--- Checking for allure.properties ---"
+                        unzip -l /mnt/portal/${portalJar.split("/")[-1]} | grep allure.properties || echo "❌ No allure.properties"
                       '
                     """
                 }
             }
         }
 
+        stage('DEBUG 7 - Check Allure Listener Registration') {
+            steps {
+                script {
+                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                    def merchantJar = sh(script: "ls merchant-api-test/target/merchant-api-test-*-test-jar-with-dependencies.jar", returnStdout: true).trim()
+
+                    sh """
+                    docker run --rm \\
+                      --entrypoint /bin/sh \\
+                      -v $(pwd)/merchant-api-test/target:/mnt \\
+                      ${imageUrl} \\
+                      -c '
+                        unzip -l /mnt/${merchantJar.split("/")[-1]} | grep -i allure || echo "No allure classes found"
+                        unzip -l /mnt/${merchantJar.split("/")[-1]} | grep META-INF/services/org.testng.ITestNGListener || echo "❌ Listener missing"
+                      '
+                    """
+                }
+            }
+        }
 
         stage('DEBUG 7 - Check Allure Listener Registration') {
             steps {
