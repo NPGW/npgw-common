@@ -58,7 +58,8 @@ jobs:
           java -jar openapi-generator-cli.jar generate -i api-merchant-doc.yaml -g html2 -o docs
 
       - name: Delete discriminator (AWS doesn't support)
-        run: sed '/discriminator/,/CreditCard: CreditCardDetails/d' api-merchant.yaml > changed-api-merchant.yaml
+        run: |
+          sed '/discriminator/,/CreditCard: CreditCardDetails/d' api-merchant.yaml > changed-api-merchant.yaml
 
       - name: Create Merchant Spec (API)
         run: openapi-merge-cli --config ./rest/processing/merge-config.json
