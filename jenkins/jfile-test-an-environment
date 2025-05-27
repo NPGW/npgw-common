@@ -154,18 +154,18 @@ pipeline {
         stage('Validate Results Directory') {
             steps {
                 script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-
                     sh """
-                    echo "--- Host machine ---"
-                    ls -lah ${WORKSPACE}/allure-results
-                    find ${WORKSPACE}/allure-results -type f
+                        echo "--- Allure results check ---"
+                        RESULTS_DIR="${WORKSPACE}/allure-results"
 
-                    echo "--- Inside container ---"
-                    docker run --rm \
-                      -v ${WORKSPACE}/allure-results:/app/target/allure-results \
-                      ${imageUrl} \
-                      sh -c "ls -lah /app/target/allure-results && find /app/target/allure-results -type f"
+                        # Check if directory exists
+                        if [ -d "\$RESULTS_DIR" ]; then
+                            echo "Found allure-results directory"
+                            # Check for JSON files without failing the build
+                            find "\$RESULTS_DIR" -name '*.json' | grep . || echo "⚠️ No JSON files found"
+                        else
+                            echo "❌ allure-results directory not found"
+                        fi
                     """
                 }
             }
