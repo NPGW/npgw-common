@@ -172,6 +172,31 @@ pipeline {
             }
         }
 
+        stage('DEBUG - Allure Results Presence in Container') {
+            steps {
+                script {
+                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                    sh """
+                        docker run --rm \\
+                          -v \$(pwd)/allure-results:/app/target/allure-results \\
+                          --entrypoint /bin/sh \\
+                          ${imageUrl} \\
+                          -c 'ls -lah /app/target/allure-results && find /app -name "*.json"'
+                    """
+                }
+            }
+        }
+
+        stage('DEBUG - Inspect Allure Output Directory') {
+            steps {
+                sh '''
+                echo "--- Listing contents of allure-results after test run ---"
+                ls -lah allure-results
+                find allure-results -type f
+                '''
+            }
+        }
+
         stage('Generate Allure Report') {
             steps {
                 withEnv(["PATH+ALLURE=${tool 'allure'}/bin"]) {
