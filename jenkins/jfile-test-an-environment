@@ -152,6 +152,26 @@ pipeline {
             }
         }
 
+        stage('DEBUG - Show Listener File Content') {
+            steps {
+                script {
+                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                    sh """
+                    docker run --rm \\
+                        --entrypoint /bin/sh \\
+                        -v \$(pwd)/merchant-api-test/target:/mnt \\
+                        ${imageUrl} \\
+                        -c '
+                          jarFile=\$(ls /mnt/merchant-api-test-*-test-jar-with-dependencies.jar 2>/dev/null)
+                          if [ -n "\$jarFile" ]; then
+                            unzip -p "\$jarFile" META-INF/services/org.testng.ITestNGListener || echo "❌ Listener file not found"
+                          fi
+                        '
+                    """
+                }
+            }
+        }
+
         stage('Generate Allure Report') {
             steps {
                 withEnv(["PATH+ALLURE=${tool 'allure'}/bin"]) {
