@@ -153,16 +153,21 @@ pipeline {
 
         stage('Validate Results Directory') {
             steps {
-                sh '''
-                echo "--- Host machine ---"
-                ls -lah ${WORKSPACE}/allure-results
-                find ${WORKSPACE}/allure-results -type f
+                script {
+                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
-                echo "--- Inside container ---"
-                docker run --rm -v ${WORKSPACE}/allure-results:/app/target/allure-results \
-                  ${imageUrl} \
-                  sh -c "ls -lah /app/target/allure-results && find /app/target/allure-results -type f"
-                '''
+                    sh """
+                    echo "--- Host machine ---"
+                    ls -lah ${WORKSPACE}/allure-results
+                    find ${WORKSPACE}/allure-results -type f
+
+                    echo "--- Inside container ---"
+                    docker run --rm \
+                      -v ${WORKSPACE}/allure-results:/app/target/allure-results \
+                      ${imageUrl} \
+                      sh -c "ls -lah /app/target/allure-results && find /app/target/allure-results -type f"
+                    """
+                }
             }
         }
 
