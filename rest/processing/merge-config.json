@@ -1,7 +1,7 @@
 {
   "inputs": [
     {
-      "inputFile": "./../../changed-api-merchant.yaml"
+      "inputFile": "./../../prepared-api-merchant.yaml"
     },
     {
       "inputFile": "./../api-processing.yaml"
