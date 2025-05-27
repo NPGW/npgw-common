@@ -1379,6 +1379,8 @@ components:
           properties:
             acquirerName:
               type: string
+            acquirerTitle:
+              type: string
             currencyList:
               type: array
               items:
