@@ -1305,6 +1305,8 @@ components:
       properties:
         companyName:
           type: string
+        companyTitle:
+          type: string
         companyType:
           type: string
         companyAddress:
@@ -1325,11 +1327,11 @@ components:
     Merchant:
       type: object
       required:
-        - merchantName
+        - merchantTitle
       properties:
         merchantId:
           type: string
-        merchantName:
+        merchantTitle:
           type: string
 
     SystemConfig:
@@ -1338,7 +1340,6 @@ components:
         - challengeUrl
         - fingerprintUrl
         - resourceUrl
-        - notificationQueue
       properties:
         challengeUrl:
           type: string
@@ -1378,6 +1379,8 @@ components:
           properties:
             acquirerName:
               type: string
+            acquirerTitle:
+              type: string
             currencyList:
               type: array
               items:
@@ -1404,6 +1407,7 @@ components:
     AddMerchantAcquirer:
       type: object
       required:
+        - merchantId
         - acquirerName
       properties:
         merchantId:
@@ -1445,18 +1449,20 @@ components:
         currency:
           $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
         paymentMethod:
-          type: string
+          $ref: '../api-merchant.yaml#/components/schemas/PaymentMethod'
         amountFrom:
           type: integer
         amountTo:
           type: integer
+        cardType:
+          $ref: '../api-merchant.yaml#/components/schemas/CardType'
 
     TransactionSummary:
       type: object
       properties:
         merchantId:
           type: string
-        createdOn:
+        updatedOn:
           format: date-time
           type: string
           description: ISO 8601
