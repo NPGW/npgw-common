@@ -123,7 +123,6 @@ pipeline {
             steps {
                 script {
                     def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-                    echo "DEBUG - Using Docker image: ${imageUrl}"
 
                     sh """
                     unset AWS_ACCESS_KEY_ID
@@ -131,7 +130,7 @@ pipeline {
                     unset AWS_SESSION_TOKEN
                     aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
 
-                    mkdir -p allure-results
+                    mkdir -p ${WORKSPACE}/allure-results
                     set +e
                     docker run --rm \\
                         -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
@@ -143,7 +142,7 @@ pipeline {
                         -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
                         -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
                         -e TEST_ENVIRONMENT=AWS \\
-                        -v `pwd`/allure-results:/app/target/allure-results \\
+                        -v ${WORKSPACE}/allure-results:/app/target/allure-results \\
                         ${imageUrl}
                     echo "Container exited with code \$?"
                     set -e
@@ -152,67 +151,17 @@ pipeline {
             }
         }
 
-        stage('DEBUG - List Allure Files in Container') {
-            steps {
-                script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-
-                    sh """
-                    docker run --rm \\
-                      -v `pwd`/allure-results:/app/target/allure-results \\
-                      --entrypoint /bin/sh \\
-                      ${imageUrl} \\
-                      -c '
-                        echo "--- Checking test results ---"
-                        ls -lah /app/target/allure-results
-                        find /app/target/allure-results -type f -name "*.json"
-                      '
-                    """
-                }
-            }
-        }
-
-        stage('DEBUG - Show Listener File Content') {
-            steps {
-                script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-                    sh """
-                    docker run --rm \\
-                        --entrypoint /bin/sh \\
-                        -v \$(pwd)/merchant-api-test/target:/mnt \\
-                        ${imageUrl} \\
-                        -c '
-                          jarFile=\$(ls /mnt/merchant-api-test-*-test-jar-with-dependencies.jar 2>/dev/null)
-                          if [ -n "\$jarFile" ]; then
-                            unzip -p "\$jarFile" META-INF/services/org.testng.ITestNGListener || echo "❌ Listener file not found"
-                          fi
-                        '
-                    """
-                }
-            }
-        }
-
-        stage('DEBUG - Allure Results Presence in Container') {
-            steps {
-                script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-                    sh """
-                        docker run --rm \\
-                          -v \$(pwd)/allure-results:/app/target/allure-results \\
-                          --entrypoint /bin/sh \\
-                          ${imageUrl} \\
-                          -c 'ls -lah /app/target/allure-results && find /app -name "*.json"'
-                    """
-                }
-            }
-        }
-
-        stage('DEBUG - Inspect Allure Output Directory') {
+        stage('Validate Results Directory') {
             steps {
                 sh '''
-                echo "--- Listing contents of allure-results after test run ---"
-                ls -lah allure-results
-                find allure-results -type f
+                echo "--- Host machine ---"
+                ls -lah ${WORKSPACE}/allure-results
+                find ${WORKSPACE}/allure-results -type f
+
+                echo "--- Inside container ---"
+                docker run --rm -v ${WORKSPACE}/allure-results:/app/target/allure-results \
+                  ${imageUrl} \
+                  sh -c "ls -lah /app/target/allure-results && find /app/target/allure-results -type f"
                 '''
             }
         }
