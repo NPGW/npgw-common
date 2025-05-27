@@ -152,6 +152,26 @@ pipeline {
             }
         }
 
+        stage('DEBUG - List Allure Files in Container') {
+            steps {
+                script {
+                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+
+                    sh """
+                    docker run --rm \\
+                      -v `pwd`/allure-results:/app/target/allure-results \\
+                      --entrypoint /bin/sh \\
+                      ${imageUrl} \\
+                      -c '
+                        echo "--- Checking test results ---"
+                        ls -lah /app/target/allure-results
+                        find /app/target/allure-results -type f -name "*.json"
+                      '
+                    """
+                }
+            }
+        }
+
         stage('DEBUG - Show Listener File Content') {
             steps {
                 script {
