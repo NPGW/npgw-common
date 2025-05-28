@@ -131,8 +131,8 @@ pipeline {
                         unset AWS_SESSION_TOKEN
                         aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
 
-                        mkdir -p ${WORKSPACE}/allure-results
-                        chmod 777 ${WORKSPACE}/allure-results
+                        mkdir -p ${WORKSPACE}/target/allure-results
+                        chmod -R 777 ${WORKSPACE}/target
 
                         docker run --rm \\
                             -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
@@ -144,24 +144,27 @@ pipeline {
                             -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
                             -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
                             -e TEST_ENVIRONMENT=AWS \\
-                            -v ${WORKSPACE}/allure-results:/app/target/allure-results \\
+                            -v ${WORKSPACE}/target:/app/target \\
                             -v ${WORKSPACE}/npgw-services/tests/docker/docker-compose/testng-docker.xml:/app/testng-docker.xml \\
                             ${imageUrl} \\
                             sh -c "\\
-                                echo '--- Starting TestNG ---' && \\
-                                java -Dallure.results.directory=/app/target/allure-results \\
-                                     -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
-                                     org.testng.TestNG /app/testng-docker.xml || true && \\
-                                echo '--- TestNG finished ---' && \\
-                                echo '--- Inside container: allure-results content ---' && \\
-                                ls -lah /app/target/allure-results && \\
-                                find /app/target/allure-results -type f && \\
-                                echo '--- End of container debug ---'
-                            "
+                            echo '--- PRE-CHECK ---' && \\
+                            pwd && \\
+                            ls -lah && \\
+                            ls -lah /app/target && \\
+                            ls -lah /app/target/allure-results && \\
 
-                        echo '--- Jenkins workspace allure-results content ---'
-                        ls -lah ${WORKSPACE}/allure-results || true
-                        """
+                            java -Dallure.results.directory=/app/target/allure-results \\
+                                 -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
+                                 org.testng.TestNG testng-docker.xml || true
+
+                            echo '--- POST-TEST DEBUG ---' && \\
+                            ls -lah /app/target/allure-results && \\
+                            find /app/target/allure-results -type f
+                        "
+                    """
+                    sh "echo '--- Jenkins workspace allure-results content ---'"
+                    sh "ls -lah ${WORKSPACE}/target/allure-results"
                     }
                 }
             }
