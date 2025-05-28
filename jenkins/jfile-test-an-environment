@@ -120,8 +120,8 @@ pipeline {
         */
 
         stage('Run Api Tests') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                steps {
                     script {
                         def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
@@ -134,7 +134,6 @@ pipeline {
                         mkdir -p ${WORKSPACE}/allure-results
                         chmod 777 ${WORKSPACE}/allure-results
 
-                        set +e
                         docker run --rm \\
                             -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
                             -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
@@ -162,6 +161,7 @@ pipeline {
                 }
             }
         }
+
 
 
         stage('Validate Results Directory') {
