@@ -162,28 +162,6 @@ pipeline {
             }
         }
 
-
-
-        stage('Validate Results Directory') {
-            steps {
-                script {
-                    sh """
-                        echo '--- Allure results check ---'
-                        RESULTS_DIR="${WORKSPACE}/allure-results"
-
-                        # Check if directory exists
-                        if [ -d "$RESULTS_DIR" ]; then
-                            echo 'Found allure-results directory'
-                            # Check for JSON files without failing the build
-                            find "$RESULTS_DIR" -name '*.json' | grep . || echo '⚠️ No JSON files found'
-                        else
-                            echo '❌ allure-results directory not found'
-                        fi
-                    """
-                }
-            }
-        }
-
         stage('Debug Container') {
             steps {
                 script {
