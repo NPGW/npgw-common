@@ -228,7 +228,7 @@ pipeline {
                         cd ${WORKSPACE}
                         cd ${image.dockerContext}
 
-                        docker build -t "${imageUrl}" -f ${image.dockerFile} .
+                        docker build --no-cache -t "${imageUrl}" -f ${image.dockerFile} .
                         docker push "${imageUrl}"
                         """
                     }
