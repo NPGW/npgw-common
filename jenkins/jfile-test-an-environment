@@ -146,15 +146,14 @@ pipeline {
                         -e TEST_ENVIRONMENT=AWS \\
                         -v ${WORKSPACE}/allure-results:/app/target/allure-results \\
                         ${imageUrl} \\
-                        sh -c "\
-                            # Run tests first\
-                            java -Dallure.results.directory=/app/target/allure-results -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar xyz.npgw.test.common.run.Run && \
-                            # Debug after tests complete\
-                            echo '--- Container debug ---' && \
-                            whoami && \
-                            ls -lah /app/target/allure-results && \
-                            find /app/target/allure-results -type f && \
-                            echo '--- End debug ---'\
+                        sh -c "\\
+                            java -Dallure.results.directory=/app/target/allure-results \\
+                                 -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
+                                 org.testng.TestNG -listener io.qameta.allure.testng.AllureTestNg /app/testng.xml && \\
+                            echo '--- Container debug ---' && \\
+                            ls -lah /app/target/allure-results && \\
+                            find /app/target/allure-results -type f && \\
+                            echo '--- End debug ---'\\
                         "
 
                     EXIT_CODE=\$?
