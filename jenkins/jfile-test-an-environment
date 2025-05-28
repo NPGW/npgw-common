@@ -214,28 +214,28 @@ pipeline {
                 }
             }
         }
-    }
 
-    stage('Generate Allure Report') {
-        when {
-            always()
+        stage('Generate Allure Report') {
+            when {
+                always()
+            }
+            steps {
+                archiveArtifacts artifacts: 'allure-results/**/*', allowEmptyArchive: true
+                allure([
+                    includeProperties: false,
+                    reportBuildPolicy: 'ALWAYS',
+                    results: [[path: 'allure-results']]
+                ])
+            }
         }
-        steps {
-            archiveArtifacts artifacts: 'allure-results/**/*', allowEmptyArchive: true
-            allure([
-                includeProperties: false,
-                reportBuildPolicy: 'ALWAYS',
-                results: [[path: 'allure-results']]
-            ])
-        }
-    }
 
-    stage('Cleanup Workspace') {
-        when {
-            always()
-        }
-        steps {
-            cleanWs()
+        stage('Cleanup Workspace') {
+            when {
+                always()
+            }
+            steps {
+                cleanWs()
+            }
         }
     }
 }
