@@ -154,9 +154,14 @@ pipeline {
                             ls -lah /app/target && \\
                             ls -lah /app/target/allure-results && \\
 
+                            echo 'ALLURE RESULTS DIR (from system property):' && \\
                             java -Dallure.results.directory=/app/target/allure-results \\
                                  -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
-                                 org.testng.TestNG testng-docker.xml || true
+                                 xyz.npgw.test.common.run.PrintAllureDir && \\
+
+                            java -Dallure.results.directory=/app/target/allure-results \\
+                                 -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
+                                 org.testng.TestNG testng-docker.xml || true && \\
 
                             echo '--- POST-TEST DEBUG ---' && \\
                             ls -lah /app/target/allure-results && \\
