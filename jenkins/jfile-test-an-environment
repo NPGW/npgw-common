@@ -215,9 +215,9 @@ pipeline {
             }
         }
 
-        stage('Generate Allure Report') {
+        stage('Publish Allure Report') {
             when {
-                always()
+                expression { true }
             }
             steps {
                 archiveArtifacts artifacts: 'allure-results/**/*', allowEmptyArchive: true
@@ -231,7 +231,7 @@ pipeline {
 
         stage('Cleanup Workspace') {
             when {
-                always()
+                expression { true }
             }
             steps {
                 cleanWs()
