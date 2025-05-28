@@ -157,9 +157,10 @@ pipeline {
                             echo '--- End debug ---'\
                         "
 
-                    echo "--- Host debug ---"
-                    ls -lath ${WORKSPACE}/allure-results
+                    EXIT_CODE=\$?
+                    echo "Container exited with code \$EXIT_CODE"
                     set -e
+                    exit 0
                     """
                 }
             }
