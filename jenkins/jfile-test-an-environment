@@ -121,7 +121,7 @@ pipeline {
 
         stage('Run Api Tests') {
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script {
                         def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
@@ -147,15 +147,18 @@ pipeline {
                             -v ${WORKSPACE}/allure-results:/app/target/allure-results \\
                             -v ${WORKSPACE}/npgw-services/tests/docker/docker-compose/testng-docker.xml:/app/testng-docker.xml \\
                             ${imageUrl} \\
-                            sh -c "\\
-                                java -Dallure.results.directory=/app/target/allure-results \\
-                                     -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
-                                     org.testng.TestNG /app/testng-docker.xml && \\
-                                echo '--- Container debug ---' && \\
-                                ls -lah /app/target/allure-results && \\
-                                find /app/target/allure-results -type f && \\
-                                echo '--- End debug ---'\\
-                            "
+                                sh -c "\\
+                                    java -Dallure.results.directory=/app/target/allure-results \\
+                                         -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
+                                         org.testng.TestNG testng-docker.xml || true
+                                    echo '--- Post-test debug ---' && \\
+                                    ls -lah /app/target/allure-results && \\
+                                    find /app/target/allure-results -type f && \\
+                                    echo '--- End debug ---'\\
+                                "
+
+                            echo '--- Jenkins side workspace debug ---'
+                            ls -lah ${WORKSPACE}/allure-results
                         """
                     }
                 }
@@ -213,14 +216,25 @@ pipeline {
         }
     }
 
-    post {
-        always {
+    stage('Generate Allure Report') {
+        when {
+            always()
+        }
+        steps {
             archiveArtifacts artifacts: 'allure-results/**/*', allowEmptyArchive: true
             allure([
                 includeProperties: false,
                 reportBuildPolicy: 'ALWAYS',
                 results: [[path: 'allure-results']]
             ])
+        }
+    }
+
+    stage('Cleanup Workspace') {
+        when {
+            always()
+        }
+        steps {
             cleanWs()
         }
     }
