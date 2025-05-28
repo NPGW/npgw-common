@@ -147,18 +147,20 @@ pipeline {
                             -v ${WORKSPACE}/allure-results:/app/target/allure-results \\
                             -v ${WORKSPACE}/npgw-services/tests/docker/docker-compose/testng-docker.xml:/app/testng-docker.xml \\
                             ${imageUrl} \\
-                                sh -c "\\
-                                    java -Dallure.results.directory=/app/target/allure-results \\
-                                         -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
-                                         org.testng.TestNG testng-docker.xml || true
-                                    echo '--- Post-test debug ---' && \\
-                                    ls -lah /app/target/allure-results && \\
-                                    find /app/target/allure-results -type f && \\
-                                    echo '--- End debug ---'\\
-                                "
+                            sh -c "\\
+                                echo '--- Starting TestNG ---' && \\
+                                java -Dallure.results.directory=/app/target/allure-results \\
+                                     -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
+                                     org.testng.TestNG /app/testng-docker.xml || true && \\
+                                echo '--- TestNG finished ---' && \\
+                                echo '--- Inside container: allure-results content ---' && \\
+                                ls -lah /app/target/allure-results && \\
+                                find /app/target/allure-results -type f && \\
+                                echo '--- End of container debug ---'
+                            "
 
-                            echo '--- Jenkins side workspace debug ---'
-                            ls -lah ${WORKSPACE}/allure-results
+                        echo '--- Jenkins workspace allure-results content ---'
+                        ls -lah ${WORKSPACE}/allure-results || true
                         """
                     }
                 }
