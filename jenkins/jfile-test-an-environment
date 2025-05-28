@@ -155,13 +155,9 @@ pipeline {
                             ls -lah /app/target/allure-results && \\
 
                             echo 'ALLURE RESULTS DIR (from system property):' && \\
-                            java -Dallure.results.directory=/app/target/allure-results \\
-                                 -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
-                                 xyz.npgw.test.common.run.PrintAllureDir && \\
-
-                            java -Dallure.results.directory=/app/target/allure-results \\
-                                 -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
-                                 org.testng.TestNG testng-docker.xml || true && \\
+                            java -Dallure.results.directory=/app/target/allure-results \
+                                 -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \
+                                 xyz.npgw.test.common.run.Run \\
 
                             echo '--- POST-TEST DEBUG ---' && \\
                             ls -lah /app/target/allure-results && \\
@@ -171,31 +167,6 @@ pipeline {
                     sh "echo '--- Jenkins workspace allure-results content ---'"
                     sh "ls -lah ${WORKSPACE}/target/allure-results"
                     }
-                }
-            }
-        }
-
-        stage('Debug Container') {
-            steps {
-                script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
-
-                    sh """
-                    docker run -d --name test-debug \
-                      -v ${WORKSPACE}/allure-results:/app/target/allure-results \
-                      ${imageUrl} \
-                      tail -f /dev/null  # Keep container running
-                    """
-
-                    sh """
-                    docker exec test-debug sh -c "
-                        echo '--- Container debug ---' &&
-                        ls -lah /app/target/allure-results &&
-                        find /app/target/allure-results -type f
-                    "
-                    """
-
-                    sh "docker stop test-debug && docker rm test-debug"
                 }
             }
         }
@@ -226,16 +197,22 @@ pipeline {
         }
 
         stage('Publish Allure Report') {
-            when {
-                expression { true }
-            }
             steps {
-                archiveArtifacts artifacts: 'allure-results/**/*', allowEmptyArchive: true
-                allure([
-                    includeProperties: false,
-                    reportBuildPolicy: 'ALWAYS',
-                    results: [[path: 'allure-results']]
-                ])
+                withEnv(["PATH+ALLURE=${tool 'allure'}/bin"]) {
+                    echo 'DEBUG - Contents of Jenkins-side allure results:'
+                    sh 'ls -lahR target/allure-results || true'
+
+                    // Ensure Jenkins can write to the folder
+                    sh 'chmod -R 777 target/allure-results || true'
+
+                    archiveArtifacts artifacts: 'target/allure-results/**/*', allowEmptyArchive: true
+
+                    allure([
+                        includeProperties: false,
+                        reportBuildPolicy: 'ALWAYS',
+                        results: [[path: 'target/allure-results']]
+                    ])
+                }
             }
         }
 
