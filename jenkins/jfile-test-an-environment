@@ -121,49 +121,48 @@ pipeline {
 
         stage('Run Api Tests') {
             steps {
-                script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script {
+                        def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
-                    sh """
-                    unset AWS_ACCESS_KEY_ID
-                    unset AWS_SECRET_ACCESS_KEY
-                    unset AWS_SESSION_TOKEN
-                    aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
+                        sh """
+                        unset AWS_ACCESS_KEY_ID
+                        unset AWS_SECRET_ACCESS_KEY
+                        unset AWS_SESSION_TOKEN
+                        aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
 
-                    mkdir -p ${WORKSPACE}/allure-results
-                    chmod 777 ${WORKSPACE}/allure-results
+                        mkdir -p ${WORKSPACE}/allure-results
+                        chmod 777 ${WORKSPACE}/allure-results
 
-                    set +e
-                    docker run --rm \\
-                        -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
-                        -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
-                        -e SERVICE_MERCHANT_USER_EMAIL=test@email.com \\
-                        -e SERVICE_MERCHANT_USER_PASSWORD=Qwerty123! \\
-                        -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
-                        -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
-                        -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
-                        -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
-                        -e TEST_ENVIRONMENT=AWS \\
-                        -v ${WORKSPACE}/allure-results:/app/target/allure-results \\
-                        ${imageUrl} \\
-                        sh -c "\\
-                            java -Dallure.results.directory=/app/target/allure-results \\
-                                 -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
-                                 org.testng.TestNG -listener io.qameta.allure.testng.AllureTestNg /app/testng.xml && \\
-                            echo '--- Container debug ---' && \\
-                            ls -lah /app/target/allure-results && \\
-                            find /app/target/allure-results -type f && \\
-                            echo '--- End debug ---'\\
-                        "
-
-                    EXIT_CODE=\$?
-                    echo "Container exited with code \$EXIT_CODE"
-                    set -e
-                    exit 0
-                    """
+                        set +e
+                        docker run --rm \\
+                            -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
+                            -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
+                            -e SERVICE_MERCHANT_USER_EMAIL=test@email.com \\
+                            -e SERVICE_MERCHANT_USER_PASSWORD=Qwerty123! \\
+                            -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
+                            -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
+                            -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
+                            -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
+                            -e TEST_ENVIRONMENT=AWS \\
+                            -v ${WORKSPACE}/allure-results:/app/target/allure-results \\
+                            -v ${WORKSPACE}/npgw-services/tests/docker/docker-compose/testng-docker.xml:/app/testng-docker.xml \\
+                            ${imageUrl} \\
+                            sh -c "\\
+                                java -Dallure.results.directory=/app/target/allure-results \\
+                                     -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
+                                     org.testng.TestNG /app/testng-docker.xml && \\
+                                echo '--- Container debug ---' && \\
+                                ls -lah /app/target/allure-results && \\
+                                find /app/target/allure-results -type f && \\
+                                echo '--- End debug ---'\\
+                            "
+                        """
+                    }
                 }
             }
         }
+
 
         stage('Validate Results Directory') {
             steps {
