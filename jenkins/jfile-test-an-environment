@@ -157,7 +157,8 @@ pipeline {
                             echo 'ALLURE RESULTS DIR (from system property):' && \\
                             java -Dallure.results.directory=/app/target/allure-results \
                                  -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \
-                                 xyz.npgw.test.common.run.Run \\
+                                 xyz.npgw.test.common.run.Run | tee /app/target/debug.log && \
+                             cat /app/target/debug.log\\
 
                             echo '--- POST-TEST DEBUG ---' && \\
                             ls -lah /app/target/allure-results && \\
@@ -176,7 +177,7 @@ pipeline {
                 withEnv(["PATH+ALLURE=${tool 'allure'}/bin"]) {
 
                     echo "DEBUG - Contents of allure-results:"
-                    sh 'ls -R allure-results'
+                    sh 'ls -R target/allure-results'
 
                     sh 'allure generate allure-results --clean -o allure-report'
                 }
