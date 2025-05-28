@@ -146,13 +146,15 @@ pipeline {
                         -e TEST_ENVIRONMENT=AWS \\
                         -v ${WORKSPACE}/allure-results:/app/target/allure-results \\
                         ${imageUrl} \\
-                        sh -c "
-                            java -Dallure.results.directory=/app/target/allure-results -cp ... &&
-                            echo '--- Container debug ---' &&
-                            whoami &&
-                            ls -lah /app/target/allure-results &&
-                            find /app/target/allure-results -type f &&
-                            echo '--- End debug ---'
+                        sh -c "\
+                            # Run tests first\
+                            java -Dallure.results.directory=/app/target/allure-results -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar xyz.npgw.test.common.run.Run && \
+                            # Debug after tests complete\
+                            echo '--- Container debug ---' && \
+                            whoami && \
+                            ls -lah /app/target/allure-results && \
+                            find /app/target/allure-results -type f && \
+                            echo '--- End debug ---'\
                         "
 
                     echo "--- Host debug ---"
@@ -163,32 +165,47 @@ pipeline {
             }
         }
 
-        stage('Verify Permissions') {
-            steps {
-                sh """
-                echo "--- Final Permissions ---"
-                ls -ld ${WORKSPACE}/allure-results
-                ls -l ${WORKSPACE}/allure-results
-                """
-            }
-        }
-
         stage('Validate Results Directory') {
             steps {
                 script {
                     sh """
-                        echo "--- Allure results check ---"
+                        echo '--- Allure results check ---'
                         RESULTS_DIR="${WORKSPACE}/allure-results"
 
                         # Check if directory exists
-                        if [ -d "\$RESULTS_DIR" ]; then
-                            echo "Found allure-results directory"
+                        if [ -d "$RESULTS_DIR" ]; then
+                            echo 'Found allure-results directory'
                             # Check for JSON files without failing the build
-                            find "\$RESULTS_DIR" -name '*.json' | grep . || echo "⚠️ No JSON files found"
+                            find "$RESULTS_DIR" -name '*.json' | grep . || echo '⚠️ No JSON files found'
                         else
-                            echo "❌ allure-results directory not found"
+                            echo '❌ allure-results directory not found'
                         fi
                     """
+                }
+            }
+        }
+
+        stage('Debug Container') {
+            steps {
+                script {
+                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+
+                    sh """
+                    docker run -d --name test-debug \
+                      -v ${WORKSPACE}/allure-results:/app/target/allure-results \
+                      ${imageUrl} \
+                      tail -f /dev/null  # Keep container running
+                    """
+
+                    sh """
+                    docker exec test-debug sh -c "
+                        echo '--- Container debug ---' &&
+                        ls -lah /app/target/allure-results &&
+                        find /app/target/allure-results -type f
+                    "
+                    """
+
+                    sh "docker stop test-debug && docker rm test-debug"
                 }
             }
         }
