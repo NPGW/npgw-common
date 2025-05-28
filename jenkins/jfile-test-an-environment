@@ -131,6 +131,8 @@ pipeline {
                     aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
 
                     mkdir -p ${WORKSPACE}/allure-results
+                    chmod 777 ${WORKSPACE}/allure-results
+
                     set +e
                     docker run --rm \\
                         -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
@@ -143,11 +145,31 @@ pipeline {
                         -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
                         -e TEST_ENVIRONMENT=AWS \\
                         -v ${WORKSPACE}/allure-results:/app/target/allure-results \\
-                        ${imageUrl}
-                    echo "Container exited with code \$?"
+                        ${imageUrl} \\
+                        sh -c "
+                            java -Dallure.results.directory=/app/target/allure-results -cp ... &&
+                            echo '--- Container debug ---' &&
+                            whoami &&
+                            ls -lah /app/target/allure-results &&
+                            find /app/target/allure-results -type f &&
+                            echo '--- End debug ---'
+                        "
+
+                    echo "--- Host debug ---"
+                    ls -lath ${WORKSPACE}/allure-results
                     set -e
                     """
                 }
+            }
+        }
+
+        stage('Verify Permissions') {
+            steps {
+                sh """
+                echo "--- Final Permissions ---"
+                ls -ld ${WORKSPACE}/allure-results
+                ls -l ${WORKSPACE}/allure-results
+                """
             }
         }
 
