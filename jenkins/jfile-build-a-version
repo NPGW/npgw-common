@@ -59,7 +59,7 @@ pipeline {
 
                             gh workflow run build-draft-release.yml \\
                                 --repo NPGW/npgw-services \\
-                                --ref add-allure-results \\
+                                --ref add-allure-reports \\
                                 -f version=${env.RELEASE_VERSION}
                         """
                     }
