@@ -147,26 +147,24 @@ pipeline {
                             -v ${WORKSPACE}/target:/app/target \\
                             -v ${WORKSPACE}/npgw-services/tests/docker/docker-compose/testng-docker.xml:/app/testng-docker.xml \\
                             ${imageUrl} \\
-                            sh -c "\\
-                            echo '--- PRE-CHECK ---' && \\
+                            sh -c \\
+                            'echo "--- PRE-CHECK ---" && \\
                             pwd && \\
-                            ls -lah && \\
                             ls -lah /app/target && \\
                             ls -lah /app/target/allure-results && \\
+                            echo "ALLURE RESULTS DIR (from system property):" && \\
+                            java -Dallure.results.directory=/app/target/allure-results \\
+                                 -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \\
+                                 xyz.npgw.test.common.run.Run && \\
+                            chmod -R 777 /app/target/allure-results && \\
+                            echo "ALLURE CONTENTS IN CONTAINER:" && \\
+                            find /app/target/allure-results -type f && \\
+                            echo "--- POST-TEST DEBUG ---" && \\
+                            ls -lah /app/target/allure-results'
+                        """
 
-                            echo 'ALLURE RESULTS DIR (from system property):' && \\
-                            java -Dallure.results.directory=/app/target/allure-results \
-                                 -cp merchant-api-test-jar-with-dependencies.jar:portal-api-test-jar-with-dependencies.jar \
-                                 xyz.npgw.test.common.run.Run | tee /app/target/debug.log && \
-                             cat /app/target/debug.log\\
-
-                            echo '--- POST-TEST DEBUG ---' && \\
-                            ls -lah /app/target/allure-results && \\
-                            find /app/target/allure-results -type f
-                        "
-                    """
-                    sh "echo '--- Jenkins workspace allure-results content ---'"
-                    sh "ls -lah ${WORKSPACE}/target/allure-results"
+                        sh "echo '--- Jenkins workspace allure-results content ---'"
+                        sh "ls -lah ${WORKSPACE}/target/allure-results"
                     }
                 }
             }
