@@ -180,6 +180,16 @@ pipeline {
             }
         }
 
+        stage('Verify Run.class in downloaded JAR') {
+            steps {
+                sh '''
+                  echo "Verifying Run.class in downloaded JAR:"
+                  jar tf npgw-services/tests/merchant-api-test/target/merchant-api-test-*.jar | grep Run.class || true
+                  unzip -p npgw-services/tests/merchant-api-test/target/merchant-api-test-*.jar xyz/npgw/test/common/run/Run.class | strings | grep DEBUG || true
+                '''
+            }
+        }
+
         stage('Test in embedded environment (EE)') {
             when {
                 expression {
