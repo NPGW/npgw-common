@@ -27,12 +27,6 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
-            steps {
-                git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
-            }
-        }
-
         stage('Get Release Version') {
             steps {
                 script {

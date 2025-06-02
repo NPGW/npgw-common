@@ -625,7 +625,7 @@ components:
           $ref: '#/components/schemas/CurrencyCode'
         notificationUrl:
           type: string
-          description: The merchant URL which should be used for server-to-server webhooks.
+          description: The merchant HTTPS Endpoint to be used for server-to-server webhooks. Please note that the Gateway doesn’t guarantee the delivery of notifications in the order that they’re generated, and as such ensure your event destination isn't dependent on receiving events in a specific order. 
           example: https://example.com/notification_endpoint
         redirectUrlSuccess:
           type: string

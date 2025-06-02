@@ -1305,8 +1305,6 @@ components:
       properties:
         companyName:
           type: string
-        companyTitle:
-          type: string
         companyType:
           type: string
         companyAddress:
@@ -1447,7 +1445,7 @@ components:
         currency:
           $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
         paymentMethod:
-          type: string
+          $ref: '../api-merchant.yaml#/components/schemas/PaymentMethod'
         amountFrom:
           type: integer
         amountTo:
