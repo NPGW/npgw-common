@@ -142,10 +142,7 @@ pipeline {
                             -e TEST_ENVIRONMENT=AWS \\
                             -v ${WORKSPACE}/allure-results:/allure-results \\
                             ${imageUrl} \\
-                            sh -c \\
-                            'echo "--- PRE-CHECK ---" && \\
-                            pwd && \\
-                            ls -lah /allure-results && \\
+                            sh -c "pwd && ls -lah /allure-results"
                         """
 
                         sh "echo '--- Jenkins workspace allure-results content ---'"
