@@ -17,6 +17,15 @@ pipeline {
     }
 
     stages {
+        stage('Docker Cleanup') {
+            steps {
+                sh '''
+                    echo "Starting Docker cleanup to free up disk space..."
+                    docker system prune -a -f --volumes
+                '''
+            }
+        }
+
         stage('Checkout') {
             steps {
                 dir('npgw-services') {
