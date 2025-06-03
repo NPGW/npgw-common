@@ -149,6 +149,19 @@ pipeline {
             }
         }
 
+        stage('Download Allure History') {
+            steps {
+                script {
+                    withAWSCreds {
+                        sh """
+                            mkdir -p allure-results/history
+                            aws s3 cp ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/history/ allure-results/history/ --recursive || echo "No previous history found (likely first run)."
+                        """
+                    }
+                }
+            }
+        }
+
         stage('Generate Allure Report') {
             steps {
                 withEnv(["PATH+ALLURE=${tool 'allure'}/bin"]) {
