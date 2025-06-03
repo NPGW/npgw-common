@@ -152,8 +152,8 @@ pipeline {
         stage('Create Allure History Folder') {
             steps {
                 sh """
-                    sudo chown -R $(id -u):$(id -g) ${WORKSPACE}/allure-results || true'
-                    mkdir -p ${WORKSPACE}/allure-results/history'
+                    sudo chown -R $(id -u):$(id -g) ${WORKSPACE}/allure-results || true
+                    mkdir -p ${WORKSPACE}/allure-results/history
                 """
             }
         }
