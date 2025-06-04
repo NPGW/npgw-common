@@ -232,6 +232,19 @@ paths:
           integration.request.path.companyName: method.request.path.companyName
           integration.request.path.merchantId: method.request.path.merchantId
 
+  /company/{companyName}/merchant/user:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/company/{companyName}/merchant/user'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.companyName: method.request.path.companyName
+
   /acquirer:
     get:
       x-amazon-apigateway-integration:
@@ -338,6 +351,20 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
           integration.request.path.merchantId: method.request.path.merchantId
+
+  /merchant-acquirer/{merchantId}/{priority}:
+    patch:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: PATCH
+        uri: '${uri}/merchant-acquirer/{merchantId}/{priority}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.merchantId: method.request.path.merchantId
+          integration.request.path.priority: method.request.path.priority
 
   /transaction/history:
     post:
