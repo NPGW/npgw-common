@@ -1,5 +1,20 @@
+def withAWSCreds(body) {
+    withEnv([
+        "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
+        "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
+        "AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}",
+        "AWS_REGION=${env.AWS_REGION}"
+    ]) {
+        body()
+    }
+}
+
 pipeline {
     agent { label 'build-node' }
+
+    tools {
+        allure 'allure'
+    }
 
     parameters {
         string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Image version to use')
@@ -9,6 +24,7 @@ pipeline {
     environment {
         AWS_REGION = 'eu-central-1'
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
+        S3_ALLURE_ROOT = 's3://npgw-testing/allure-history'
     }
 
     stages {
@@ -91,13 +107,7 @@ pipeline {
                 script {
                     echo "Seeding AWS data for environment: ${params.ENVIRONMENT_NAME}"
                     dir('npgw-services/tests/docker/docker-compose') {
-                        withEnv([
-                            "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
-                            "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
-                            "AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}",
-                            "AWS_REGION=${env.AWS_REGION}",
-                            "DEPLOY_ENV=${params.ENVIRONMENT_NAME}"
-                        ]) {
+                        withAWSCreds {
                             sh """
                                 chmod +x aws-seed-script.sh
                                 ./aws-seed-script.sh
@@ -110,35 +120,90 @@ pipeline {
 
         stage('Run Api Tests') {
             steps {
-                script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script {
+                        def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
-                    sh """
-                    unset AWS_ACCESS_KEY_ID
-                    unset AWS_SECRET_ACCESS_KEY
-                    unset AWS_SESSION_TOKEN
-                    aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
-
-                    docker run --rm \\
-                        -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
-                        -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
-                        -e SERVICE_MERCHANT_USER_EMAIL=test@email.com \\
-                        -e SERVICE_MERCHANT_USER_PASSWORD=Qwerty123! \\
-                        -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
-                        -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
-                        -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
-                        -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
-                        -e TEST_ENVIRONMENT=AWS \\
-                        ${imageUrl}
-                    """
+                        sh """
+                        unset AWS_ACCESS_KEY_ID
+                        unset AWS_SECRET_ACCESS_KEY
+                        unset AWS_SESSION_TOKEN
+                        aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
+                        docker run --rm \\
+                            -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
+                            -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
+                            -e SERVICE_MERCHANT_USER_EMAIL=test@email.com \\
+                            -e SERVICE_MERCHANT_USER_PASSWORD=Qwerty123! \\
+                            -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
+                            -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
+                            -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
+                            -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
+                            -e TEST_ENVIRONMENT=AWS \\
+                            -v ${WORKSPACE}/allure-results:/allure-results \\
+                            ${imageUrl}
+                        """
+                    }
                 }
             }
         }
-    }
 
-    post {
-        always {
-            cleanWs()
+        stage('Create Allure History Folder') {
+            steps {
+                sh 'sudo chown -R $(id -u):$(id -g) ${WORKSPACE}/allure-results || true'
+                sh 'mkdir -p ${WORKSPACE}/allure-results/history'
+
+            }
+        }
+
+        stage('Download Allure History') {
+            steps {
+                script {
+                    withAWSCreds {
+                        sh """
+                            aws s3 cp ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/history/ ${WORKSPACE}/allure-results/history/ --recursive || echo "No previous history found (likely first run)."
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Generate Allure Report') {
+            steps {
+                withEnv(["PATH+ALLURE=${tool 'allure'}/bin"]) {
+                    sh 'allure generate allure-results --clean -o allure-report'
+                }
+            }
+        }
+
+        stage('Upload Allure Report and History to S3') {
+            steps {
+                script {
+                    sh """
+                        aws s3 cp allure-report/ ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/report/ --recursive
+                        aws s3 cp allure-report/history/ ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/history/ --recursive
+                    """
+                    }
+            }
+        }
+
+        stage('Notify via Slack') {
+            steps {
+                script {
+                    def s3ReportUrl = "https://npgw-testing.s3.eu-central-1.amazonaws.com/allure-history/${params.ENVIRONMENT_NAME}/report/index.html"
+
+                    slackSend(
+                        channel: '#npgw-notification-jenkins',
+                        color: currentBuild.currentResult == 'SUCCESS' ? 'good' : 'danger',
+                        message: "*[${env.JOB_NAME} #${env.BUILD_NUMBER}]* Allure report for `${params.ENVIRONMENT_NAME}`:\n${s3ReportUrl}"
+                    )
+                }
+            }
+        }
+
+        stage('Cleanup Workspace') {
+            steps {
+                cleanWs()
+            }
         }
     }
 }
