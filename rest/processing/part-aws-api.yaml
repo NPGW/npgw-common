@@ -1,17 +1,4 @@
 paths:
-  /transaction/{transactionId}:
-    get:
-      x-amazon-apigateway-integration:
-        connectionType: ${connectionType}
-        connectionId: ${connectionId}
-        type: ${type}
-        httpMethod: GET
-        uri: '${uri}/transaction/{transactionId}'
-        passthroughBehavior: ${passthroughBehavior}
-        requestParameters:
-          integration.request.header.Accept: "' '"
-          integration.request.path.transactionId: method.request.path.transactionId
-
   /transaction:
     get:
       x-amazon-apigateway-integration:
@@ -34,6 +21,58 @@ paths:
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
+
+  /transaction/{transactionId}:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/transaction/{transactionId}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.transactionId: method.request.path.transactionId
+
+  /transaction/{transactionId}/capture:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/transaction/{transactionId}/capture'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.transactionId: method.request.path.transactionId
+
+  /transaction/{transactionId}/refund:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/transaction/{transactionId}/refund'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.transactionId: method.request.path.transactionId
+
+  /transaction/{transactionId}/cancel:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/transaction/{transactionId}/refund'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.transactionId: method.request.path.transactionId
 
   /token:
     post:
