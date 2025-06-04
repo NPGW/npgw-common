@@ -120,6 +120,7 @@ pipeline {
 
         stage('Run Api Tests') {
             steps {
+                env.TESTS_FAILED = 'false'
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script {
                         def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
@@ -143,6 +144,9 @@ pipeline {
                             ${imageUrl}
                         """
                     }
+                    if (currentBuild.currentResult == 'FAILURE' || currentBuild.result == 'FAILURE') {
+                                    env.TESTS_FAILED = 'true'
+                                }
                 }
             }
         }
@@ -196,6 +200,16 @@ pipeline {
                         color: currentBuild.currentResult == 'SUCCESS' ? 'good' : 'danger',
                         message: "*[${env.JOB_NAME} #${env.BUILD_NUMBER}]* Allure report for `${params.ENVIRONMENT_NAME}`:\n${s3ReportUrl}"
                     )
+                }
+            }
+        }
+
+        stage('Fail Pipeline if Tests Failed') {
+            steps {
+                script {
+                    if (env.TESTS_FAILED == 'true') {
+                        error("API tests failed.")
+                    }
                 }
             }
         }
