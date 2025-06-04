@@ -143,10 +143,12 @@ pipeline {
                                 -e TEST_ENVIRONMENT=AWS \\
                                 -v ${WORKSPACE}/allure-results:/allure-results \\
                                 ${imageUrl}
-                            """
+                            """,
+                            returnStatus: true
                         )
                         if (status != 0) {
                             testsFailed = true
+                            error("Tests failed")
                         }
                     }
                 }
