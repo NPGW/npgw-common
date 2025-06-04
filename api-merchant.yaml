@@ -144,10 +144,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Transaction'
+              $ref: '#/components/schemas/Amount'
         required: true
       responses:
-        '201':
+        '200':
           $ref: '#/components/responses/TransactionResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
@@ -590,31 +590,12 @@ components:
         - PURCHASE
         - AUTH
 
-    BaseTransaction:
+    Amount:
       type: object
       required:
-        - merchantId
         - amount
         - currency
-        - redirectUrlSuccess
-        - redirectUrlCancel
-        - redirectUrlFail
-        - paymentDetails
       properties:
-        merchantId:
-          type: string
-          description: Unique merchant id in the NPGW system.
-          example: company786
-        externalTransactionId:
-          type: string
-          description: Unique transaction id in merchant's system.
-          example: REF00L00000
-          minLength: 1
-          maxLength: 30
-          pattern: '^[a-zA-Z0-9]*$'
-        type:
-          $ref: '#/components/schemas/TransactionType'
-          default: PURCHASE
         amount:
           type: integer
           minimum: 1
@@ -623,34 +604,60 @@ components:
           example: 1999
         currency:
           $ref: '#/components/schemas/CurrencyCode'
-        notificationUrl:
-          type: string
-          description: The merchant HTTPS Endpoint to be used for server-to-server webhooks. Please note that the Gateway doesn’t guarantee the delivery of notifications in the order that they’re generated, and as such ensure your event destination isn't dependent on receiving events in a specific order. 
-          example: https://example.com/notification_endpoint
-        redirectUrlSuccess:
-          type: string
-          description: The merchant URL to which the user should be redirected in case of a successful transaction.
-          example: https://example.com/success
-        redirectUrlCancel:
-          type: string
-          description: The merchant URL to which the user should be redirected in case of a cancelled transaction.
-          example: https://example.com/cancel
-        redirectUrlFail:
-          type: string
-          description: The merchant URL to which the user should be redirected in case of a failed transaction.
-          example: https://example.com/failed
-        expiresAt:
-          format: date-time
-          type: string
-          description: |
-            ISO 8601. Time of the transaction expiration, minimum allowed is _timestamp+30min_ (will be set by default if field is omitted). 
-            If the transaction is not completed within this time, we will reject any attempt to complete it. 
-            The expiration is extended each time a user (re-)submits a payment, so provided expiration date will be updated in most cases. 
-            Max value is _(now)+3h_
-          example: 2021-12-22T05:17:56.323Z
-        paymentDetails:
-          oneOf:
-            - $ref: '#/components/schemas/CreditCardDetails'
+
+    BaseTransaction:
+      allOf:
+        - $ref: '#/components/schemas/Amount'
+        - type: object
+          required:
+            - merchantId
+            - redirectUrlSuccess
+            - redirectUrlCancel
+            - redirectUrlFail
+            - paymentDetails
+          properties:
+            merchantId:
+              type: string
+              description: Unique merchant id in the NPGW system.
+              example: company786
+            externalTransactionId:
+              type: string
+              description: Unique transaction id in merchant's system.
+              example: REF00L00000
+              minLength: 1
+              maxLength: 30
+              pattern: '^[a-zA-Z0-9]*$'
+            type:
+              $ref: '#/components/schemas/TransactionType'
+              default: PURCHASE
+            notificationUrl:
+              type: string
+              description: The merchant HTTPS Endpoint to be used for server-to-server webhooks. Please note that the Gateway doesn’t guarantee the delivery of notifications in the order that they’re generated, and as such ensure your event destination isn't dependent on receiving events in a specific order.
+              example: https://example.com/notification_endpoint
+            redirectUrlSuccess:
+              type: string
+              description: The merchant URL to which the user should be redirected in case of a successful transaction.
+              example: https://example.com/success
+            redirectUrlCancel:
+              type: string
+              description: The merchant URL to which the user should be redirected in case of a cancelled transaction.
+              example: https://example.com/cancel
+            redirectUrlFail:
+              type: string
+              description: The merchant URL to which the user should be redirected in case of a failed transaction.
+              example: https://example.com/failed
+            expiresAt:
+              format: date-time
+              type: string
+              description: |
+                ISO 8601. Time of the transaction expiration, minimum allowed is _timestamp+30min_ (will be set by default if field is omitted). 
+                If the transaction is not completed within this time, we will reject any attempt to complete it. 
+                The expiration is extended each time a user (re-)submits a payment, so provided expiration date will be updated in most cases. 
+                Max value is _(now)+3h_
+              example: 2021-12-22T05:17:56.323Z
+            paymentDetails:
+              oneOf:
+                - $ref: '#/components/schemas/CreditCardDetails'
 
     TransactionStatus:
       type: string
