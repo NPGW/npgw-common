@@ -1414,8 +1414,10 @@ components:
           type: string
         isPortalActive:
           type: boolean
+          default: true
         isApiActive:
           type: boolean
+          default: true
 
     Merchant:
       type: object
@@ -1500,6 +1502,7 @@ components:
       required:
         - merchantId
         - acquirerName
+        - currencyList
       properties:
         merchantId:
           type: string
@@ -1511,6 +1514,7 @@ components:
             $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
         isActive:
           type: boolean
+          default: true
 
     IdMerchantAcquirer:
       type: object
