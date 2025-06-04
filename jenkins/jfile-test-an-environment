@@ -121,32 +121,34 @@ pipeline {
 
         stage('Run Api Tests') {
             steps {
-                script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script {
+                        def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
 
-                    def status = sh(
-                        script: """
-                        unset AWS_ACCESS_KEY_ID
-                        unset AWS_SECRET_ACCESS_KEY
-                        unset AWS_SESSION_TOKEN
-                        aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
-                        docker run --rm \\
-                            -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
-                            -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
-                            -e SERVICE_MERCHANT_USER_EMAIL=test@email.com \\
-                            -e SERVICE_MERCHANT_USER_PASSWORD=Qwerty123! \\
-                            -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
-                            -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
-                            -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
-                            -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
-                            -e TEST_ENVIRONMENT=AWS \\
-                            -v ${WORKSPACE}/allure-results:/allure-results \\
-                            ${imageUrl}
-                        """,
-                        returnStatus: true
-                    )
-                    if (status != 0) {
-                        testsFailed = true
+                        def status = sh(
+                            script: """
+                            unset AWS_ACCESS_KEY_ID
+                            unset AWS_SECRET_ACCESS_KEY
+                            unset AWS_SESSION_TOKEN
+                            aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
+                            docker run --rm \\
+                                -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
+                                -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
+                                -e SERVICE_MERCHANT_USER_EMAIL=test@email.com \\
+                                -e SERVICE_MERCHANT_USER_PASSWORD=Qwerty123! \\
+                                -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
+                                -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
+                                -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
+                                -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
+                                -e TEST_ENVIRONMENT=AWS \\
+                                -v ${WORKSPACE}/allure-results:/allure-results \\
+                                ${imageUrl}
+                            """,
+                            returnStatus: true
+                        )
+                        if (status != 0) {
+                            testsFailed = true
+                        }
                     }
                 }
             }
