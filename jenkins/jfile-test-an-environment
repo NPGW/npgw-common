@@ -205,6 +205,12 @@ pipeline {
             }
         }
 
+        stage('Cleanup Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
         stage('Fail Pipeline if Tests Failed') {
             steps {
                 script {
@@ -212,12 +218,6 @@ pipeline {
                         error("API tests failed.")
                     }
                 }
-            }
-        }
-
-        stage('Cleanup Workspace') {
-            steps {
-                cleanWs()
             }
         }
     }
