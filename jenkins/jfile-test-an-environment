@@ -13,15 +13,6 @@ def testsFailed = false
 pipeline {
     agent { label 'build-node' }
 
-    stage('Check Allure') {
-      steps {
-        sh '''
-          echo ">>> which allure:"
-          which allure || echo "Allure not found on PATH"
-        '''
-      }
-    }
-
     parameters {
         string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Image version to use')
         choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'prod', 'sandbox'], description: 'Deployment environment')
@@ -34,6 +25,16 @@ pipeline {
     }
 
     stages {
+
+        stage('Check Allure') {
+          steps {
+            sh '''
+              echo ">>> which allure:"
+              which allure || echo "Allure not found on PATH"
+            '''
+          }
+        }
+
         stage('Determine url where run tests') {
             steps {
                 script {
