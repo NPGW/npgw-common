@@ -2,9 +2,11 @@ pipeline {
   agent { label 'build-node' }
 
   parameters {
+    string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to deploy from')
     choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'sandbox', 'prod'], description: 'Target environment')
     string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'ECR image tag to use')
-    choice(name: 'TERRAFORM_ACTION', choices: ['plan', 'apply', 'destroy'], description: 'Terraform action to perform')
+    choice(name: 'CUSTOM_ACTION', choices: ['plan', 'apply', 'other'], description: 'Terraform action (destroy must be typed manually)')
+    string(name: 'DESTROY_CONFIRMATION', defaultValue: '', description: 'To destroy, type "destroy" exactly')
   }
 
   environment {
@@ -19,7 +21,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git branch: 'main', credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git'
+        git branch: "${params.GIT_BRANCH}", credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git'
       }
     }
 
@@ -73,9 +75,7 @@ pipeline {
     stage('Create var.tfvars') {
       steps {
         dir('infra') {
-          sh """
-            echo 'image_source_tag = "${IMAGE_REPO}:${params.IMAGE_TAG}"' > var.tfvars
-          """
+          sh "echo 'image_source_tag = \"${IMAGE_REPO}:${params.IMAGE_TAG}\"' > var.tfvars"
         }
       }
     }
@@ -126,7 +126,7 @@ pipeline {
 
     stage('Terraform Plan') {
       when {
-        expression { params.TERRAFORM_ACTION == 'plan' || params.TERRAFORM_ACTION == 'apply' }
+        expression { params.CUSTOM_ACTION == 'plan' }
       }
       steps {
         dir('infra') {
@@ -137,11 +137,10 @@ pipeline {
 
     stage('Terraform Apply') {
       when {
-        expression { params.TERRAFORM_ACTION == 'apply' }
+        expression { params.CUSTOM_ACTION == 'apply' }
       }
       steps {
         dir('infra') {
-          // No manual approval for apply
           sh "terraform apply -auto-approve -var='environment=${params.ENVIRONMENT_NAME}' -var-file=var.tfvars"
         }
       }
@@ -149,22 +148,13 @@ pipeline {
 
     stage('Terraform Destroy') {
       when {
-        expression { params.TERRAFORM_ACTION == 'destroy' }
+        expression {
+          params.CUSTOM_ACTION == 'other' && params.DESTROY_CONFIRMATION == 'destroy'
+        }
       }
       steps {
         dir('infra') {
-          script {
-            def confirmation = input(
-              message: "⚠️ Confirm destroy of ${params.ENVIRONMENT_NAME}",
-              parameters: [
-                string(name: "CONFIRMATION", description: 'Type "destroy" to confirm')
-              ]
-            )
-            if (confirmation != 'destroy') {
-              error("❌ Destroy not confirmed. You typed '${confirmation}' instead of 'destroy'. Aborting")
-            }
-          }
-          
+          echo "⚠️ Confirmed: Destroying environment ${params.ENVIRONMENT_NAME}"
           sh "terraform destroy -auto-approve -var='environment=${params.ENVIRONMENT_NAME}' -var-file=var.tfvars"
         }
       }
