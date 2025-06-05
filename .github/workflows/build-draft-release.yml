@@ -28,10 +28,7 @@ jobs:
 
       - name: Get RELEASE_VERSION
         run: |
-          if [[ -z "${{ github.event.inputs.version }}" ]]; then
-            echo "Error: No version passed"
-            exit 1
-          fi
+
 
           RELEASE_VERSION="${{ github.event.inputs.version }}"
           RELEASE_VERSION="mytry3"
