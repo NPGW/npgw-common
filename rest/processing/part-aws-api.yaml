@@ -68,7 +68,7 @@ paths:
         connectionId: ${connectionId}
         type: ${type}
         httpMethod: POST
-        uri: '${uri}/transaction/{transactionId}/refund'
+        uri: '${uri}/transaction/{transactionId}/cancel'
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
