@@ -1,10 +1,10 @@
 name: Build draft release
 
 on:
-  on:
-    pull_request:
-      branches:
-        - feature/build-draft-release4
+  pull_request:
+    branches:
+      - feature/build-draft-release5
+      - main
   workflow_dispatch:
     inputs:
       version:
