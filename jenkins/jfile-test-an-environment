@@ -13,12 +13,6 @@ def testsFailed = false
 pipeline {
     agent { label 'build-node' }
 
-
-    */
-    tools {
-        allure 'allure'
-    }
-    /*
     stage('Check Allure') {
       steps {
         sh '''
