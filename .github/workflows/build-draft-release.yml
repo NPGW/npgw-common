@@ -4,7 +4,7 @@ on:
   on:
     pull_request:
       branches:
-        - feature/build-draft-release
+        - feature/build-draft-release4
   workflow_dispatch:
     inputs:
       version:
