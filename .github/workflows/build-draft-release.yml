@@ -5,15 +5,14 @@ on:
     branches:
       - 'feature/build-draft-release5'
       - 'main'
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Release version'
-        required: true
+#  workflow_dispatch:
+#    inputs:
+#      version:
+#        description: 'Release version'
+#        required: true
 
 permissions:
   contents: read
-  pages: write
   id-token: write
 
 concurrency:
