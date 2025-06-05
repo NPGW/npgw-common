@@ -65,10 +65,10 @@ jobs:
         run: openapi-merge-cli --config ./rest/processing/merge-config.json
 
       - name: Create Merchant Spec (AWS)
-        run: python3 ./rest/script/yaml-merge.py ./rest/processing/part-aws-api.yaml ./api-merchant-processing.yaml x-amazon- > ./docs/merchant-v1.yaml
+        run: python3 ./rest/script/yaml-merge.py ./rest/processing/part-aws-api.yaml ./api-merchant-processing.yaml x-amazon- > merchant-v1.yaml
 
       - name: Validation Merchant Spec (AWS)
-        run: java -jar openapi-generator-cli.jar validate -i ./docs/merchant-v1.yaml --recommend
+        run: java -jar openapi-generator-cli.jar validate -i merchant-v1.yaml --recommend
 
       - name: Create Portal Spec (API)
         run: java -jar openapi-generator-cli.jar generate -i ./rest/api-portal.yaml -g openapi-yaml -o ./temp --additional-properties outputFile=./api-portal-merchant.yaml
@@ -81,10 +81,10 @@ jobs:
         run: sed 's|BaseTransaction_paymentDetails|BaseTransactionPaymentDetails|g' ./temp/prepared-api-portal-merchant.yaml > ./api-portal-merchant.yaml
 
       - name: Create Portal Spec (AWS)
-        run: python3 ./rest/script/yaml-merge.py ./rest/portal/part-aws-api.yaml ./api-portal-merchant.yaml x-amazon- > ./docs/portal-v1.yaml
+        run: python3 ./rest/script/yaml-merge.py ./rest/portal/part-aws-api.yaml ./api-portal-merchant.yaml x-amazon- > portal-v1.yaml
 
       - name: Validation Portal Spec (AWS)
-        run: java -jar openapi-generator-cli.jar validate -i ./docs/portal-v1.yaml --recommend
+        run: java -jar openapi-generator-cli.jar validate -i portal-v1.yaml --recommend
 
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
@@ -94,6 +94,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Attache build to draft release
-        run: gh release upload ${{ env.RELEASE_VERSION }} ./docs/ --clobber
+        run: gh release upload ${{ env.RELEASE_VERSION }} portal-v1.yaml merchant-v1.yaml --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
