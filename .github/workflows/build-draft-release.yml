@@ -1,7 +1,7 @@
 name: Build draft release
 
 on:
-  pull_request:
+  push:
     branches:
       - feature/build-draft-release5
       - main
