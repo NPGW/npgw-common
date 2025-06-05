@@ -3,8 +3,8 @@ name: Build draft release
 on:
   push:
     branches:
-      - feature/build-draft-release5
-      - main
+      - 'feature/build-draft-release5'
+      - 'main'
   workflow_dispatch:
     inputs:
       version:
