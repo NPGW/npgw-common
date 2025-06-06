@@ -1215,7 +1215,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '../api-merchant.yaml#/components/schemas/TransactionResponse'
+                  $ref: '../api-merchant.yaml#/components/schemas/TransactionInfo'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
