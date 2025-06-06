@@ -19,9 +19,16 @@ pipeline {
   }
 
   stages {
+    stage('Clean Workspace') {
+      steps {
+        deleteDir()
+      }
+    }
+
     stage('Checkout') {
       steps {
         git branch: "${params.GIT_BRANCH}", credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git'
+        sh 'git rev-parse HEAD'
       }
     }
 
@@ -67,7 +74,7 @@ pipeline {
     stage('Configure provider.tf backend') {
       steps {
         dir('infra') {
-          sh "sed -i 's|npgw-terraform-state-|npgw-terraform-state-${params.ENVIRONMENT_NAME}|' provider.tf"
+          sh "sed -i 's|npgw-terraform-state-|npgw-terraform-state-${params.ENVIRONMENT_NAME}|' ${env.PROVIDER_TF_PATH}"
         }
       }
     }
@@ -94,7 +101,7 @@ pipeline {
                   --region ${env.AWS_REGION} \
                   --registry-id "214404897309" \
                   --query 'imageIds[*].imageTag' \
-                  --output text | tr '\\t' '\\n' | sort -r | head -n 1
+                  --output text | tr '\t' '\n' | sort -r | head -n 1
               """,
               returnStdout: true
             ).trim()
@@ -109,8 +116,8 @@ pipeline {
       steps {
         dir('infra') {
           sh """
-            wget ${OPENAPI_MERCHANT}
-            wget ${OPENAPI_PORTAL}
+            wget -q ${OPENAPI_MERCHANT} -O merchant-v1.yaml
+            wget -q ${OPENAPI_PORTAL} -O portal-v1.yaml
           """
         }
       }
@@ -119,7 +126,7 @@ pipeline {
     stage('Terraform Init') {
       steps {
         dir('infra') {
-          sh "terraform init -upgrade -reconfigure"
+          sh 'terraform init -upgrade -reconfigure'
         }
       }
     }
@@ -154,7 +161,7 @@ pipeline {
       }
       steps {
         dir('infra') {
-          echo "⚠️ Confirmed: Destroying environment ${params.ENVIRONMENT_NAME}"
+          echo "\u26a0\ufe0f Confirmed: Destroying environment ${params.ENVIRONMENT_NAME}"
           sh "terraform destroy -auto-approve -var='environment=${params.ENVIRONMENT_NAME}' -var-file=var.tfvars"
         }
       }
