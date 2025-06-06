@@ -159,7 +159,8 @@ pipeline {
                     sh "${tool('allure')}/bin/allure generate /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous --clean -o /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report"
                     echo "Syncing with S3"
                     sh "aws s3 sync /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/"
-                    echo "Updating report folder"
+                    echo "Updating report folders"
+                    sh "rm -rf /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous"
                     sh "mv /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous"
                 }
             }
