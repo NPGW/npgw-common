@@ -19,7 +19,7 @@ pipeline {
 
     parameters {
         string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Image version to use')
-        choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'prod', 'sandbox'], description: 'Deployment environment')
+        choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'sandbox'], description: 'Deployment environment')
     }
 
     environment {
@@ -36,7 +36,6 @@ pipeline {
                     def urls = [
                         'test'   : 'https://test.npgw.xyz',
                         'dev'    : 'https://dev.npgw.xyz',
-                        'prod'   : 'https://npgw.xyz',
                         'sandbox': 'https://sandbox.npgw.xyz'
                     ]
                     env.URL = urls[params.ENVIRONMENT_NAME] ?: error("Invalid environment: ${params.ENVIRONMENT_NAME}")
@@ -150,12 +149,13 @@ pipeline {
         stage ('Modifications - in progress') {
             steps {
                 script {
+
                     echo "Preparing Allure Directory on the controller"
                     sh "mkdir -p /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous"
                     echo "Copying new allure results into directory"
                     sh "rsync -a ${WORKSPACE}/allure-results/ /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/"
-                    sh "mkdir -p /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/widgets"
-                    writeFile file: "/home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/widgets/executors.json", text: """
+                    sh "mkdir -p /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/history"
+                    writeFile file: "/home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/history/executor.json", text: """
                         {
                           "name": "Jenkins",
                           "type": "jenkins",
