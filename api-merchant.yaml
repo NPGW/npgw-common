@@ -714,6 +714,16 @@ components:
             threeDSecureDetails:
               $ref: '#/components/schemas/ThreeDSecureDetails'
 
+    TransactionInfo:
+      allOf:
+        - $ref: '#/components/schemas/TransactionResponse'
+        - type: object
+          required:
+            - customerDetails
+          properties:
+            customerDetails:
+              $ref: '#/components/schemas/CustomerDetails'
+
     Transaction:
       allOf:
         - $ref: '#/components/schemas/BaseTransaction'
