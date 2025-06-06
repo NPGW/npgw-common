@@ -151,15 +151,15 @@ pipeline {
                 script {
                     echo "Preparing Allure Directory on the controller"
                     sh 'pwd'
-                    sh "mkdir -p /opt/jenkins-cache/${ENVIRONMENT_NAME}/allure-report-previous"
+                    sh "mkdir -p /home/jenkins/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous"
                     echo "Copying new allure results into directory"
-                    sh "rsync -a ${WORKSPACE}/allure-results/ /opt/jenkins-cache/${ENVIRONMENT_NAME}/allure-report-previous/"
+                    sh "rsync -a ${WORKSPACE}/allure-results/ /home/jenkins/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/"
                     echo "Generating Allure Report"
-                    sh "allure generate /opt/jenkins-cache/${ENVIRONMENT_NAME}/allure-report-previous --clean -o /opt/jenkins-cache/${ENVIRONMENT_NAME}/allure-report"
+                    sh "allure generate /home/jenkins/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous --clean -o /home/jenkins/allure-cache/${ENVIRONMENT_NAME}/allure-report"
                     echo "Syncing with S3"
-                    sh "aws s3 sync /opt/jenkins-cache/${ENVIRONMENT_NAME}/allure-report ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/"
+                    sh "aws s3 sync /home/jenkins/allure-cache/${ENVIRONMENT_NAME}/allure-report ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/"
                     echo "Updating report folder"
-                    sh "mv /opt/jenkins-cache/${ENVIRONMENT_NAME}/allure-report /opt/jenkins-cache/${ENVIRONMENT_NAME}/allure-report-previous"
+                    sh "mv /home/jenkins/allure-cache/${ENVIRONMENT_NAME}/allure-report /home/jenkins/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous"
                 }
             }
         }
