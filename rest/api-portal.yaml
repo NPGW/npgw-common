@@ -570,49 +570,6 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
   /company/{companyName}/merchant/{merchantId}:
-    get:
-      operationId: getOneMerchant
-      security:
-        - apiKeyAuth: []
-      parameters:
-        - description: The company name
-          in: path
-          name: companyName
-          required: true
-          schema:
-            type: string
-        - description: The merchant id
-          in: path
-          name: merchantId
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Merchant'
-          description: Ok
-        '400':
-          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
-        '401':
-          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
-        '403':
-          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
-        '404':
-          $ref: '../api-merchant.yaml#/components/responses/NotFound'
-        '405':
-          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
-        '406':
-          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
-        '422':
-          $ref: '../api-merchant.yaml#/components/responses/Validation'
-        '429':
-          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
-        '500':
-          $ref: '../api-merchant.yaml#/components/responses/Error'
-
     post:
       operationId: createSecretToken
       security:
@@ -636,6 +593,49 @@ paths:
             text/plain:
               schema:
                 type: string
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    get:
+      operationId: getOneMerchant
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - description: The company name
+          in: path
+          name: companyName
+          required: true
+          schema:
+            type: string
+        - description: The merchant id
+          in: path
+          name: merchantId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Merchant'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -1215,7 +1215,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '../api-merchant.yaml#/components/schemas/TransactionResponse'
+                  $ref: '../api-merchant.yaml#/components/schemas/TransactionInfo'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
