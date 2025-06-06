@@ -230,6 +230,8 @@ pipeline {
 
                     sh """
                         cd ./npgw-common
+                        rf -rf docs
+                        mkdir docs api
                         tar --overwrite -xvf docs.tar -C ./docs
                         tar --overwrite -xvf api.tar -C ./api
                     """
