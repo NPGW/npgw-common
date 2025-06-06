@@ -196,11 +196,11 @@ pipeline {
 
                             gh release download ${env.RELEASE_VERSION} \
                                 --repo NPGW/npgw-common \
-                                --pattern '*.yml' \
+                                --pattern '*.yaml' \
                                 --dir ${targetApiSpecDir} --clobber
 
-                            if [ -z "\$(ls ${targetApiSpecDir}/*.yml 2>/dev/null)" ]; then
-                                echo "ERROR: no .yml builds found in ${targetApiSpecDir}" >&2
+                            if [ -z "\$(ls ${targetApiSpecDir}/*.yaml 2>/dev/null)" ]; then
+                                echo "ERROR: no .yaml builds found in ${targetApiSpecDir}" >&2
                                 exit 1
                             fi
                         """
