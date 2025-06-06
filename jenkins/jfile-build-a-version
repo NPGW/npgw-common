@@ -287,21 +287,12 @@ pipeline {
             }
         }
 
-        stage('Upload portal UI build to S3') {
+        stage('Upload to S3') {
             steps {
                 script {
                     sh """
                     aws s3 sync ${WORKSPACE}/npgw-portal/portal-web/dist s3://${env.AWS_BUCKET_NAME}/npgw-portal/${env.RELEASE_VERSION}
-                    """
-                }
-            }
-        }
-
-        stage('Upload API spec to S3') {
-            steps {
-                script {
-                    sh """
-                    aws s3 sync ${WORKSPACE}/npgw-common/docs s3://${env.AWS_BUCKET_NAME}/npgw-common/docs
+                    aws s3 sync ${WORKSPACE}/npgw-common/docs/*.yml s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}
                     """
                 }
             }
