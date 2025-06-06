@@ -170,7 +170,7 @@ pipeline {
                     script {
                         def targetPortalDir = "${WORKSPACE}/npgw-portal"
                         def targetBackendDir = "${WORKSPACE}/npgw-services"
-                        def targetApiSpecDir = "${WORKSPACE}/npgw-common/docs"
+                        def targetApiSpecDir = "${WORKSPACE}/npgw-common"
                         sh """
                             gh release download ${env.RELEASE_VERSION} \
                                 --repo NPGW/npgw-portal \
@@ -196,11 +196,11 @@ pipeline {
 
                             gh release download ${env.RELEASE_VERSION} \
                                 --repo NPGW/npgw-common \
-                                --pattern '*.yaml' \
+                                --pattern '*.tar' \
                                 --dir ${targetApiSpecDir} --clobber
 
                             if [ -z "\$(ls ${targetApiSpecDir}/*.yaml 2>/dev/null)" ]; then
-                                echo "ERROR: no .yaml builds found in ${targetApiSpecDir}" >&2
+                                echo "ERROR: no .tar builds found in ${targetApiSpecDir}" >&2
                                 exit 1
                             fi
                         """
@@ -227,6 +227,12 @@ pipeline {
                             tar --overwrite -xvf ${WORKSPACE}/npgw-services/${image.repoName}.tar -C ${WORKSPACE}/npgw-services
                         """
                     }
+
+                    sh """
+                        cd ./npgw-common
+                        tar --overwrite -xvf ${WORKSPACE}/npgw-common/docs docs.tar
+                        tar --overwrite -xvf ${WORKSPACE}/npgw-common/api api.tar
+                    """
                 }
             }
         }
@@ -292,7 +298,8 @@ pipeline {
                 script {
                     sh """
                     aws s3 sync ${WORKSPACE}/npgw-portal/portal-web/dist s3://${env.AWS_BUCKET_NAME}/npgw-portal/${env.RELEASE_VERSION}
-                    aws s3 sync ${WORKSPACE}/npgw-common/docs/*.yaml s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}
+                    aws s3 sync ${WORKSPACE}/npgw-common/docs s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}
+                    aws s3 sync ${WORKSPACE}/npgw-common/api s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}
                     """
                 }
             }
