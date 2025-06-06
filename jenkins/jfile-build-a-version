@@ -89,7 +89,7 @@ pipeline {
 
                         timeout(time: 5, unit: 'MINUTES') {
                             parallel(
-                                npgw-portal: {
+                                "npgw-portal": {
                                     waitUntil {
                                         def raw = sh(
                                             script: "gh release list --repo NPGW/npgw-portal --json tagName",
@@ -105,7 +105,7 @@ pipeline {
                                         }
                                     }
                                 },
-                                npgw-services: {
+                                "npgw-services": {
                                     waitUntil {
                                         def raw = sh(
                                             script: "gh release list --repo NPGW/npgw-services --json tagName",
@@ -131,7 +131,7 @@ pipeline {
                                         }
                                     }
                                 },
-                                npgw-common: {
+                                "npgw-common": {
                                     waitUntil {
                                         def raw = sh(
                                             script: "gh release list --repo NPGW/npgw-common --json tagName",
