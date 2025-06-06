@@ -71,17 +71,18 @@ pipeline {
       }
     }
 
-    stage('Configure provider.tf backend') {
+    stage('Prepare Working Directory') {
       steps {
-        dir('infra') {
-          sh "sed -i 's|npgw-terraform-state-|npgw-terraform-state-${params.ENVIRONMENT_NAME}|' provider.tf"
-        }
+        sh """
+          cp -R infra infra-${params.ENVIRONMENT_NAME}
+          sed -i 's|npgw-terraform-state-|npgw-terraform-state-${params.ENVIRONMENT_NAME}|' infra-${params.ENVIRONMENT_NAME}/provider.tf
+        """
       }
     }
 
     stage('Create var.tfvars') {
       steps {
-        dir('infra') {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
           sh "echo 'image_source_tag = \"${IMAGE_REPO}:${params.IMAGE_TAG}\"' > var.tfvars"
         }
       }
@@ -92,7 +93,7 @@ pipeline {
         expression { params.IMAGE_TAG == 'latest' }
       }
       steps {
-        dir('infra') {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
           script {
             def latestTag = sh(
               script: """
@@ -114,7 +115,7 @@ pipeline {
 
     stage('Download OpenAPI specs') {
       steps {
-        dir('infra') {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
           sh """
             wget -q ${OPENAPI_MERCHANT} -O merchant-v1.yaml
             wget -q ${OPENAPI_PORTAL} -O portal-v1.yaml
@@ -125,8 +126,8 @@ pipeline {
 
     stage('Terraform Init') {
       steps {
-        dir('infra') {
-          sh 'terraform init -upgrade -reconfigure'
+        dir("infra-${params.ENVIRONMENT_NAME}") {
+          sh 'terraform init -upgrade'
         }
       }
     }
@@ -136,7 +137,7 @@ pipeline {
         expression { params.CUSTOM_ACTION == 'plan' }
       }
       steps {
-        dir('infra') {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
           sh "terraform plan -var='environment=${params.ENVIRONMENT_NAME}' -var-file=var.tfvars"
         }
       }
@@ -147,7 +148,7 @@ pipeline {
         expression { params.CUSTOM_ACTION == 'apply' }
       }
       steps {
-        dir('infra') {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
           sh "terraform apply -auto-approve -var='environment=${params.ENVIRONMENT_NAME}' -var-file=var.tfvars"
         }
       }
@@ -160,7 +161,7 @@ pipeline {
         }
       }
       steps {
-        dir('infra') {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
           echo "\u26a0\ufe0f Confirmed: Destroying environment ${params.ENVIRONMENT_NAME}"
           sh "terraform destroy -auto-approve -var='environment=${params.ENVIRONMENT_NAME}' -var-file=var.tfvars"
         }
