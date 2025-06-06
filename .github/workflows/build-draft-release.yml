@@ -57,6 +57,10 @@ jobs:
           rm -rf docs
           java -jar openapi-generator-cli.jar generate -i api-merchant-doc.yaml -g html2 -o docs
 
+      - name: Archive Merchant Docs
+        run: |
+          tar cvf docs.tar ./docs/*
+
       - name: Delete discriminator (AWS doesn't support)
         run: |
           sed '/discriminator/,/CreditCard: CreditCardDetails/d' api-merchant.yaml > prepared-api-merchant.yaml
@@ -86,6 +90,10 @@ jobs:
       - name: Validation Portal Spec (AWS)
         run: java -jar openapi-generator-cli.jar validate -i ./docs/portal.yaml --recommend
 
+      - name: Archive Portal and Merchant Specs
+        run: |
+          tar cvf api.tar ./docs/portal.yaml ./docs/merchant.yaml
+
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
         with:
@@ -93,11 +101,7 @@ jobs:
           draft: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create archives for draft release
-        run: |
-          tar cvf api.tar ./docs/portal.yaml ./docs/merchant.yaml
-
       - name: Attache build to draft release
-        run: gh release upload ${{ env.RELEASE_VERSION }} docs/* --clobber
+        run: gh release upload ${{ env.RELEASE_VERSION }} api.tar docs.tar --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
