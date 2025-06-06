@@ -154,8 +154,20 @@ pipeline {
                     sh "mkdir -p /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous"
                     echo "Copying new allure results into directory"
                     sh "rsync -a ${WORKSPACE}/allure-results/ /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/"
+                    sh "mkdir -p /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/history"
+                    sh """
+                       # Write executor.json so Allure’s trend chart X-axis uses this build number
+                       cat <<EOF > /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/history/executor.json
+                    {
+                      "name": "Jenkins",
+                      "type": "jenkins",
+                      "url": "${BUILD_URL}",
+                      "buildName": "#${BUILD_NUMBER}",
+                      "buildUrl": "${BUILD_URL}"
+                    }
+                    EOF
+                        """
                     echo "Generating Allure Report"
-
                     sh "${tool('allure')}/bin/allure generate /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous --clean -o /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report"
                     echo "Syncing with S3"
                     sh "aws s3 sync /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/"
