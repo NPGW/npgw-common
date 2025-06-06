@@ -154,19 +154,17 @@ pipeline {
                     sh "mkdir -p /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous"
                     echo "Copying new allure results into directory"
                     sh "rsync -a ${WORKSPACE}/allure-results/ /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/"
-                    sh "mkdir -p /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/history"
-                    sh """
-                       # Write executor.json so Allure’s trend chart X-axis uses this build number
-                       cat <<EOF > /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/history/executor.json
-                    {
-                      "name": "Jenkins",
-                      "type": "jenkins",
-                      "url": "${BUILD_URL}",
-                      "buildOrder": "#${BUILD_NUMBER}",
-                      "buildName": "#${BUILD_NUMBER}",
-                      "buildUrl": "${BUILD_URL}"
-                    }
-                    EOF
+                    sh "mkdir -p /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/widgets"
+                    writeFile file: "/home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/widgets/executors.json", text: """
+                        {
+                          "name": "Jenkins",
+                          "type": "jenkins",
+                          "url": "${env.BUILD_URL}",
+                          "buildOrder": ${env.BUILD_NUMBER},
+                          "buildName": "Build #${env.BUILD_NUMBER}",
+                          "buildUrl": "${env.BUILD_URL}",
+                          "reportUrl": "${env.BUILD_URL}allure"
+                        }
                         """
                     echo "Generating Allure Report"
                     sh "${tool('allure')}/bin/allure generate /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous --clean -o /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report"
