@@ -74,7 +74,7 @@ pipeline {
     stage('Configure provider.tf backend') {
       steps {
         dir('infra') {
-          sh "sed -i 's|npgw-terraform-state-|npgw-terraform-state-${params.ENVIRONMENT_NAME}|' ${env.PROVIDER_TF_PATH}"
+          sh "sed -i 's|npgw-terraform-state-|npgw-terraform-state-${params.ENVIRONMENT_NAME}|' provider.tf"
         }
       }
     }
