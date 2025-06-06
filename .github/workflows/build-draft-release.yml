@@ -49,6 +49,14 @@ jobs:
           java-version: '17'
       - run: curl https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.7.0/openapi-generator-cli-7.7.0.jar -o openapi-generator-cli.jar
 
+      - name: Create Merchant Spec (Docs)
+        run: python3 ./rest/script/yaml-merge.py ./rest/processing/part-doc-api.yaml ./api-merchant.yaml /info > ./api-merchant-doc.yaml
+
+      - name: Create Merchant Docs
+        run: |
+          rm -rf docs
+          java -jar openapi-generator-cli.jar generate -i api-merchant-doc.yaml -g html2 -o docs
+
       - name: Delete discriminator (AWS doesn't support)
         run: |
           sed '/discriminator/,/CreditCard: CreditCardDetails/d' api-merchant.yaml > prepared-api-merchant.yaml
@@ -57,10 +65,10 @@ jobs:
         run: openapi-merge-cli --config ./rest/processing/merge-config.json
 
       - name: Create Merchant Spec (AWS)
-        run: python3 ./rest/script/yaml-merge.py ./rest/processing/part-aws-api.yaml ./api-merchant-processing.yaml x-amazon- > merchant-v1.yaml
+        run: python3 ./rest/script/yaml-merge.py ./rest/processing/part-aws-api.yaml ./api-merchant-processing.yaml x-amazon- > ./docs/merchant.yaml
 
       - name: Validation Merchant Spec (AWS)
-        run: java -jar openapi-generator-cli.jar validate -i merchant-v1.yaml --recommend
+        run: java -jar openapi-generator-cli.jar validate -i ./docs/merchant.yaml --recommend
 
       - name: Create Portal Spec (API)
         run: java -jar openapi-generator-cli.jar generate -i ./rest/api-portal.yaml -g openapi-yaml -o ./temp --additional-properties outputFile=./api-portal-merchant.yaml
@@ -70,13 +78,13 @@ jobs:
           sed '/discriminator/,/propertyName: paymentMethod/d' ./temp/api-portal-merchant.yaml > ./temp/prepared-api-portal-merchant.yaml
 
       - name: Refactor Portal Spec (AWS)
-        run: sed 's|BaseTransaction_paymentDetails|BaseTransactionPaymentDetails|g' ./temp/prepared-api-portal-merchant.yaml > ./api-portal-merchant.yaml
+        run: sed 's|BaseTransaction_allOf_paymentDetails|BaseTransactionPaymentDetails|g' ./temp/prepared-api-portal-merchant.yaml > ./api-portal-merchant.yaml
 
       - name: Create Portal Spec (AWS)
-        run: python3 ./rest/script/yaml-merge.py ./rest/portal/part-aws-api.yaml ./api-portal-merchant.yaml x-amazon- > portal-v1.yaml
+        run: python3 ./rest/script/yaml-merge.py ./rest/portal/part-aws-api.yaml ./api-portal-merchant.yaml x-amazon- > ./docs/portal.yaml
 
       - name: Validation Portal Spec (AWS)
-        run: java -jar openapi-generator-cli.jar validate -i portal-v1.yaml --recommend
+        run: java -jar openapi-generator-cli.jar validate -i ./docs/portal.yaml --recommend
 
       - name: Create Draft Release
         uses: softprops/action-gh-release@v1
@@ -85,7 +93,12 @@ jobs:
           draft: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create archives for draft release
+        run: |
+          tar cvf docs.tar ./docs/api-merchant-doc.yaml
+          tar cvf api.tar ./docs/portal.yaml ./docs/merchant.yaml
+
       - name: Attache build to draft release
-        run: gh release upload ${{ env.RELEASE_VERSION }} portal-v1.yaml merchant-v1.yaml --clobber
+        run: gh release upload ${{ env.RELEASE_VERSION }} docs.tar api.tar --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
