@@ -146,7 +146,7 @@ pipeline {
             }
         }
 
-        stage (Modifications in progress) {
+        stage ('Modifications - in progress') {
             steps {
                 script {
                     echo "Preparing Allure Directory on the controller"
