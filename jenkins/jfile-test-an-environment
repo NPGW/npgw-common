@@ -93,7 +93,7 @@ pipeline {
                 }
             }
         }
-
+        /*
         stage('Seed AWS Data') {
             steps {
                 script {
@@ -109,6 +109,7 @@ pipeline {
                 }
             }
         }
+        */
 
         stage('Run Api Tests') {
             steps {
@@ -150,12 +151,12 @@ pipeline {
             steps {
                 script {
                     echo "Preparing Allure Directory on the controller"
-                    sh 'pwd'
                     sh "mkdir -p /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous"
                     echo "Copying new allure results into directory"
                     sh "rsync -a ${WORKSPACE}/allure-results/ /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/"
                     echo "Generating Allure Report"
-                    sh "allure generate /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous --clean -o /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report"
+
+                    sh "${tool('allure')}/bin/allure generate /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous --clean -o /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report"
                     echo "Syncing with S3"
                     sh "aws s3 sync /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/"
                     echo "Updating report folder"
