@@ -95,10 +95,9 @@ jobs:
 
       - name: Create archives for draft release
         run: |
-          tar cvf docs.tar ./docs/api-merchant-doc.yaml
           tar cvf api.tar ./docs/portal.yaml ./docs/merchant.yaml
 
       - name: Attache build to draft release
-        run: gh release upload ${{ env.RELEASE_VERSION }} docs.tar api.tar --clobber
+        run: gh release upload ${{ env.RELEASE_VERSION }} * --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
