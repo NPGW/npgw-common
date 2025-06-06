@@ -162,6 +162,7 @@ pipeline {
                       "name": "Jenkins",
                       "type": "jenkins",
                       "url": "${BUILD_URL}",
+                      "buildOrder": "#${BUILD_NUMBER}",
                       "buildName": "#${BUILD_NUMBER}",
                       "buildUrl": "${BUILD_URL}"
                     }
