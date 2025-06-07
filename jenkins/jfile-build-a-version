@@ -35,6 +35,10 @@ pipeline {
                 dir('npgw-portal') {
                     git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-portal.git', branch: 'main'
                 }
+
+                dir('npgw-terraform') {
+                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git', branch: 'main'
+                }
             }
         }
 
@@ -302,6 +306,7 @@ pipeline {
                     aws s3 sync ${WORKSPACE}/npgw-portal/portal-web/dist s3://${env.AWS_BUCKET_NAME}/npgw-portal/${env.RELEASE_VERSION}
                     aws s3 sync ${WORKSPACE}/npgw-common/docs s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}
                     aws s3 sync ${WORKSPACE}/npgw-common/api s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}
+                    aws s3 sync ${WORKSPACE}/npgw-terraform s3://${env.AWS_BUCKET_NAME}/npgw-terraform/${env.RELEASE_VERSION}
                     """
                 }
             }
