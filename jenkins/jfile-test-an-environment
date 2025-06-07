@@ -26,6 +26,7 @@ pipeline {
         AWS_REGION = 'eu-central-1'
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
         S3_ALLURE_ROOT = 's3://npgw-testing/allure-history'
+        ALLURE_CACHE_BASE_DIR = "/home/ec2-user/allure-cache/${ENVIRONMENT_NAME}"
     }
 
     stages {
@@ -146,16 +147,22 @@ pipeline {
             }
         }
 
-        stage ('Modifications - in progress') {
+        stage ('Generate allure report') {
             steps {
                 script {
-
                     echo "Preparing Allure Directory on the controller"
-                    sh "mkdir -p /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous"
-                    echo "Copying new allure results into directory"
-                    sh "rsync -a ${WORKSPACE}/allure-results/ /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/"
-                    sh "mkdir -p /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/history"
-                    writeFile file: "/home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous/history/executor.json", text: """
+                    if (!fileExists(env.ALLURE_CACHE_BASE_DIR/allure-report) {
+                        echo "Allure report directory not found, syncing from S3"
+                        sh """
+                            mkdir -p ${env.ALLURE_CACHE_BASE_DIR}/allure-report
+                            aws s3 sync ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report
+                            """
+                    }
+                    echo "Copying new allure results into report directory"
+                    sh "rsync -a ${WORKSPACE}/allure-results/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report"
+                    echo "Renaming to previous to generate new report"
+                    sh "mv ${env.ALLURE_CACHE_BASE_DIR}/allure-report ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous"
+                    writeFile file: "${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous", text: """
                         {
                           "name": "Jenkins",
                           "type": "jenkins",
@@ -167,12 +174,11 @@ pipeline {
                         }
                         """
                     echo "Generating Allure Report"
-                    sh "${tool('allure')}/bin/allure generate /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous --clean -o /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report"
+                    sh "${tool('allure')}/bin/allure generate ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous --clean -o ${env.ALLURE_CACHE_BASE_DIR}/allure-report"
                     echo "Syncing with S3"
-                    sh "aws s3 sync /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/"
-                    echo "Updating report folders"
-                    sh "rm -rf /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous"
-                    sh "mv /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report /home/ec2-user/allure-cache/${ENVIRONMENT_NAME}/allure-report-previous"
+                    sh "aws s3 sync ${env.ALLURE_CACHE_BASE_DIR}/allure-report ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/"
+                    echo "Removing outdated report folders"
+                    sh "rm -rf ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous"
                 }
             }
         }
