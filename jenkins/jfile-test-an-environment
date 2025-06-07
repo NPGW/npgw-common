@@ -151,7 +151,7 @@ pipeline {
             steps {
                 script {
                     echo "Preparing Allure Directory on the controller"
-                    if (!fileExists(env.ALLURE_CACHE_BASE_DIR/allure-report)) {
+                    if (!fileExists("${env.ALLURE_CACHE_BASE_DIR}/allure-report")) {
                         echo "Allure report directory not found, syncing from S3"
                         sh """
                             mkdir -p ${env.ALLURE_CACHE_BASE_DIR}/allure-report
@@ -162,7 +162,7 @@ pipeline {
                     sh "rsync -a ${WORKSPACE}/allure-results/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report"
                     echo "Renaming to previous to generate new report"
                     sh "mv ${env.ALLURE_CACHE_BASE_DIR}/allure-report ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous"
-                    writeFile file: "${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous", text: """
+                    writeFile file: "${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous.executor.json", text: """
                         {
                           "name": "Jenkins",
                           "type": "jenkins",
