@@ -159,7 +159,8 @@ pipeline {
                             """
                     }
                     echo "Copying new allure results into report directory"
-                    sh "rsync -a --delete --exclude='*-container.json' ${WORKSPACE}/allure-results/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report"
+                    sh "rsync -a --exclude='*-container.json' ${WORKSPACE}/allure-results/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report"
+                    sh "find ${env.ALLURE_CACHE_BASE_DIR}/allure-report -type f -name '*-container.json' -delete"
                     echo "Renaming to previous to generate new report"
                     sh "mv ${env.ALLURE_CACHE_BASE_DIR}/allure-report ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous"
                     writeFile file: "${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous/executor.json", text: """
