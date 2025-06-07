@@ -205,14 +205,6 @@ pipeline {
             }
         }
 
-        stage('Cleanup Workspace') {
-            post {
-                always {
-                    cleanWs()
-                }
-            }
-        }
-
         stage('Fail Pipeline if Tests Failed') {
             steps {
                 script {
@@ -221,6 +213,13 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+
+    post {
+        always {
+          echo '🔧 Cleaning workspace (always)…'
+          cleanWs()
         }
     }
 }
