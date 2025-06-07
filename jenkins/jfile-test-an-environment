@@ -173,12 +173,15 @@ pipeline {
                           "reportUrl": "${env.BUILD_URL}allure"
                         }
                         """
+                    echo "What's inside executor.json"
+                    sh "cat ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous.executor.json"
                     echo "Generating Allure Report"
                     sh "${tool('allure')}/bin/allure generate ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous --clean -o ${env.ALLURE_CACHE_BASE_DIR}/allure-report"
                     echo "Syncing with S3"
                     //sh "aws s3 sync ${env.ALLURE_CACHE_BASE_DIR}/allure-report ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/"
                     echo "Removing outdated report folders"
                     sh "rm -rf ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous"
+                    sh "rm -r allure-report-previous.executor.json"
                     echo "What inside Base"
                     sh "ls -R ${env.ALLURE_CACHE_BASE_DIR}"
                 }
