@@ -155,7 +155,7 @@ pipeline {
                         echo "Allure report directory not found, syncing from S3"
                         sh """
                             mkdir -p ${env.ALLURE_CACHE_BASE_DIR}/allure-report
-                            aws s3 sync ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report
+                            //aws s3 sync ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report
                             """
                     }
                     echo "Copying new allure results into report directory"
@@ -179,6 +179,9 @@ pipeline {
                     sh "aws s3 sync ${env.ALLURE_CACHE_BASE_DIR}/allure-report ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/"
                     echo "Removing outdated report folders"
                     sh "rm -rf ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous"
+                    echo "What inside Base"
+                    sh "ls -R ${env.ALLURE_CACHE_BASE_DIR}"
+                    sh "find ${env.ALLURE_CACHE_BASE_DIR} -maxdepth 1 -type d -print"
                 }
             }
         }
