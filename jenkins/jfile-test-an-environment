@@ -159,13 +159,13 @@ pipeline {
                             """
                     }
                     echo "Print all status fields from allure-results"
-                          sh """
-                            for f in $(find ${WORKSPACE}/allure-results -name "*.json"); do
-                              echo ""
-                              echo "=== $f ==="
-                              grep '"status"' $f || echo "   → no status field!"
-                            done
-                          """
+                      sh '''
+                        for f in $(find ${WORKSPACE}/allure-results -name "*.json"); do
+                          echo ""
+                          echo "=== $f ==="
+                          grep '"status"' $f || echo "   → no status field!"
+                        done
+                      '''
                     echo "Copying new allure results into report directory"
                     sh "rsync -a ${WORKSPACE}/allure-results/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report"
                     echo "Renaming to previous to generate new report"
