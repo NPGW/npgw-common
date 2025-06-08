@@ -65,6 +65,20 @@ pipeline {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
                         sh """
+                            df -h /
+                            docker images
+                            df -h
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Trigger build workflows') {
+            steps {
+                withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
+                    script {
+                        sh """
                             gh workflow run build-draft-release.yml \\
                                 --repo NPGW/npgw-portal \\
                                 --ref main \\
