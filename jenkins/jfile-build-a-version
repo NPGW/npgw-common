@@ -17,6 +17,12 @@ pipeline {
     }
 
     stages {
+        stage('Clean workspace before everything') {
+          steps {
+            cleanWs()
+          }
+        }
+
         stage('Docker Cleanup') {
             steps {
                 sh '''
