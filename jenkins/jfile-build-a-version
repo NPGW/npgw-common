@@ -60,7 +60,7 @@ pipeline {
             }
         }
 
-        stage('Trigger build workflows') {
+        stage('Temp') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
