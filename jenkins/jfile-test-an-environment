@@ -19,45 +19,36 @@ pipeline {
 
     parameters {
         string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Image version to use')
-        choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'prod', 'sandbox'], description: 'Deployment environment')
+        choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'sandbox'], description: 'Deployment environment')
     }
 
     environment {
         AWS_REGION = 'eu-central-1'
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
         S3_ALLURE_ROOT = 's3://npgw-testing/allure-history'
+        ALLURE_CACHE_BASE_DIR = "/home/ec2-user/allure-cache/${ENVIRONMENT_NAME}"
     }
 
     stages {
-        stage('Determine url where run tests') {
+        stage('Prepare Environment and Determine Release Version') {
             steps {
                 script {
+                    echo "Determining url to run tests"
                     def urls = [
                         'test'   : 'https://test.npgw.xyz',
                         'dev'    : 'https://dev.npgw.xyz',
-                        'prod'   : 'n/aYet',
                         'sandbox': 'https://sandbox.npgw.xyz'
                     ]
                     env.URL = urls[params.ENVIRONMENT_NAME] ?: error("Invalid environment: ${params.ENVIRONMENT_NAME}")
-                }
-            }
-        }
 
-        stage('Get Release Version') {
-            steps {
-                script {
+                    echo "Getting Release Version"
                     if (params.RELEASE_VERSION == 'latest') {
                         env.RELEASE_VERSION = sh(script: """aws ecr describe-images --repository-name npgw/api-test --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text""", returnStdout: true).trim()
                     } else {
                         env.RELEASE_VERSION = params.RELEASE_VERSION
                     }
-                }
-            }
-        }
 
-        stage('Validate Release Version') {
-            steps {
-                script {
+                    echo "Validating Release Version"
                     if (!env.RELEASE_VERSION) {
                         error("Release version is null. Exiting...")
                     }
@@ -155,49 +146,46 @@ pipeline {
             }
         }
 
-        stage('Create Allure History Folder') {
-            steps {
-                sh 'sudo chown -R $(id -u):$(id -g) ${WORKSPACE}/allure-results || true'
-                sh 'mkdir -p ${WORKSPACE}/allure-results/history'
-
-            }
-        }
-
-        stage('Download Allure History') {
+        stage ('Generate allure report') {
             steps {
                 script {
-                    withAWSCreds {
+                    echo "Preparing Allure Directory on the controller"
+                    if (!fileExists("${env.ALLURE_CACHE_BASE_DIR}/allure-report")) {
+                        echo "Allure report directory not found, syncing from S3"
                         sh """
-                            aws s3 cp ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/history/ ${WORKSPACE}/allure-results/history/ --recursive || echo "No previous history found (likely first run)."
+                            mkdir -p ${env.ALLURE_CACHE_BASE_DIR}/allure-report
+                            aws s3 sync ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report
+                            """
+                    }
+                    echo "Copying new allure results into report directory"
+                    sh "rsync -a ${WORKSPACE}/allure-results/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report"
+                    echo "Renaming to previous to generate new report"
+                    sh "mv ${env.ALLURE_CACHE_BASE_DIR}/allure-report ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous"
+                    writeFile file: "${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous/executor.json", text: """
+                        {
+                          "name": "Jenkins",
+                          "type": "jenkins",
+                          "url": "${env.BUILD_URL}",
+                          "buildOrder": ${env.BUILD_NUMBER},
+                          "buildName": "Build #${env.BUILD_NUMBER}",
+                          "buildUrl": "${env.BUILD_URL}",
+                          "reportUrl": "${env.BUILD_URL}allure"
+                        }
                         """
-                    }
+                    echo "Generating Allure Report"
+                    sh "${tool('allure')}/bin/allure generate ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous --clean -o ${env.ALLURE_CACHE_BASE_DIR}/allure-report"
+                    echo "Syncing with S3"
+                    sh "aws s3 sync ${env.ALLURE_CACHE_BASE_DIR}/allure-report ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/"
+                    echo "Removing outdated report folders"
+                    sh "rm -rf ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous"
                 }
-            }
-        }
-
-        stage('Generate Allure Report') {
-            steps {
-                withEnv(["PATH+ALLURE=${tool 'allure'}/bin"]) {
-                    sh 'allure generate allure-results --clean -o allure-report'
-                }
-            }
-        }
-
-        stage('Upload Allure Report and History to S3') {
-            steps {
-                script {
-                    sh """
-                        aws s3 cp allure-report/ ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/report/ --recursive
-                        aws s3 cp allure-report/history/ ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/history/ --recursive
-                    """
-                    }
             }
         }
 
         stage('Notify via Slack') {
             steps {
                 script {
-                    def s3ReportUrl = "https://npgw-testing.s3.eu-central-1.amazonaws.com/allure-history/${params.ENVIRONMENT_NAME}/report/index.html"
+                    def s3ReportUrl = "https://npgw-testing.s3.eu-central-1.amazonaws.com/allure-history/${params.ENVIRONMENT_NAME}/allure-report/index.html"
 
                     slackSend(
                         channel: '#npgw-notification-jenkins',
@@ -205,12 +193,6 @@ pipeline {
                         message: "*[${env.JOB_NAME} #${env.BUILD_NUMBER}]* Allure report for `${params.ENVIRONMENT_NAME}`:\n${s3ReportUrl}"
                     )
                 }
-            }
-        }
-
-        stage('Cleanup Workspace') {
-            steps {
-                cleanWs()
             }
         }
 
@@ -222,6 +204,12 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+
+    post {
+        always {
+          cleanWs()
         }
     }
 }
