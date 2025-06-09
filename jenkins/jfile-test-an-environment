@@ -93,7 +93,7 @@ pipeline {
                 }
             }
         }
-        /*
+
         stage('Seed AWS Data') {
             steps {
                 script {
@@ -109,7 +109,6 @@ pipeline {
                 }
             }
         }
-        */
 
         stage('Run Api Tests') {
             steps {
