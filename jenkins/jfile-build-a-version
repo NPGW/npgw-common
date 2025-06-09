@@ -30,7 +30,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 dir('npgw-services') {
-                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'bugfix/lambda-docker-bug'
+                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
                 }
 
                 dir('npgw-portal') {
