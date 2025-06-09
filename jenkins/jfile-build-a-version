@@ -22,7 +22,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Starting Docker cleanup to free up disk space..."
-                    sudo docker system prune -a -f --volumes
+                    docker system prune -a -f --volumes
                 '''
             }
         }
