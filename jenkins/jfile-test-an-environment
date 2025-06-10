@@ -106,6 +106,8 @@ pipeline {
                             sh '''
                                 set -euo pipefail
 
+                                ls
+
                                 echo "Loading non-credential env vars from aws.env"
                                 set -a
                                 source "${WORKSPACE}/npgw-common/jenkins/aws.env"
