@@ -98,12 +98,26 @@ pipeline {
             steps {
                 script {
                     echo "Seeding AWS data for environment: ${params.ENVIRONMENT_NAME}"
-                    dir('npgw-services/tests/docker/docker-compose') {
-                        withAWSCreds {
-                            sh """
-                                chmod +x aws-seed-script.sh
-                                ./aws-seed-script.sh
-                            """
+                    withAWSCreds {
+                        withEnv([
+                            "ENVIRONMENT_NAME=${params.ENVIRONMENT_NAME}",
+                            "AWS_REGION=${env.AWS_REGION}"
+                        ]) {
+                            sh '''
+                                set -euo pipefail
+
+                                echo "Loading non-credential env vars from aws.env"
+                                set -a
+                                source "${WORKSPACE}/jenkins/aws.env"
+                                set +a
+
+                                DATA_DIR="${WORKSPACE}/npgw-services/tests/docker/docker-compose/aws-mock-init/2-data"
+                                echo "Seeding AWS for ${ENVIRONMENT_NAME} environment"
+                                for script in "$DATA_DIR"/*.sh; do
+                                  echo "Running: $script"
+                                  bash "$script"
+                                done
+                            '''
                         }
                     }
                 }
@@ -123,15 +137,9 @@ pipeline {
                             unset AWS_SESSION_TOKEN
                             aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
                             docker run --rm \\
+                                --env-file ${WORKSPACE}/jenkins/aws.env \\
                                 -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
-                                -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
-                                -e SERVICE_MERCHANT_USER_EMAIL=test@email.com \\
-                                -e SERVICE_MERCHANT_USER_PASSWORD=Qwerty123! \\
                                 -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
-                                -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
-                                -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
-                                -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
-                                -e TEST_ENVIRONMENT=AWS \\
                                 -v ${WORKSPACE}/allure-results:/allure-results \\
                                 ${imageUrl}
                             """,
