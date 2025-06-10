@@ -118,7 +118,7 @@ pipeline {
                                 echo "Seeding AWS for {${ENVIRONMENT_NAME}} environment "
                                 for script in "$DATA_DIR"/*.sh; do
                                   echo "Running: $script"
-                                  ./"$script"
+                                  bash "$script"
                                 done
                             '''
                         }
