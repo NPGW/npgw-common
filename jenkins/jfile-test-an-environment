@@ -100,6 +100,8 @@ pipeline {
                     echo "Seeding AWS data for environment: ${params.ENVIRONMENT_NAME}"
                     withAWSCreds {
                         sh """
+                            set -euo pipefail
+
                             ENV_FILE="${WORKSPACE}/npgw-common/jenkins/aws.env"
                             if [[ -f "$ENV_FILE" ]]; then
                               echo "Loading non-credential env vars from $ENV_FILE"
