@@ -137,7 +137,7 @@ pipeline {
                             unset AWS_SESSION_TOKEN
                             aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
                             docker run --rm \\
-                                --env-file ${WORKSPACE}/npgw-common/jenkins/aws.env
+                                --env-file ${WORKSPACE}/jenkins/aws.env
                                 -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
                                 -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
                                 -v ${WORKSPACE}/allure-results:/allure-results \\
