@@ -19,10 +19,9 @@ pipeline {
     stages {
         stage('Docker Cleanup') {
             steps {
-                sh '''
-                    echo "Starting Docker cleanup to free up disk space..."
+                sh """
                     docker system prune -a -f --volumes
-                '''
+                """
             }
         }
 
