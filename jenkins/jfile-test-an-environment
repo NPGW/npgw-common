@@ -103,7 +103,7 @@ pipeline {
                             "ENVIRONMENT_NAME=${params.ENVIRONMENT_NAME}",
                             "AWS_REGION=${env.AWS_REGION}"
                         ]) {
-                            sh """
+                            sh '''
                                 set -euo pipefail
 
                                 ENV_FILE="${WORKSPACE}/npgw-common/jenkins/aws.env"
@@ -120,7 +120,7 @@ pipeline {
                                   echo "Running: $script"
                                   ./"$script"
                                 done
-                            """
+                            '''
                         }
                     }
                 }
