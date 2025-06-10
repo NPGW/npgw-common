@@ -106,11 +106,9 @@ pipeline {
                             sh '''
                                 set -euo pipefail
 
-                                ls
-
                                 echo "Loading non-credential env vars from aws.env"
                                 set -a
-                                source "${WORKSPACE}/npgw-common/jenkins/aws.env"
+                                source "${WORKSPACE}/jenkins/aws.env"
                                 set +a
 
                                 DATA_DIR="${WORKSPACE}/npgw-services/tests/docker/docker-compose/aws-mock-init/2-data"
