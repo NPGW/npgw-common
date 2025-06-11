@@ -1535,6 +1535,8 @@ components:
       properties:
         merchantId:
           type: string
+        transactionId:
+          type: string
         dateFrom:
           format: date-time
           type: string
