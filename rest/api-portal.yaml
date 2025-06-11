@@ -1463,8 +1463,6 @@ components:
           type: string
         acquirerMid:
           type: string
-        acquirerMidMcc:
-          type: string
         acquirerCode:
           $ref: '#/components/schemas/AcquirerCode'
         acquirerConfig:
@@ -1480,7 +1478,7 @@ components:
             - acquirerName
             - currencyList
           properties:
-            acquirerDisplayName:
+            acquirerMidMcc:
               type: string
             currencyList:
               type: array
