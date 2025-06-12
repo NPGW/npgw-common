@@ -971,106 +971,20 @@ paths:
 
   /merchant-acquirer:
     post:
-      operationId: addMerchantAcquirer
+      operationId: createMerchantAcquirer
       security:
         - apiKeyAuth: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddMerchantAcquirer'
+              $ref: '#/components/schemas/MerchantAcquirer'
       responses:
         '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MerchantAcquirer'
-          description: Ok
-        '400':
-          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
-        '401':
-          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
-        '403':
-          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
-        '404':
-          $ref: '../api-merchant.yaml#/components/responses/NotFound'
-        '405':
-          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
-        '406':
-          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
-        '422':
-          $ref: '../api-merchant.yaml#/components/responses/Validation'
-        '429':
-          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
-        '500':
-          $ref: '../api-merchant.yaml#/components/responses/Error'
-
-    patch:
-      operationId: moveMerchantAcquirer
-      security:
-        - apiKeyAuth: []
-      parameters:
-        - in: query
-          name: merchantId
-          schema:
-            type: string
-          required: true
-        - in: query
-          name: priority
-          schema:
-            type: integer
-          required: true
-        - in: query
-          name: up
-          schema:
-            type: string
-        - in: query
-          name: down
-          schema:
-            type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MerchantAcquirer'
-          description: Ok
-        '400':
-          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
-        '401':
-          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
-        '403':
-          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
-        '404':
-          $ref: '../api-merchant.yaml#/components/responses/NotFound'
-        '405':
-          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
-        '406':
-          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
-        '422':
-          $ref: '../api-merchant.yaml#/components/responses/Validation'
-        '429':
-          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
-        '500':
-          $ref: '../api-merchant.yaml#/components/responses/Error'
-
-    delete:
-      operationId: deleteMerchantAcquirer
-      security:
-        - apiKeyAuth: []
-      parameters:
-        - in: query
-          name: merchantId
-          schema:
-            type: string
-          required: true
-        - in: query
-          name: priority
-          schema:
-            type: integer
-          required: true
-      responses:
-        '204':
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -1093,7 +1007,7 @@ paths:
 
   /merchant-acquirer/{merchantId}:
     get:
-      operationId: getAllMerchantAcquirers
+      operationId: getOneMerchantAcquirer
       security:
         - apiKeyAuth: []
       parameters:
@@ -1131,9 +1045,8 @@ paths:
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
-  /merchant-acquirer/{merchantId}/{priority}:
-    patch:
-      operationId: activateMerchantAcquirer
+    put:
+      operationId: editMerchantAcquirer
       security:
         - apiKeyAuth: []
       parameters:
@@ -1143,23 +1056,50 @@ paths:
           required: true
           schema:
             type: string
-        - description: The priority
-          in: path
-          name: priority
-          required: true
-          schema:
-            type: integer
-        - in: query
-          name: active
-          schema:
-            type: boolean
-          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MerchantAcquirer'
       responses:
         '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MerchantAcquirer'
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    delete:
+      operationId: deleteMerchantAcquirer
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - description: The merchant Id
+          in: path
+          name: merchantId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -1455,10 +1395,9 @@ components:
       type: object
       required:
         - acquirerCode
+        - currencyList
         - systemConfig
       properties:
-        acquirerName:
-          type: string
         acquirerDisplayName:
           type: string
         acquirerMid:
@@ -1467,8 +1406,14 @@ components:
           $ref: '#/components/schemas/AcquirerCode'
         acquirerConfig:
           type: string
+        currencyList:
+          type: array
+          items:
+            $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
         systemConfig:
           $ref: '#/components/schemas/SystemConfig'
+        isActive:
+          type: boolean
 
     Acquirer:
       allOf:
@@ -1476,59 +1421,29 @@ components:
         - type: object
           required:
             - acquirerName
-            - currencyList
           properties:
+            acquirerName:
+              type: string
             acquirerMidMcc:
               type: string
-            currencyList:
-              type: array
-              items:
-                $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
-            isActive:
-              type: boolean
 
-    MerchantAcquirer:
+    MerchantAcquirerItem:
       allOf:
         - $ref: '#/components/schemas/BaseAcquirer'
         - type: object
           properties:
-            merchantId:
-              type: string
             priority:
               type: integer
-            currencyList:
-              type: array
-              items:
-                $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
-            isActive:
-              type: boolean
 
-    AddMerchantAcquirer:
+    MerchantAcquirer:
       type: object
-      required:
-        - merchantId
-        - acquirerName
-        - currencyList
       properties:
         merchantId:
           type: string
-        acquirerName:
-          type: string
-        currencyList:
+        acquirerList:
           type: array
           items:
-            $ref: '../api-merchant.yaml#/components/schemas/CurrencyCode'
-        isActive:
-          type: boolean
-          default: true
-
-    IdMerchantAcquirer:
-      type: object
-      properties:
-        merchantId:
-          type: string
-        priority:
-          type: integer
+            $ref: '#/components/schemas/MerchantAcquirerItem'
 
     TransactionHistoryFilter:
       type: object
