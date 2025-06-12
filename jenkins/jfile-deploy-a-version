@@ -123,7 +123,7 @@ pipeline {
                     }
 
                     sh """
-                    aws s3 sync s3://npgw-versions/npgw-portal/build_${env.RELEASE_VERSION}/ s3://${targetBucketName} --delete
+                    aws s3 sync s3://npgw-versions/npgw-portal/${env.RELEASE_VERSION}/ s3://${targetBucketName} --delete
                     """
                 }
             }
