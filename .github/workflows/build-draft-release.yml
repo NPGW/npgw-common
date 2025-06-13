@@ -78,7 +78,7 @@ jobs:
         run: openapi-merge-cli --config ./rest/portal/merge-config.json
 
       - name: Create Portal Spec (API)
-        run: java -jar openapi-generator-cli.jar generate -i ./api-portal-extended.yaml -g openapi-yaml -o ./temp --additional-properties outputFile=./api-portal-merchant.yaml
+        run: java -jar openapi-generator-cli.jar generate -i ./rest/api-portal-extended.yaml -g openapi-yaml -o ./temp --additional-properties outputFile=./api-portal-merchant.yaml
 
       - name: Delete discriminator (AWS doesn't support)
         run: |

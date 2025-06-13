@@ -7,5 +7,5 @@
       "inputFile": "./part-extended-api.yaml"
     }
   ],
-  "output": "./../../api-portal-extended.yaml"
+  "output": "./../api-portal-extended.yaml"
 }
