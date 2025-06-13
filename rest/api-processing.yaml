@@ -225,18 +225,21 @@ components:
       description: See other
 
   schemas:
+    InfoApp:
+      type: object
+      properties:
+        version:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+
     Info:
       type: object
       properties:
         app:
-          type: object
-          properties:
-            version:
-              type: string
-            name:
-              type: string
-            description:
-              type: string
+          $ref: '#/components/schemas/InfoApp'
 
     Fingerprint:
       type: object
