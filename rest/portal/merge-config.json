@@ -1,0 +1,11 @@
+{
+  "inputs": [
+    {
+      "inputFile": "./../api-portal.yaml"
+    },
+    {
+      "inputFile": "./part-extended-api.yaml"
+    }
+  ],
+  "output": "./../../api-portal-extended.yaml"
+}

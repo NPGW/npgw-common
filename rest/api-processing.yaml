@@ -225,6 +225,19 @@ components:
       description: See other
 
   schemas:
+    Info:
+      type: object
+      properties:
+        app:
+          type: object
+          properties:
+            version:
+              type: string
+            name:
+              type: string
+            description:
+              type: string
+
     Fingerprint:
       type: object
       required:
