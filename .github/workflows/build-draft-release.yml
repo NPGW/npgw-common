@@ -65,17 +65,20 @@ jobs:
         run: |
           sed '/discriminator/,/CreditCard: CreditCardDetails/d' api-merchant.yaml > prepared-api-merchant.yaml
 
-      - name: Create Merchant Spec (API)
+      - name: Create Extended Merchant Spec (API)
         run: openapi-merge-cli --config ./rest/processing/merge-config.json
 
       - name: Create Merchant Spec (AWS)
-        run: python3 ./rest/script/yaml-merge.py ./rest/processing/part-aws-api.yaml ./api-merchant-processing.yaml x-amazon- > ./docs/merchant.yaml
+        run: python3 ./rest/script/yaml-merge.py ./rest/processing/part-aws-api.yaml ./api-merchant-extended.yaml x-amazon- > ./docs/merchant.yaml
 
       - name: Validation Merchant Spec (AWS)
         run: java -jar openapi-generator-cli.jar validate -i ./docs/merchant.yaml --recommend
 
+      - name: Create Extended Portal Spec (API)
+        run: openapi-merge-cli --config ./rest/portal/merge-config.json
+
       - name: Create Portal Spec (API)
-        run: java -jar openapi-generator-cli.jar generate -i ./rest/api-portal.yaml -g openapi-yaml -o ./temp --additional-properties outputFile=./api-portal-merchant.yaml
+        run: java -jar openapi-generator-cli.jar generate -i ./api-portal-extended.yaml -g openapi-yaml -o ./temp --additional-properties outputFile=./api-portal-merchant.yaml
 
       - name: Delete discriminator (AWS doesn't support)
         run: |

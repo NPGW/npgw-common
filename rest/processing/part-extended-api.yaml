@@ -1,0 +1,52 @@
+paths:
+  /info:
+    get:
+      operationId: getInfo
+      security:
+        - apiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Info'
+          description: Ok
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /resource/{resource}:
+    get:
+      operationId: getResource
+      parameters:
+        - in: path
+          name: resource
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Page'
+        '404':
+          $ref: '#/components/responses/Page'
+        '405':
+          $ref: '#/components/responses/Page'
+        '406':
+          $ref: '#/components/responses/Page'
+        '429':
+          $ref: '#/components/responses/Page'

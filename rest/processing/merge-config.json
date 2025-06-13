@@ -7,8 +7,8 @@
       "inputFile": "./../api-processing.yaml"
     },
     {
-      "inputFile": "./part-resource-api.yaml"
+      "inputFile": "./part-extended-api.yaml"
     }
   ],
-  "output": "./../../api-merchant-processing.yaml"
+  "output": "./../../api-merchant-extended.yaml"
 }

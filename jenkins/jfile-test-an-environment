@@ -18,8 +18,8 @@ pipeline {
     }
 
     parameters {
-        string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Image version to use')
-        choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'sandbox'], description: 'Deployment environment')
+        string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Release version')
+        choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'sandbox'], description: 'Testing environment')
     }
 
     environment {

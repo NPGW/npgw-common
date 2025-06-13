@@ -1,0 +1,31 @@
+paths:
+  /info:
+    get:
+      operationId: getInfo
+      security:
+        - apiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: './api-processing.yaml#/components/schemas/Info'
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
