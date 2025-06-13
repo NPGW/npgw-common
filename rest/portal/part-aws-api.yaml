@@ -330,28 +330,6 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
 
-    patch:
-      x-amazon-apigateway-integration:
-        connectionType: ${connectionType}
-        connectionId: ${connectionId}
-        type: ${type}
-        httpMethod: PATCH
-        uri: '${uri}/merchant-acquirer'
-        passthroughBehavior: ${passthroughBehavior}
-        requestParameters:
-          integration.request.header.Accept: "' '"
-
-    delete:
-      x-amazon-apigateway-integration:
-        connectionType: ${connectionType}
-        connectionId: ${connectionId}
-        type: ${type}
-        httpMethod: DELETE
-        uri: '${uri}/merchant-acquirer'
-        passthroughBehavior: ${passthroughBehavior}
-        requestParameters:
-          integration.request.header.Accept: "' '"
-
   /merchant-acquirer/{merchantId}:
     get:
       x-amazon-apigateway-integration:
@@ -365,19 +343,29 @@ paths:
           integration.request.header.Accept: "' '"
           integration.request.path.merchantId: method.request.path.merchantId
 
-  /merchant-acquirer/{merchantId}/{priority}:
-    patch:
+    put:
       x-amazon-apigateway-integration:
         connectionType: ${connectionType}
         connectionId: ${connectionId}
         type: ${type}
-        httpMethod: PATCH
-        uri: '${uri}/merchant-acquirer/{merchantId}/{priority}'
+        httpMethod: PUT
+        uri: '${uri}/merchant-acquirer/{merchantId}'
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
           integration.request.path.merchantId: method.request.path.merchantId
-          integration.request.path.priority: method.request.path.priority
+
+    delete:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: DELETE
+        uri: '${uri}/merchant-acquirer/{merchantId}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.merchantId: method.request.path.merchantId
 
   /transaction/history:
     post:
