@@ -391,6 +391,18 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
 
+  /info:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/info'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+
 components:
   securitySchemes:
     apiKeyAuth:
