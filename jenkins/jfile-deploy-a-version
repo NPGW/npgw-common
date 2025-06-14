@@ -64,8 +64,8 @@ pipeline {
                         parameters: [
                             string(name: 'GIT_BRANCH', value: 'main'),
                             string(name: 'RELEASE_VERSION', value: env.RELEASE_VERSION),
-                            choice(name: 'ENVIRONMENT_NAME', value: env.ENVIRONMENT_NAME),
-                            choice(name: 'ACTION', value: 'apply'),
+                            string(name: 'ENVIRONMENT_NAME', value: env.ENVIRONMENT_NAME),
+                            string(name: 'ACTION', value: 'apply'),
                             string(name: 'CUSTOM_ACTION', value: '')
                         ],
                         wait: true,
