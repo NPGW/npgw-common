@@ -62,11 +62,9 @@ pipeline {
                 script {
                     build job: 'apply-an-environment',
                         parameters: [
-                            string(name: 'GIT_BRANCH', value: 'main'),
                             string(name: 'RELEASE_VERSION', value: env.RELEASE_VERSION),
                             string(name: 'ENVIRONMENT_NAME', value: env.ENVIRONMENT_NAME),
                             string(name: 'ACTION', value: 'apply'),
-                            string(name: 'CUSTOM_ACTION', value: '')
                         ],
                         wait: true,
                         propagate: true
@@ -171,8 +169,8 @@ pipeline {
                 script {
                     build job: 'test-an-environment',
                         parameters: [
-                            string(name: 'ENVIRONMENT_NAME', value: env.ENVIRONMENT_NAME),
-                            string(name: 'RELEASE_VERSION', value: env.RELEASE_VERSION)
+                            string(name: 'RELEASE_VERSION', value: env.RELEASE_VERSION),
+                            string(name: 'ENVIRONMENT_NAME', value: env.ENVIRONMENT_NAME)
                         ],
                         wait: true,
                         propagate: true
