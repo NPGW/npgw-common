@@ -303,8 +303,8 @@ pipeline {
                 script {
                     sh """
                     aws s3 sync ${WORKSPACE}/npgw-portal/portal-web/dist s3://${env.AWS_BUCKET_NAME}/npgw-portal/${env.RELEASE_VERSION}
-                    aws s3 sync ${WORKSPACE}/npgw-common/docs s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}/docs
-                    aws s3 sync ${WORKSPACE}/npgw-common/api s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}/api
+                    aws s3 sync ${WORKSPACE}/npgw-common/docs s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}
+                    aws s3 sync ${WORKSPACE}/npgw-common/api s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}
                     aws s3 sync ${WORKSPACE}/npgw-terraform s3://${env.AWS_BUCKET_NAME}/npgw-terraform/${env.RELEASE_VERSION}
                     """
                 }
