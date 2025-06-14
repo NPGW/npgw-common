@@ -4,7 +4,8 @@ pipeline {
     parameters {
         string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Release version')
         choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'prod', 'sandbox'], description: 'Deployment environment')
-        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'If unchecked, API tests will be skipped')
+        booleanParam(name: 'APPLY_TERRAFORM', defaultValue: true, description: 'If checked, terraform will be applied')
+        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'If checked, API tests will be run')
     }
 
     environment {
@@ -47,6 +48,28 @@ pipeline {
                     if (!env.RELEASE_VERSION) {
                         error("Release version is null. Exiting...")
                     }
+                }
+            }
+        }
+
+        stage('Apply terraform') {
+            when {
+                expression {
+                    return params.APPLY_TERRAFORM
+                }
+            }
+            steps {
+                script {
+                    build job: 'apply-an-environment',
+                        parameters: [
+                            string(name: 'GIT_BRANCH', value: 'main')
+                            string(name: 'RELEASE_VERSION', value: env.RELEASE_VERSION)
+                            choice(name: 'ENVIRONMENT_NAME', value: env.ENVIRONMENT_NAME)
+                            choice(name: 'ACTION', value: 'apply')
+                            string(name: 'CUSTOM_ACTION', value: '')
+                        ],
+                        wait: true,
+                        propagate: true
                 }
             }
         }

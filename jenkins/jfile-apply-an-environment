@@ -3,14 +3,15 @@ pipeline {
 
   parameters {
     string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to deploy from')
+    string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Release version')
     choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'sandbox', 'prod'], description: 'Target environment')
-    string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'ECR image tag to use')
-    choice(name: 'CUSTOM_ACTION', choices: ['plan', 'apply', 'other'], description: 'Terraform action (destroy must be typed manually)')
-    string(name: 'DESTROY_CONFIRMATION', defaultValue: '', description: 'To destroy, type "destroy" exactly')
+    choice(name: 'ACTION', choices: ['plan', 'apply', 'custom'], description: 'Terraform action (destroy must be typed manually)')
+    string(name: 'CUSTOM_ACTION', defaultValue: '', description: 'plan, apply -> [branch name] | custom -> "destroy"')
   }
 
   environment {
     AWS_REGION         = 'eu-central-1'
+    AWS_BUCKET_NAME    = 'npgw-versions'
     IMAGE_REPO         = '214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/merchant'
     PROVIDER_TF_PATH   = 'infra/provider.tf'
     VARS_FILE_PATH     = 'infra/var.tfvars'
@@ -25,10 +26,26 @@ pipeline {
       }
     }
 
-    stage('Checkout') {
+    stage('Checkout GIT') {
+      when {
+        expression { true }
+      }
       steps {
         git branch: "${params.GIT_BRANCH}", credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git'
-        sh 'git rev-parse HEAD'
+      }
+    }
+
+    stage('Checkout S3') {
+      when {
+        expression { false }
+      }
+      steps {
+        script {
+          sh """
+            mkdir -p ${WORKSPACE}/npgw-terraform
+            aws s3 sync ${WORKSPACE}/npgw-terraform s3://${env.AWS_BUCKET_NAME}/npgw-terraform/${env.RELEASE_VERSION}
+          """
+        }
       }
     }
 
@@ -83,14 +100,14 @@ pipeline {
     stage('Create var.tfvars') {
       steps {
         dir("infra-${params.ENVIRONMENT_NAME}") {
-          sh "echo 'image_source_tag = \"${IMAGE_REPO}:${params.IMAGE_TAG}\"' > var.tfvars"
+          sh "echo 'image_source_tag = \"${IMAGE_REPO}:${params.RELEASE_VERSION}\"' > var.tfvars"
         }
       }
     }
 
-    stage('Resolve latest ECR tag if IMAGE_TAG == latest') {
+    stage('Resolve latest ECR tag if RELEASE_VERSION == latest') {
       when {
-        expression { params.IMAGE_TAG == 'latest' }
+        expression { params.RELEASE_VERSION == 'latest' }
       }
       steps {
         dir("infra-${params.ENVIRONMENT_NAME}") {
@@ -134,7 +151,7 @@ pipeline {
 
     stage('Terraform Plan') {
       when {
-        expression { params.CUSTOM_ACTION == 'plan' }
+        expression { params.ACTION == 'plan' }
       }
       steps {
         dir("infra-${params.ENVIRONMENT_NAME}") {
@@ -145,7 +162,7 @@ pipeline {
 
     stage('Terraform Apply') {
       when {
-        expression { params.CUSTOM_ACTION == 'apply' }
+        expression { params.ACTION == 'apply' }
       }
       steps {
         dir("infra-${params.ENVIRONMENT_NAME}") {
@@ -156,9 +173,7 @@ pipeline {
 
     stage('Terraform Destroy') {
       when {
-        expression {
-          params.CUSTOM_ACTION == 'other' && params.DESTROY_CONFIRMATION == 'destroy'
-        }
+        expression { params.ACTION == 'custom' && params.CUSTOM_ACTION == 'destroy' }
       }
       steps {
         dir("infra-${params.ENVIRONMENT_NAME}") {
