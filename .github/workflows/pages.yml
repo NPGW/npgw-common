@@ -49,6 +49,7 @@ jobs:
           java-version: '17'
       - run: curl https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.7.0/openapi-generator-cli-7.7.0.jar -o openapi-generator-cli.jar
 
+# Create doc
       - name: Create Merchant Spec (Docs)
         run: python3 ./rest/script/yaml-merge.py ./rest/processing/part-doc-api.yaml ./api-merchant.yaml /info > ./api-merchant-doc.yaml
 
@@ -57,6 +58,7 @@ jobs:
           rm -rf docs
           java -jar openapi-generator-cli.jar generate -i api-merchant-doc.yaml -g html2 -o docs
 
+# Create merchant API
       - name: Delete discriminator (AWS doesn't support)
         run: |
           sed '/discriminator/,/CreditCard: CreditCardDetails/d' api-merchant.yaml > prepared-api-merchant.yaml
@@ -70,6 +72,7 @@ jobs:
       - name: Validation Merchant Spec (AWS)
         run: java -jar openapi-generator-cli.jar validate -i ./docs/merchant-v1.yaml --recommend
 
+# Create portal API
       - name: Create Extended Portal Spec (API)
         run: openapi-merge-cli --config ./rest/portal/merge-config.json
 
