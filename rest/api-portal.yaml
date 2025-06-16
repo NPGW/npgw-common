@@ -1022,9 +1022,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MerchantAcquirer'
+                $ref: '#/components/schemas/MerchantAcquirer'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -1099,10 +1097,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MerchantAcquirer'
-                type: array
-                items:
-                  $ref: '#/components/schemas/MerchantAcquirer'
+                $ref: '#/components/schemas/MerchantAcquirerItem'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
