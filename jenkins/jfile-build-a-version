@@ -207,6 +207,18 @@ pipeline {
                                 exit 1
                             fi
                         """
+
+                        for (repo in ['npgw-portal', 'npgw-services', 'npgw-common']) {
+                            def releasesJson = sh(
+                                script: "gh release list --repo NPGW/${repo} --json tagName,isDraft",
+                                returnStdout: true
+                            ).trim()
+                            def releases = readJSON(text: releasesJson)
+                            releases.findAll { it.isDraft }.each { draft ->
+                                echo "Deleting draft release ${draft.tagName} from ${repo}"
+                                sh "gh release delete ${draft.tagName} --repo NPGW/${repo} --yes"
+                            }
+                        }
                     }
                 }
             }
