@@ -63,7 +63,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
-                        def repos = ['npgw-portal', 'npgw-services', 'npgw-terraform']
+                        def repos = ['npgw-portal', 'npgw-services', 'npgw-terraform', 'npgw-common']
 
                         repos.each { repo ->
                             def rawBranches = sh(
@@ -80,14 +80,13 @@ pipeline {
                                 error "Multiple release/***-rc branches found in NPGW/${repo}: ${names}"
                             }
 
-                            def rc = rcBranches[0].name
+                            def rcBranch = rcBranches[0].name
 
                             sh """
                                 gh api -X POST /repos/NPGW/${repo}/merges \\
-                                  -H "Accept: application/vnd.github+json" \\
-                                  -f base=${rc} \\
+                                  -f base=${rcBranch} \\
                                   -f head=main \\
-                                  -f commit_message="Merge main into ${rc}"
+                                  -f commit_message="Merge main into ${rcBranch}"
                             """
                         }
                     }
