@@ -70,15 +70,14 @@ pipeline {
                                 script: "gh api /repos/NPGW/${repo}/branches?per_page=100",
                                 returnStdout: true
                             ).trim()
-
                             def branches = readJSON(text: rawBranches)
-                            echo "${branches}"
                             def rcBranches = branches.findAll { it.name ==~ /^release\/.*-rc.*/ }
+
                             if (rcBranches.size() == 0) {
-                                error("✖ No release/***-rc branch found in NPGW/${repo}")
+                                error "No release/***-rc branch found in NPGW/${repo}"
                             } else if (rcBranches.size() > 1) {
                                 def names = rcBranches*.name.join(', ')
-                                error("✖ Multiple release/***-rc branches found in NPGW/${repo}: ${names}")
+                                error "Multiple release/***-rc branches found in NPGW/${repo}: ${names}"
                             }
 
                             def rc = rcBranches[0].name
