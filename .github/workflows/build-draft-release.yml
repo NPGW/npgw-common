@@ -1,32 +1,32 @@
-name: Generate and deploy the docs to Pages
+name: Build draft release
 
 on:
-  push:
-    branches:
-      - main
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  contents: write
 
 jobs:
-  generate-docs:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
+  build-draft-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Get RELEASE_VERSION
+        run: |
+          if [[ -z "${{ github.event.inputs.version }}" ]]; then
+            echo "Error: No version passed"
+            exit 1
+          fi
+
+          RELEASE_VERSION="${{ github.event.inputs.version }}"
+          echo "Release version (name): $RELEASE_VERSION"
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -58,7 +58,15 @@ jobs:
           rm -rf docs
           java -jar openapi-generator-cli.jar generate -i api-merchant-doc.yaml -g html2 -o docs
 
+      - name: Archive Merchant Docs
+        run: |
+          tar cvf docs.tar ./docs/*
+
 # Create merchant API
+      - name: Create api dir
+        run: |
+          mkdir ./api
+
       - name: Delete discriminator (AWS doesn't support)
         run: |
           sed '/discriminator/,/CreditCard: CreditCardDetails/d' api-merchant.yaml > prepared-api-merchant.yaml
@@ -67,10 +75,10 @@ jobs:
         run: openapi-merge-cli --config ./rest/processing/merge-config.json
 
       - name: Create Merchant Spec (AWS)
-        run: python3 ./rest/script/yaml-merge.py ./rest/processing/part-aws-api.yaml ./api-merchant-extended.yaml x-amazon- > ./docs/merchant-v1.yaml
+        run: python3 ./rest/script/yaml-merge.py ./rest/processing/part-aws-api.yaml ./api-merchant-extended.yaml x-amazon- > ./api/merchant.yaml
 
       - name: Validation Merchant Spec (AWS)
-        run: java -jar openapi-generator-cli.jar validate -i ./docs/merchant-v1.yaml --recommend
+        run: java -jar openapi-generator-cli.jar validate -i ./api/merchant.yaml --recommend
 
 # Create portal API
       - name: Create Extended Portal Spec (API)
@@ -87,18 +95,24 @@ jobs:
         run: sed 's|BaseTransaction_allOf_paymentDetails|BaseTransactionPaymentDetails|g' ./temp/prepared-api-portal-merchant.yaml > ./api-portal-merchant.yaml
 
       - name: Create Portal Spec (AWS)
-        run: python3 ./rest/script/yaml-merge.py ./rest/portal/part-aws-api.yaml ./api-portal-merchant.yaml x-amazon- > ./docs/portal-v1.yaml
+        run: python3 ./rest/script/yaml-merge.py ./rest/portal/part-aws-api.yaml ./api-portal-merchant.yaml x-amazon- > ./api/portal.yaml
 
       - name: Validation Portal Spec (AWS)
-        run: java -jar openapi-generator-cli.jar validate -i ./docs/portal-v1.yaml --recommend
+        run: java -jar openapi-generator-cli.jar validate -i ./api/portal.yaml --recommend
 
-      - name: Set up GitHub Pages
-        uses: actions/configure-pages@v5
+# Create Draft Release
+      - name: Archive Portal and Merchant Specs
+        run: |
+          tar cvf api.tar ./api/portal.yaml ./api/merchant.yaml
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v1
         with:
-          path: './docs/'
+          tag_name: ${{ env.RELEASE_VERSION }}
+          draft: true
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+      - name: Attache build to draft release
+        run: gh release upload ${{ env.RELEASE_VERSION }} api.tar docs.tar --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

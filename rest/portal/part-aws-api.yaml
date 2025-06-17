@@ -193,6 +193,19 @@ paths:
           integration.request.path.companyName: method.request.path.companyName
 
   /company/{companyName}/merchant/{merchantId}:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/company/{companyName}/merchant/{merchantId}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.companyName: method.request.path.companyName
+          integration.request.path.merchantId: method.request.path.merchantId
+
     get:
       x-amazon-apigateway-integration:
         connectionType: ${connectionType}
@@ -231,6 +244,19 @@ paths:
           integration.request.header.Accept: "' '"
           integration.request.path.companyName: method.request.path.companyName
           integration.request.path.merchantId: method.request.path.merchantId
+
+  /company/{companyName}/merchant/user:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/company/{companyName}/merchant/user'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.companyName: method.request.path.companyName
 
   /acquirer:
     get:
@@ -304,28 +330,6 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
 
-    patch:
-      x-amazon-apigateway-integration:
-        connectionType: ${connectionType}
-        connectionId: ${connectionId}
-        type: ${type}
-        httpMethod: PATCH
-        uri: '${uri}/merchant-acquirer'
-        passthroughBehavior: ${passthroughBehavior}
-        requestParameters:
-          integration.request.header.Accept: "' '"
-
-    delete:
-      x-amazon-apigateway-integration:
-        connectionType: ${connectionType}
-        connectionId: ${connectionId}
-        type: ${type}
-        httpMethod: DELETE
-        uri: '${uri}/merchant-acquirer'
-        passthroughBehavior: ${passthroughBehavior}
-        requestParameters:
-          integration.request.header.Accept: "' '"
-
   /merchant-acquirer/{merchantId}:
     get:
       x-amazon-apigateway-integration:
@@ -338,6 +342,58 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
           integration.request.path.merchantId: method.request.path.merchantId
+
+    delete:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: DELETE
+        uri: '${uri}/merchant-acquirer/{merchantId}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.merchantId: method.request.path.merchantId
+
+  /merchant-acquirer/{merchantId}/{priority}:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/merchant-acquirer/{merchantId}/{priority}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.merchantId: method.request.path.merchantId
+          integration.request.path.priority: method.request.path.priority
+
+    patch:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: PATCH
+        uri: '${uri}/merchant-acquirer/{merchantId}/{priority}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.merchantId: method.request.path.merchantId
+          integration.request.path.priority: method.request.path.priority
+
+    delete:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: DELETE
+        uri: '${uri}/merchant-acquirer/{merchantId}/{priority}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.merchantId: method.request.path.merchantId
+          integration.request.path.priority: method.request.path.priority
 
   /transaction/history:
     post:
@@ -359,6 +415,18 @@ paths:
         type: ${type}
         httpMethod: POST
         uri: '${uri}/transaction/summary'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+
+  /info:
+    get:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: GET
+        uri: '${uri}/info'
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"

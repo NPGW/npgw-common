@@ -1,0 +1,192 @@
+pipeline {
+  agent { label 'build-node' }
+
+  parameters {
+    string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to deploy from')
+    string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Release version')
+    choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'sandbox', 'prod'], description: 'Target environment')
+    choice(name: 'ACTION', choices: ['plan', 'apply', 'custom'], description: 'Terraform action (destroy must be typed manually)')
+    string(name: 'CUSTOM_ACTION', defaultValue: '', description: 'plan, apply -> [branch name] | custom -> "destroy"')
+  }
+
+  environment {
+    AWS_REGION         = 'eu-central-1'
+    AWS_BUCKET_NAME    = 'npgw-versions'
+    IMAGE_REPO         = '214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/merchant'
+    PROVIDER_TF_PATH   = 'infra/provider.tf'
+    VARS_FILE_PATH     = 'infra/var.tfvars'
+    OPENAPI_MERCHANT   = 'https://docs.npgw.xyz/merchant-v1.yaml'
+    OPENAPI_PORTAL     = 'https://docs.npgw.xyz/portal-v1.yaml'
+  }
+
+  stages {
+    stage('Clean Workspace') {
+      steps {
+        deleteDir()
+      }
+    }
+
+    stage('Checkout GIT') {
+      when {
+        expression { true }
+      }
+      steps {
+        git branch: "${params.GIT_BRANCH}", credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git'
+      }
+    }
+
+    stage('Checkout S3') {
+      when {
+        expression { false }
+      }
+      steps {
+        script {
+          sh """
+            mkdir -p ${WORKSPACE}/npgw-terraform
+            aws s3 sync ${WORKSPACE}/npgw-terraform s3://${env.AWS_BUCKET_NAME}/npgw-terraform/${env.RELEASE_VERSION}
+          """
+        }
+      }
+    }
+
+    stage('Determine AWS Role') {
+      steps {
+        script {
+          def roles = [
+            'test'   : 'arn:aws:iam::820242903147:role/npgw-jenkins-terraform-env-role',
+            'dev'    : 'arn:aws:iam::872515291967:role/npgw-jenkins-terraform-env-role',
+            'prod'   : 'arn:aws:iam::721719382766:role/npgw-jenkins-terraform-env-role',
+            'sandbox': 'arn:aws:iam::225989351233:role/npgw-jenkins-terraform-env-role'
+          ]
+
+          def selectedRole = roles[params.ENVIRONMENT_NAME]
+          if (!selectedRole) {
+            error("Invalid environment: ${params.ENVIRONMENT_NAME}")
+          }
+
+          env.ROLE_TO_ASSUME = selectedRole
+          echo "Assuming role: ${env.ROLE_TO_ASSUME}"
+        }
+      }
+    }
+
+    stage('Assume Role') {
+      steps {
+        script {
+          def creds = sh(script: """
+            aws sts assume-role \
+              --role-arn ${env.ROLE_TO_ASSUME} \
+              --role-session-name jenkins-${params.ENVIRONMENT_NAME} \
+              --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
+              --output text
+          """, returnStdout: true).trim().split()
+
+          env.AWS_ACCESS_KEY_ID     = creds[0]
+          env.AWS_SECRET_ACCESS_KEY = creds[1]
+          env.AWS_SESSION_TOKEN     = creds[2]
+        }
+      }
+    }
+
+    stage('Prepare Working Directory') {
+      steps {
+        sh """
+          cp -R infra infra-${params.ENVIRONMENT_NAME}
+          sed -i 's|npgw-terraform-state-|npgw-terraform-state-${params.ENVIRONMENT_NAME}|' infra-${params.ENVIRONMENT_NAME}/provider.tf
+        """
+      }
+    }
+
+    stage('Create var.tfvars') {
+      steps {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
+          sh "echo 'image_source_tag = \"${IMAGE_REPO}:${params.RELEASE_VERSION}\"' > var.tfvars"
+        }
+      }
+    }
+
+    stage('Resolve latest ECR tag if RELEASE_VERSION == latest') {
+      when {
+        expression { params.RELEASE_VERSION == 'latest' }
+      }
+      steps {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
+          script {
+            def latestTag = sh(
+              script: """
+                aws ecr list-images \
+                  --repository-name "npgw/merchant" \
+                  --region ${env.AWS_REGION} \
+                  --registry-id "214404897309" \
+                  --query 'imageIds[*].imageTag' \
+                  --output text | tr '\t' '\n' | sort -r | head -n 1
+              """,
+              returnStdout: true
+            ).trim()
+            echo "Resolved latest tag: ${latestTag}"
+            sh "echo 'image_tag = \"${latestTag}\"' >> var.tfvars"
+          }
+        }
+      }
+    }
+
+    stage('Download OpenAPI specs') {
+      steps {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
+          sh """
+            wget -q ${OPENAPI_MERCHANT} -O merchant-v1.yaml
+            wget -q ${OPENAPI_PORTAL} -O portal-v1.yaml
+          """
+        }
+      }
+    }
+
+    stage('Terraform Init') {
+      steps {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
+          sh 'terraform init -upgrade'
+        }
+      }
+    }
+
+    stage('Terraform Plan') {
+      when {
+        expression { params.ACTION == 'plan' }
+      }
+      steps {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
+          sh "terraform plan -var='environment=${params.ENVIRONMENT_NAME}' -var-file=var.tfvars"
+        }
+      }
+    }
+
+    stage('Terraform Apply') {
+      when {
+        expression { params.ACTION == 'apply' }
+      }
+      steps {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
+          sh "terraform apply -auto-approve -var='environment=${params.ENVIRONMENT_NAME}' -var-file=var.tfvars"
+        }
+      }
+    }
+
+    stage('Terraform Destroy') {
+      when {
+        expression { params.ACTION == 'custom' && params.CUSTOM_ACTION == 'destroy' }
+      }
+      steps {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
+          echo "\u26a0\ufe0f Confirmed: Destroying environment ${params.ENVIRONMENT_NAME}"
+          sh "terraform destroy -auto-approve -var='environment=${params.ENVIRONMENT_NAME}' -var-file=var.tfvars"
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      cleanWs()
+    }
+  }
+}

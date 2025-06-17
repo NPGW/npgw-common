@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         AWS_REGION = 'eu-central-1'
+        AWS_BUCKET_NAME = 'npgw-versions'
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
         AWS_ROLE = 'arn:aws:iam::214404897309:role/npgw-jenkins-build-a-version-role'
 
@@ -124,6 +125,16 @@ pipeline {
                               --image-digest "\$IMAGE_DIGEST"
                         """
                     }
+
+                    // rename S3 prefix from -nightly to -rc
+                    sh """
+                        for repo in npgw-portal npgw-common npgw-terraform; do
+                            aws s3 mv \\
+                                s3://${env.AWS_BUCKET_NAME}/\$repo/${nightlyTag}/ \\
+                                s3://${env.AWS_BUCKET_NAME}/\$repo/${nightlyTag.replace('-nightly', '-rc')}/ \\
+                                --recursive
+                        done
+                    """
                 }
             }
         }
@@ -143,6 +154,9 @@ pipeline {
                               message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
                 }
             }
+        }
+        always {
+            cleanWs()
         }
     }
 }

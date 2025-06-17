@@ -1,46 +1,54 @@
+def withAWSCreds(body) {
+    withEnv([
+        "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
+        "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
+        "AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}",
+        "AWS_REGION=${env.AWS_REGION}"
+    ]) {
+        body()
+    }
+}
+def testsFailed = false
+
 pipeline {
     agent { label 'build-node' }
 
+    tools {
+        allure 'allure'
+    }
+
     parameters {
-        string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Image version to use')
-        choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'prod', 'sandbox'], description: 'Deployment environment')
+        string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Release version')
+        choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'sandbox'], description: 'Testing environment')
     }
 
     environment {
         AWS_REGION = 'eu-central-1'
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
+        S3_ALLURE_ROOT = 's3://npgw-testing/allure-history'
+        ALLURE_CACHE_BASE_DIR = "/home/ec2-user/allure-cache/${ENVIRONMENT_NAME}"
     }
 
     stages {
-        stage('Determine url where run tests') {
+        stage('Prepare Environment and Determine Release Version') {
             steps {
                 script {
+                    echo "Determining url to run tests"
                     def urls = [
                         'test'   : 'https://test.npgw.xyz',
                         'dev'    : 'https://dev.npgw.xyz',
-                        'prod'   : 'n/aYet',
                         'sandbox': 'https://sandbox.npgw.xyz'
                     ]
                     env.URL = urls[params.ENVIRONMENT_NAME] ?: error("Invalid environment: ${params.ENVIRONMENT_NAME}")
-                }
-            }
-        }
 
-        stage('Get Release Version') {
-            steps {
-                script {
+                    echo "Getting Release Version"
                     if (params.RELEASE_VERSION == 'latest') {
                         env.RELEASE_VERSION = sh(script: """aws ecr describe-images --repository-name npgw/api-test --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text""", returnStdout: true).trim()
                     } else {
                         env.RELEASE_VERSION = params.RELEASE_VERSION
                     }
-                }
-            }
-        }
 
-        stage('Validate Release Version') {
-            steps {
-                script {
+                    echo "Validating Release Version"
                     if (!env.RELEASE_VERSION) {
                         error("Release version is null. Exiting...")
                     }
@@ -90,18 +98,26 @@ pipeline {
             steps {
                 script {
                     echo "Seeding AWS data for environment: ${params.ENVIRONMENT_NAME}"
-                    dir('npgw-services/tests/docker/docker-compose') {
+                    withAWSCreds {
                         withEnv([
-                            "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
-                            "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
-                            "AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}",
-                            "AWS_REGION=${env.AWS_REGION}",
-                            "DEPLOY_ENV=${params.ENVIRONMENT_NAME}"
+                            "ENVIRONMENT_NAME=${params.ENVIRONMENT_NAME}",
+                            "AWS_REGION=${env.AWS_REGION}"
                         ]) {
-                            sh """
-                                chmod +x aws-seed-script.sh
-                                ./aws-seed-script.sh
-                            """
+                            sh '''
+                                set -euo pipefail
+
+                                echo "Loading non-credential env vars from aws.env"
+                                set -a
+                                source "${WORKSPACE}/jenkins/aws.env"
+                                set +a
+
+                                DATA_DIR="${WORKSPACE}/npgw-services/tests/docker/docker-compose/aws-mock-init/2-data"
+                                echo "Seeding AWS for ${ENVIRONMENT_NAME} environment"
+                                for script in "$DATA_DIR"/*.sh; do
+                                  echo "Running: $script"
+                                  bash "$script"
+                                done
+                            '''
                         }
                     }
                 }
@@ -110,27 +126,90 @@ pipeline {
 
         stage('Run Api Tests') {
             steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script {
+                        def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+
+                        def status = sh(
+                            script: """
+                            unset AWS_ACCESS_KEY_ID
+                            unset AWS_SECRET_ACCESS_KEY
+                            unset AWS_SESSION_TOKEN
+                            aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
+                            docker run --rm \\
+                                --env-file ${WORKSPACE}/jenkins/aws.env \\
+                                -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
+                                -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
+                                -v ${WORKSPACE}/allure-results:/allure-results \\
+                                ${imageUrl}
+                            """,
+                            returnStatus: true
+                        )
+                        if (status != 0) {
+                            testsFailed = true
+                            error("Tests failed")
+                        }
+                    }
+                }
+            }
+        }
+
+        stage ('Generate allure report') {
+            steps {
                 script {
-                    def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/api-test:${env.RELEASE_VERSION}"
+                    echo "Preparing Allure Directory on the controller"
+                    if (!fileExists("${env.ALLURE_CACHE_BASE_DIR}/allure-report")) {
+                        echo "Allure report directory not found, syncing from S3"
+                        sh """
+                            mkdir -p ${env.ALLURE_CACHE_BASE_DIR}/allure-report
+                            aws s3 sync ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report
+                            """
+                    }
+                    echo "Copying new allure results into report directory"
+                    sh "rsync -a ${WORKSPACE}/allure-results/ ${env.ALLURE_CACHE_BASE_DIR}/allure-report"
+                    echo "Renaming to previous to generate new report"
+                    sh "mv ${env.ALLURE_CACHE_BASE_DIR}/allure-report ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous"
+                    writeFile file: "${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous/executor.json", text: """
+                        {
+                          "name": "Jenkins",
+                          "type": "jenkins",
+                          "url": "${env.BUILD_URL}",
+                          "buildOrder": ${env.BUILD_NUMBER},
+                          "buildName": "Build #${env.BUILD_NUMBER}",
+                          "buildUrl": "${env.BUILD_URL}",
+                          "reportUrl": "${env.BUILD_URL}allure"
+                        }
+                        """
+                    echo "Generating Allure Report"
+                    sh "${tool('allure')}/bin/allure generate ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous --clean -o ${env.ALLURE_CACHE_BASE_DIR}/allure-report"
+                    echo "Syncing with S3"
+                    sh "aws s3 sync ${env.ALLURE_CACHE_BASE_DIR}/allure-report ${env.S3_ALLURE_ROOT}/${params.ENVIRONMENT_NAME}/allure-report/"
+                    echo "Removing outdated report folders"
+                    sh "rm -rf ${env.ALLURE_CACHE_BASE_DIR}/allure-report-previous"
+                }
+            }
+        }
 
-                    sh """
-                    unset AWS_ACCESS_KEY_ID
-                    unset AWS_SECRET_ACCESS_KEY
-                    unset AWS_SESSION_TOKEN
-                    aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${env.AWS_REPOSITORY_URL}
+        stage('Notify via Slack') {
+            steps {
+                script {
+                    def s3ReportUrl = "https://npgw-testing.s3.eu-central-1.amazonaws.com/allure-history/${params.ENVIRONMENT_NAME}/allure-report/index.html"
 
-                    docker run --rm \\
-                        -e SERVICE_MERCHANT_URL=${env.URL}/merchant-v1 \\
-                        -e SERVICE_MERCHANT_ID=merchant-server-ngenius \\
-                        -e SERVICE_MERCHANT_USER_EMAIL=test@email.com \\
-                        -e SERVICE_MERCHANT_USER_PASSWORD=Qwerty123! \\
-                        -e SERVICE_PORTAL_URL=${env.URL}/portal-v1 \\
-                        -e SERVICE_PORTAL_ID=merchant-server-ngenius \\
-                        -e SERVICE_PORTAL_USER_EMAIL=test@email.com \\
-                        -e SERVICE_PORTAL_USER_PASSWORD=Qwerty123! \\
-                        -e TEST_ENVIRONMENT=AWS \\
-                        ${imageUrl}
-                    """
+                    slackSend(
+                        channel: '#npgw-notification-jenkins',
+                        color: currentBuild.currentResult == 'SUCCESS' ? 'good' : 'danger',
+                        message: "*[${env.JOB_NAME} #${env.BUILD_NUMBER}]* Allure report for `${params.ENVIRONMENT_NAME}`:\n${s3ReportUrl}"
+                    )
+                }
+            }
+        }
+
+        stage('Fail Pipeline if Tests Failed') {
+            steps {
+                script {
+                    if (testsFailed) {
+                        error("API tests failed.")
+                    }
                 }
             }
         }
@@ -138,7 +217,7 @@ pipeline {
 
     post {
         always {
-            cleanWs()
+          cleanWs()
         }
     }
 }
