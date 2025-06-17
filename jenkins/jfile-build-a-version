@@ -61,30 +61,36 @@ pipeline {
 
         stage('Merge main branch to rc') {
             steps {
-                script {
-                    sh """
-                        git fetch --all
-                    """
+                withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
+                    script {
+                        def repos = ['npgw-portal', 'npgw-services', 'npgw-terraform']
 
-                    def rcBranches = sh(
-                        script: "git ls-remote --heads origin 'release/*-rc' | awk '{print \$2}' | sed 's#refs/heads/##'",
-                        returnStdout: true
-                    ).trim().split('\n').findAll { it }
+                        repos.each { repo ->
+                            def rawBranches = sh(
+                                script: "gh api /repos/NPGW/${repo}/branches?per_page=100",
+                                returnStdout: true
+                            ).trim()
 
-                    if (rcBranches.size() == 0) {
-                        error "No release/*-rc branch found"
+                            def branches = readJSON(text: rawBranches)
+                            def rcBranches = branches.findAll { it.name ==~ /^release\\/.*-rc\$/ }
+                            if (rcBranches.size() == 0) {
+                                error("✖ No release/***-rc branch found in NPGW/${repo}")
+                            } else if (rcBranches.size() > 1) {
+                                def names = rcBranches*.name.join(', ')
+                                error("✖ Multiple release/***-rc branches found in NPGW/${repo}: ${names}")
+                            }
+
+                            def rc = rcBranches[0].name
+
+                            sh """
+                                gh api -X POST /repos/NPGW/${repo}/merges \\
+                                  -H "Accept: application/vnd.github+json" \\
+                                  -f base=${rc} \\
+                                  -f head=main \\
+                                  -f commit_message="Merge main into ${rc}"
+                            """
+                        }
                     }
-
-                    if (rcBranches.size() > 1) {
-                        error "Multiple release/*-rc branches found on origin: ${rcBranches.join(', ')}"
-                    }
-
-                    def rcBranch = rcBranches[0]
-                    sh """
-                        git checkout ${rcBranch}
-                        git merge origin/main --no-ff -m 'Merge origin/main into ${rcBranch}'
-                        git push origin ${rcBranch}
-                    """
                 }
             }
         }
