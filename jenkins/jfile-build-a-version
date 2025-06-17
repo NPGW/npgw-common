@@ -59,6 +59,36 @@ pipeline {
             }
         }
 
+        stage('Merge main branch to rc') {
+            steps {
+                script {
+                    sh """
+                        git fetch --all
+                    """
+
+                    def rcBranches = sh(
+                        script: "git ls-remote --heads origin 'release/*-rc' | awk '{print \$2}' | sed 's#refs/heads/##'",
+                        returnStdout: true
+                    ).trim().split('\n').findAll { it }
+
+                    if (rcBranches.size() == 0) {
+                        error "No release/*-rc branch found"
+                    }
+
+                    if (rcBranches.size() > 1) {
+                        error "Multiple release/*-rc branches found on origin: ${rcBranches.join(', ')}"
+                    }
+
+                    def rcBranch = rcBranches[0]
+                    sh """
+                        git checkout ${rcBranch}
+                        git merge origin/main --no-ff -m 'Merge origin/main into ${rcBranch}'
+                        git push origin ${rcBranch}
+                    """
+                }
+            }
+        }
+
         stage('Trigger build workflows') {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
