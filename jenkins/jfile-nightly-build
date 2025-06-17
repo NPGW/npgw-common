@@ -140,6 +140,7 @@ pipeline {
         }
 
         stage('Merge main branch to rc') {
+
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
