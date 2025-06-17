@@ -72,7 +72,7 @@ pipeline {
                             ).trim()
 
                             def branches = readJSON(text: rawBranches)
-                            def rcBranches = branches.findAll { it.name ==~ /^release\\/.*-rc\$/ }
+                            def rcBranches = branches.findAll { it.name ==~ /^release\/.*-rc\$/ }
                             if (rcBranches.size() == 0) {
                                 error("✖ No release/***-rc branch found in NPGW/${repo}")
                             } else if (rcBranches.size() > 1) {
