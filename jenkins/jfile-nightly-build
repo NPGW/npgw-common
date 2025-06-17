@@ -138,6 +138,42 @@ pipeline {
                 }
             }
         }
+
+        stage('Merge main branch to rc') {
+            steps {
+                withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
+                    script {
+                        def repos = ['npgw-portal', 'npgw-services', 'npgw-terraform', 'npgw-common', 'npgw-ui-test']
+
+                        repos.each { repo ->
+                            def rawBranches = sh(
+                                script: "gh api /repos/NPGW/${repo}/branches?per_page=100",
+                                returnStdout: true
+                            ).trim()
+                            def branches = readJSON(text: rawBranches)
+                            def rcBranches = branches.findAll { it.name ==~ /^release\/.*-rc.*/ }
+
+                            if (rcBranches.size() == 0) {
+                                error "No release/***-rc branch found in NPGW/${repo}"
+                            } else if (rcBranches.size() > 1) {
+                                def names = rcBranches*.name.join(', ')
+                                error "Multiple release/***-rc branches found in NPGW/${repo}: ${names}"
+                            }
+
+                            def rcBranch = rcBranches[0].name
+
+                            sh """
+                                gh api -X POST /repos/NPGW/${repo}/merges \\
+                                    -H "Accept: application/vnd.github+json" \\
+                                    -f base=${rcBranch} \\
+                                    -f head=main \\
+                                    -f commit_message="Merge main into ${rcBranch}"
+                            """
+                        }
+                    }
+                }
+            }
+        }
     }
 
     post {
