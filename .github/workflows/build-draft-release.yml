@@ -58,6 +58,9 @@ jobs:
           rm -rf docs
           java -jar openapi-generator-cli.jar generate -i api-merchant-doc.yaml -g html2 -o docs
 
+      - name: Add api-merchant.yaml to docs/ folder
+        run: cp api-merchant.yaml ./docs/merchant.yaml
+
       - name: Archive Merchant Docs
         run: |
           tar cvf docs.tar ./docs/*
