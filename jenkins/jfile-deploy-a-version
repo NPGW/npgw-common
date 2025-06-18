@@ -10,6 +10,7 @@ pipeline {
 
     environment {
         AWS_REGION = 'eu-central-1'
+        AWS_BUCKET_NAME = 'npgw-versions'
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
     }
 
@@ -139,12 +140,15 @@ pipeline {
             steps {
                 script {
                     def targetBucketName = "${params.ENVIRONMENT_NAME}.npgw.xyz"
+                    def targetDocsBucketName = "docs.${params.ENVIRONMENT_NAME}.npgw.xyz"
                     if (params.ENVIRONMENT_NAME == 'prod') {
                         targetBucketName = "npgw.xyz"
+                        targetDocsBucketName = "docs.npgw.xyz"
                     }
 
                     sh """
-                    aws s3 sync s3://npgw-versions/npgw-portal/${env.RELEASE_VERSION}/ s3://${targetBucketName} --delete
+                        aws s3 sync s3://${env.AWS_BUCKET_NAME}/npgw-portal/${env.RELEASE_VERSION}/ s3://${targetBucketName} --delete
+                        aws s3 sync s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}/ s3://${targetDocsBucketName} --delete
                     """
                 }
             }
