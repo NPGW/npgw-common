@@ -58,6 +58,13 @@ jobs:
           rm -rf docs
           java -jar openapi-generator-cli.jar generate -i api-merchant-doc.yaml -g html2 -o docs
 
+      - name: Add api-merchant.yaml to docs/ folder
+        run: cp api-merchant.yaml .docs/merchant.yaml
+
+      - name: Archive Merchant Docs
+        run: |
+          tar cvf docs.tar ./docs/*
+
 # Create merchant API
       - name: Create api dir
         run: |
@@ -75,9 +82,6 @@ jobs:
 
       - name: Validation Merchant Spec (AWS)
         run: java -jar openapi-generator-cli.jar validate -i ./api/merchant.yaml --recommend
-
-      - name: Add merchant.yaml to docs/ folder
-        run: cp ./api/merchant.yaml .docs/merchant.yaml
 
 # Create portal API
       - name: Create Extended Portal Spec (API)
@@ -100,10 +104,6 @@ jobs:
         run: java -jar openapi-generator-cli.jar validate -i ./api/portal.yaml --recommend
 
 # Create Draft Release
-      - name: Archive Merchant Docs
-        run: |
-          tar cvf docs.tar ./docs/*
-
       - name: Archive Portal and Merchant Specs
         run: |
           tar cvf api.tar ./api/portal.yaml ./api/merchant.yaml
