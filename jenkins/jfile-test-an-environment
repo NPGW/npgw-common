@@ -207,14 +207,14 @@ pipeline {
             script {
                 slackSend channel: '#npgw-notification-jenkins',
                    color: 'good',
-                   message: ":v: *SUCCESS*: test run <${env.BUILD_URL}|#${env.BUILD_NUMBER}> in ${params.ENVIRONMENT_NAME} – see <${env.ALLURE_REPORT_URL}|Allure Report>"
+                   message: ":v: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> in [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
             }
         }
         failure {
             script {
                 slackSend channel: '#npgw-notification-jenkins',
                    color: 'danger',
-                   message: ":x: *FAILURE*: test run <${env.BUILD_URL}|#${env.BUILD_NUMBER}> in ${params.ENVIRONMENT_NAME} failed – see <${env.ALLURE_REPORT_URL}|Allure Report>"
+                   message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> in [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
             }
         }
         always {
