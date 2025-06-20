@@ -27,6 +27,7 @@ pipeline {
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
         S3_ALLURE_ROOT = 's3://npgw-testing/allure-history'
         ALLURE_CACHE_BASE_DIR = "/home/ec2-user/allure-cache/${ENVIRONMENT_NAME}"
+        ALLURE_REPORT_URL =
     }
 
     stages {
@@ -52,6 +53,7 @@ pipeline {
                     if (!env.RELEASE_VERSION) {
                         error("Release version is null. Exiting...")
                     }
+                    env.ALLURE_REPORT_URL = "${env.S3_ALLURE_ROOT.replace('s3://', 'https://')}/${params.ENVIRONMENT_NAME}/allure-report/index.html"
                 }
             }
         }
@@ -190,20 +192,6 @@ pipeline {
             }
         }
 
-        stage('Notify via Slack') {
-            steps {
-                script {
-                    def s3ReportUrl = "https://npgw-testing.s3.eu-central-1.amazonaws.com/allure-history/${params.ENVIRONMENT_NAME}/allure-report/index.html"
-
-                    slackSend(
-                        channel: '#npgw-notification-jenkins',
-                        color: currentBuild.currentResult == 'SUCCESS' ? 'good' : 'danger',
-                        message: "*[${env.JOB_NAME} #${env.BUILD_NUMBER}]* Allure report for `${params.ENVIRONMENT_NAME}`:\n${s3ReportUrl}"
-                    )
-                }
-            }
-        }
-
         stage('Fail Pipeline if Tests Failed') {
             steps {
                 script {
@@ -216,8 +204,22 @@ pipeline {
     }
 
     post {
+        success {
+            script {
+                slackSend channel: '#npgw-notification-jenkins',
+                   color: 'good',
+                   message: ":v: *SUCCESS*: test run <${env.BUILD_URL}|#${env.BUILD_NUMBER}> in ${params.ENVIRONMENT_NAME} – see <${env.ALLURE_REPORT_URL}|Allure Report>"
+            }
+        }
+        failure {
+            script {
+                slackSend channel: '#npgw-notification-jenkins',
+                   color: 'danger',
+                   message: ":x: *FAILURE*: test run <${env.BUILD_URL}|#${env.BUILD_NUMBER}> in ${params.ENVIRONMENT_NAME} failed – see <${env.ALLURE_REPORT_URL}|Allure Report>"
+            }
+        }
         always {
-          cleanWs()
+            cleanWs()
         }
     }
 }
