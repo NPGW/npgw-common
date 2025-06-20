@@ -37,7 +37,7 @@ pipeline {
                         slackSend(
                             channel: '#npgw-notification-jenkins',
                             color: 'danger',
-                            message: ":x: FAILURE: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} – see <${env.JENKINS_URL}/job/build-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
+                            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} – see <${env.JENKINS_URL}/job/build-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
                         )
                         currentBuild.description = 'FAILURE_NOTIFIED'
                         error("Downstream pipeline failed")
@@ -63,7 +63,7 @@ pipeline {
                         slackSend(
                             channel: '#npgw-notification-jenkins',
                             color: '#danger',
-                            message: ":x: FAILURE: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
+                            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
                         )
                         currentBuild.description = 'FAILURE_NOTIFIED'
                         error("DEV deploy failed")
@@ -88,7 +88,7 @@ pipeline {
                         def failedStage = "deploy-a-version [test]"
                         slackSend(
                             color: 'danger',
-                            message: ":x: FAILURE: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
+                            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
                         )
                         currentBuild.description = 'FAILURE_NOTIFIED'
                         error("Test deploy failed")
@@ -181,7 +181,7 @@ pipeline {
         success {
             slackSend channel: '#npgw-notification-jenkins',
                       color: 'good',
-                      message: ":v: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
+                      message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
         }
         failure {
             script {
