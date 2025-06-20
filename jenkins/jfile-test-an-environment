@@ -52,7 +52,7 @@ pipeline {
                     if (!env.RELEASE_VERSION) {
                         error("Release version is null. Exiting...")
                     }
-                    env.ALLURE_REPORT_URL = "${env.S3_ALLURE_ROOT.replace('s3://', 'https://')}/${params.ENVIRONMENT_NAME}/allure-report/index.html"
+                    env.ALLURE_REPORT_URL = "https://npgw-testing.s3.eu-central-1.amazonaws.com/allure-history/${params.ENVIRONMENT_NAME}/allure-report/index.html"
                 }
             }
         }
