@@ -135,8 +135,8 @@ pipeline {
         dir("infra-${params.ENVIRONMENT_NAME}") {
           sh """
             aws s3 ls s3://${env.AWS_BUCKET_NAME}/npgw-common/ --recursive --human-readable
-            aws s3 cp s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}/merchant.yaml merchant-v1.yaml --region ${env.AWS_REGION}
-            aws s3 cp s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}/portal.yaml portal-v1.yaml --region ${env.AWS_REGION}
+            aws s3 cp s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}/api/merchant.yaml merchant-v1.yaml --region ${env.AWS_REGION}
+            aws s3 cp s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}/api/portal.yaml portal-v1.yaml --region ${env.AWS_REGION}
           """
         }
       }
