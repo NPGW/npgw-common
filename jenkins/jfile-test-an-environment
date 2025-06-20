@@ -27,7 +27,6 @@ pipeline {
         AWS_REPOSITORY_URL = '214404897309.dkr.ecr.eu-central-1.amazonaws.com'
         S3_ALLURE_ROOT = 's3://npgw-testing/allure-history'
         ALLURE_CACHE_BASE_DIR = "/home/ec2-user/allure-cache/${ENVIRONMENT_NAME}"
-        ALLURE_REPORT_URL =
     }
 
     stages {
