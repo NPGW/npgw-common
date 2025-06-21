@@ -8,9 +8,7 @@ info:
 
     The endpoints provided include operations for generating authentication tokens, creating new transactions and retrieving transaction details for CreditCard payments.
 
-    Useful links:
-    - [Merchant API GitHub repo](https://github.com/NPGW/npgw-api-specification)
-    - [Merchant API YAML definition](https://github.com/NPGW/npgw-api-specification/blob/main/api-merchant.yaml)
+    [API YAML definition](/api.yaml)
   x-meta:
     Title: API and SDK Documentation
     Author: NPGW
