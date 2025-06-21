@@ -52,6 +52,7 @@ pipeline {
                     if (!env.RELEASE_VERSION) {
                         error("Release version is null. Exiting...")
                     }
+                    env.ALLURE_REPORT_URL = "https://npgw-testing.s3.eu-central-1.amazonaws.com/allure-history/${params.ENVIRONMENT_NAME}/allure-report/index.html"
                 }
             }
         }
@@ -190,20 +191,6 @@ pipeline {
             }
         }
 
-        stage('Notify via Slack') {
-            steps {
-                script {
-                    def s3ReportUrl = "https://npgw-testing.s3.eu-central-1.amazonaws.com/allure-history/${params.ENVIRONMENT_NAME}/allure-report/index.html"
-
-                    slackSend(
-                        channel: '#npgw-notification-jenkins',
-                        color: currentBuild.currentResult == 'SUCCESS' ? 'good' : 'danger',
-                        message: "*[${env.JOB_NAME} #${env.BUILD_NUMBER}]* Allure report for `${params.ENVIRONMENT_NAME}`:\n${s3ReportUrl}"
-                    )
-                }
-            }
-        }
-
         stage('Fail Pipeline if Tests Failed') {
             steps {
                 script {
@@ -216,8 +203,22 @@ pipeline {
     }
 
     post {
+        success {
+            script {
+                slackSend channel: '#npgw-notification-jenkins',
+                   color: 'good',
+                   message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
+            }
+        }
+        failure {
+            script {
+                slackSend channel: '#npgw-notification-jenkins',
+                   color: 'danger',
+                   message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
+            }
+        }
         always {
-          cleanWs()
+            cleanWs()
         }
     }
 }
