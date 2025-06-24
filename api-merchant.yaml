@@ -584,10 +584,10 @@ components:
     TransactionType:
       type: string
       description: |
-        PURCHASE - purchase order is a document issued by a buyer to a supplier for goods or services.
+        SALE - purchase order is a document issued by a buyer to a supplier for goods or services.
         AUTH - authorization refers to the process of verifying a cardholder's ability to make a purchase.
       enum:
-        - PURCHASE
+        - SALE
         - AUTH
 
     Amount:
@@ -629,7 +629,7 @@ components:
               pattern: '^[a-zA-Z0-9]*$'
             type:
               $ref: '#/components/schemas/TransactionType'
-              default: PURCHASE
+              default: SALE
             notificationUrl:
               type: string
               description: The merchant HTTPS Endpoint to be used for server-to-server webhooks. Please note that the Gateway doesn’t guarantee the delivery of notifications in the order that they’re generated, and as such ensure your event destination isn't dependent on receiving events in a specific order.
