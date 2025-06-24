@@ -312,6 +312,12 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
       description: The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request.
+    Conflict:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: The requested resource could not be processed due to conflict with related resource.
     NotAllowed:
       content:
         application/json:

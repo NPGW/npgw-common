@@ -405,6 +405,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
           $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../api-merchant.yaml#/components/responses/Conflict'
         '422':
           $ref: '../api-merchant.yaml#/components/responses/Validation'
         '429':
@@ -606,6 +608,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
           $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../api-merchant.yaml#/components/responses/Conflict'
         '422':
           $ref: '../api-merchant.yaml#/components/responses/Validation'
         '429':
