@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: NPGW Merchant API
-  version: 0.1.4
+  version: DEV
 
 externalDocs:
     url: https://docs.npgw.xyz
