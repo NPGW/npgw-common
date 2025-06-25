@@ -28,6 +28,13 @@ jobs:
           echo "Release version (name): $RELEASE_VERSION"
           echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
 
+      - name: Set version
+        run: |
+          sed -i -E "s|version: DEV|version: ${{ env.RELEASE_VERSION }}|g" api-merchant.yaml
+          sed -i -E "s|version: DEV|version: ${{ env.RELEASE_VERSION }}|g" rest/api-processing.yaml
+          sed -i -E "s|version: DEV|version: ${{ env.RELEASE_VERSION }}|g" rest/api-portal.yaml
+          sed -i -E "s|version: DEV|version: ${{ env.RELEASE_VERSION }}|g" rest/processing/part-doc-api.yaml
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -60,10 +67,6 @@ jobs:
 
       - name: Add api-merchant.yaml to docs/ folder
         run: cp api-merchant.yaml ./docs/api.yaml
-
-      - name: Set version to api spec
-        run: |
-          sed -i -E "s|version: DEV|version: ${{ env.RELEASE_VERSION }}|g" ./docs/api.yaml
 
       - name: Archive Merchant Docs
         run: |
@@ -106,11 +109,6 @@ jobs:
 
       - name: Validation Portal Spec (AWS)
         run: java -jar openapi-generator-cli.jar validate -i ./api/portal.yaml --recommend
-
-      - name: Set version to api spec
-        run: |
-          sed -i -E "s|version: DEV|version: ${{ env.RELEASE_VERSION }}|g" ./api/portal.yaml
-          sed -i -E "s|version: DEV|version: ${{ env.RELEASE_VERSION }}|g" ./api/merchant.yaml
 
 # Create Draft Release
       - name: Archive Portal and Merchant Specs
