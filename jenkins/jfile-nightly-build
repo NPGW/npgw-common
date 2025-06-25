@@ -17,7 +17,6 @@ pipeline {
                     def downstream = build(
                         job: 'build-a-version',
                         parameters: [
-                            string(name: 'MAJOR_VERSION', value: 'latest'),
                             booleanParam(name: 'RUN_TESTS', value: true),
                             string(name: 'TAG_VERSION', value: 'nightly')
                         ],

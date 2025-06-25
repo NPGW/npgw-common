@@ -2,7 +2,7 @@ pipeline {
     agent { label 'build-node' }
 
     parameters {
-        string(name: 'MAJOR_VERSION', defaultValue: '0.1', description: 'Major version')
+        string(name: 'MAJOR_VERSION', defaultValue: 'latest', description: 'Major version')
         booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'If unchecked, API tests will be skipped')
         string(name: 'TAG_VERSION', defaultValue: 'draft', description: 'Tag version, ex. nightly, rc')
     }
@@ -43,7 +43,7 @@ pipeline {
                                 def rcBranches = branches.findAll { it.name ==~ /^release\/.*-rc.*/ }
 
                                 if (rcBranches.size() != 1) {
-                                    error "Expected one release branch in NPGW/${repo}, but found ${rcBranches*.name.join(', ') ?: 'none'}"
+                                    error "Expected one release candidate candidate matching release/v<MAJOR_VERSION>-rc in NPGW/${repo}, but found ${rcBranches*.name.join(', ') ?: 'none'}"
                                 }
                                 branchesNames << rcBranches[0].name
                             }
