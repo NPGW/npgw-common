@@ -63,7 +63,7 @@ jobs:
 
       - name: Set version to api spec
         run: |
-          sed -i -E "s|^([[:space:]]*version:[[:space:]]*)[0-9]+\.[0-9]+\.[0-9]+|\1${{ env.RELEASE_VERSION }}|g" ./docs/api.yaml
+          sed -i -E "s|version: DEV|version: ${{ env.RELEASE_VERSION }}|g" ./docs/api.yaml
 
       - name: Archive Merchant Docs
         run: |
@@ -109,8 +109,8 @@ jobs:
 
       - name: Set version to api spec
         run: |
-          sed -i -E "s|^([[:space:]]*version:[[:space:]]*)[0-9]+\.[0-9]+\.[0-9]+|\1${{ env.RELEASE_VERSION }}|g" ./api/portal.yaml
-          sed -i -E "s|^([[:space:]]*version:[[:space:]]*)[0-9]+\.[0-9]+\.[0-9]+|\1${{ env.RELEASE_VERSION }}|g" ./api/merchant.yaml
+          sed -i -E "s|version: DEV|version: ${{ env.RELEASE_VERSION }}|g" ./api/portal.yaml
+          sed -i -E "s|version: DEV|version: ${{ env.RELEASE_VERSION }}|g" ./api/merchant.yaml
 
 # Create Draft Release
       - name: Archive Portal and Merchant Specs

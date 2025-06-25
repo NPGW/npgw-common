@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: NPGW Portal API
-  version: 0.1.2
+  version: DEV
 
 servers:
   - url: https://npgw.xyz/portal-v1/
