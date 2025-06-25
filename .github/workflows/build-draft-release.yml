@@ -103,6 +103,12 @@ jobs:
       - name: Validation Portal Spec (AWS)
         run: java -jar openapi-generator-cli.jar validate -i ./api/portal.yaml --recommend
 
+# Update API spec versions
+      - name: Bump versions
+        run: |
+          sed -i "s|^\([[:space:]]*version:\).*|\1 ${RELEASE_VERSION}|" ./api/merchant.yaml
+          sed -i "s|^\([[:space:]]*version:\).*|\1 ${RELEASE_VERSION}|" ./api/portal.yaml
+
 # Create Draft Release
       - name: Archive Portal and Merchant Specs
         run: |
