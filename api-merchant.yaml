@@ -319,7 +319,7 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-      description: The requested resource could not be processed due to conflict with related resource.
+      description: The requested resource could not be processed due to a conflict with this or related resources
     NotAllowed:
       content:
         application/json:
