@@ -372,8 +372,6 @@ components:
           type: string
         code:
           type: string
-        id:
-          type: string
 
     ResponseToken:
       type: object
