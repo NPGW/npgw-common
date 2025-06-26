@@ -34,10 +34,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                         if (params.RELEASE_VERSION == 'latest') {
-                            env.RELEASE_VERSION = sh(script: 'aws ecr describe-images --repository-name npgw/merchant --query
-                        "sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]" --output text',
-                            returnStdout: true
-                            ).trim()
+                            env.RELEASE_VERSION = sh(script: '''aws ecr describe-images --repository-name npgw/merchant --query "sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]" --output text''', returnStdout: true).trim()
                         } else {
                             env.RELEASE_VERSION = params.RELEASE_VERSION
                         }
