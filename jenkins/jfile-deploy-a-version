@@ -140,20 +140,21 @@ pipeline {
         stage('Invalidate CloudFront Caches') {
             steps {
                 script {
-                    env.DISTRIBUTION_ID = sh(script: """
+                    def distributionIds = sh(script: """
                         aws cloudfront list-distributions \
-                        --region us-east-1 \
-                        --query "DistributionList.Items[0].Id" \
-                        --output text
-                    """, returnStdout: true).trim()
+                            --region us-east-1 \
+                            --query "DistributionList.Items[].Id" \
+                            --output text
+                    """, returnStdout: true).trim().split()
 
-                    if (!env.DISTRIBUTION_ID) {
-                        error("Error: No CloudFront Distribution ID found for environment ${params.ENVIRONMENT_NAME}")
+                    if (!distributionIds) {
+                        error("Error: No CloudFront Distribution IDs found for environment ${params.ENVIRONMENT_NAME}")
                     }
 
-                    sh """
-                        aws cloudfront create-invalidation --distribution-id \"${env.DISTRIBUTION_ID}\" --paths \"/*\"
-                    """
+                    distributionIds.each { distId ->
+                        echo ${distributionIds}
+                        sh "aws cloudfront create-invalidation --distribution-id ${distId} --paths '/*'"
+                    }
                 }
             }
         }
