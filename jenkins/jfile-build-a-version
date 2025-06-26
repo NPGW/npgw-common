@@ -43,7 +43,8 @@ pipeline {
                                 def rcBranches = branches.findAll { it.name ==~ /^release\/.*-rc.*/ }
 
                                 if (rcBranches.size() != 1) {
-                                    error "Expected one release candidate candidate matching release/v<MAJOR_VERSION>-rc in NPGW/${repo.repoName}, but found ${rcBranches*.name.join(', ') ?: 'none'}"
+                                    def rcNames = rcBranches.collect { it.name }
+                                    error "Expected one release candidate candidate matching release/v<MAJOR_VERSION>-rc in NPGW/${repo.repoName}, but found ${rcNames.join(', ') ?: 'none'}"
                                 }
                                 branchesNames << rcBranches[0].name
                             }
