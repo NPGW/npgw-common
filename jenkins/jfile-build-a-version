@@ -47,11 +47,12 @@ pipeline {
                                     error "Expected one release candidate candidate matching release/v<MAJOR_VERSION>-rc in NPGW/${repo.repoName}, but found ${rcNames.join(', ') ?: 'none'}"
                                 }
                                 branchesNames << rcBranches[0].name
+                                echo "BRANCH NAMES: ${branchesNames}"
                             }
                             if (branchesNames.toSet().size() > 1) {
                                 error "Inconsistent release versions found: ${branchesNames.join(', ')}"
                             }
-                            def versionMatch = branchesNames[0].name =~ /^release\/v(.+)-rc$/
+                            def versionMatch = branchesNames[0] =~ /^release\/v(.+)-rc$/
                             env.MAJOR_VERSION = versionMatch[0][1]
                         } else {
                             env.MAJOR_VERSION = params.MAJOR_VERSION
