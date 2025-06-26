@@ -53,7 +53,7 @@ pipeline {
                             def versionMatch = branchesNames[0].name =~ /^release\/v(.+)-rc$/
                             env.MAJOR_VERSION = versionMatch[0][1]
                         } else {
-                            env.MAJOR_VERSION = param.MAJOR_VERSION
+                            env.MAJOR_VERSION = params.MAJOR_VERSION
                         }
                     }
                 }
