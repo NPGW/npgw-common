@@ -119,24 +119,7 @@ pipeline {
             }
         }
 
-        stage('Fetch CloudFront Distribution ID') {
-                    steps {
-                        script {
-                            env.DISTRIBUTION_ID = sh(script: """
-                                aws cloudfront list-distributions \
-                                --region us-east-1 \
-                                --query "DistributionList.Items[0].Id" \
-                                --output text
-                            """, returnStdout: true).trim()
-
-                            if (!env.DISTRIBUTION_ID) {
-                                error("Error: No CloudFront Distribution ID found for environment ${params.ENVIRONMENT_NAME}")
-                            }
-                        }
-                    }
-                }
-
-        stage('Fetch portal UI build') {
+        stage('Fetch portal and docs builds') {
             steps {
                 script {
                     def targetBucketName = "${params.ENVIRONMENT_NAME}.npgw.xyz"
@@ -154,14 +137,26 @@ pipeline {
             }
         }
 
-        stage('Invalidate CloudFront Cache') {
+        stage('Invalidate CloudFront Caches') {
             steps {
-                sh """
-                    aws cloudfront create-invalidation --distribution-id \"${env.DISTRIBUTION_ID}\" --paths \"/*\"
-                """
+                script {
+                    env.DISTRIBUTION_ID = sh(script: """
+                        aws cloudfront list-distributions \
+                        --region us-east-1 \
+                        --query "DistributionList.Items[0].Id" \
+                        --output text
+                    """, returnStdout: true).trim()
+
+                    if (!env.DISTRIBUTION_ID) {
+                        error("Error: No CloudFront Distribution ID found for environment ${params.ENVIRONMENT_NAME}")
+                    }
+
+                    sh """
+                        aws cloudfront create-invalidation --distribution-id \"${env.DISTRIBUTION_ID}\" --paths \"/*\"
+                    """
+                }
             }
         }
-
 
         stage('Test deployed service') {
             when {
