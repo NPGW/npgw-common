@@ -8,6 +8,7 @@ pipeline {
         AWS_ROLE = 'arn:aws:iam::214404897309:role/npgw-jenkins-build-a-version-role'
 
         IMAGE_FILE = '.github/IMAGE_LIST.json'
+        REPO_FILE = 'pipeline/REPO_LIST.json'
     }
 
     stages {
@@ -151,7 +152,7 @@ pipeline {
                         def rcBranchName = "release/v${versionMatch[0][1]}-rc"
                         repos.each {
                             sh """
-                                gh api -X POST /repos/NPGW/${repo}/merges \\
+                                gh api -X POST /repos/NPGW/${repo.repoName}/merges \\
                                     -H "Accept: application/vnd.github+json" \\
                                     -f base=${rcBranchName} \\
                                     -f head=main \\
