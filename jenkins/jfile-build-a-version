@@ -47,7 +47,7 @@ pipeline {
                                 }
                                 branchesNames << rcBranches[0].name
                             }
-                            if (branchesNames.toSet().size > 1) {
+                            if (branchesNames.toSet().size() > 1) {
                                 error "Inconsistent release versions found: ${branchesNames.join(', ')}"
                             }
                             def versionMatch = branchesNames[0].name =~ /^release\/v(.+)-rc$/
