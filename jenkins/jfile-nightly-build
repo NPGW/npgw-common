@@ -150,7 +150,7 @@ pipeline {
                             error "Could not extract Major Version from ${env.RELEASE_VERSION}"
                         }
                         def rcBranchName = "release/v${versionMatch[0][1]}-rc"
-                        repos.each {
+                        repos.each { repo ->
                             sh """
                                 gh api -X POST /repos/NPGW/${repo.repoName}/merges \\
                                     -H "Accept: application/vnd.github+json" \\
