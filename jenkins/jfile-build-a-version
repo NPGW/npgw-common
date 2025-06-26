@@ -36,14 +36,14 @@ pipeline {
 
                             repos.each { repo ->
                                 def rawBranches = sh(
-                                    script: "gh api /repos/NPGW/${repo}/branches?per_page=100",
+                                    script: "gh api /repos/NPGW/${repo.repoName}/branches?per_page=100",
                                     returnStdout: true
                                 ).trim()
                                 def branches = readJSON(text: rawBranches)
                                 def rcBranches = branches.findAll { it.name ==~ /^release\/.*-rc.*/ }
 
                                 if (rcBranches.size() != 1) {
-                                    error "Expected one release candidate candidate matching release/v<MAJOR_VERSION>-rc in NPGW/${repo}, but found ${rcBranches*.name.join(', ') ?: 'none'}"
+                                    error "Expected one release candidate candidate matching release/v<MAJOR_VERSION>-rc in NPGW/${repo.repoName}, but found ${rcBranches*.name.join(', ') ?: 'none'}"
                                 }
                                 branchesNames << rcBranches[0].name
                             }
