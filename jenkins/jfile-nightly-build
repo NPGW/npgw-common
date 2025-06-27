@@ -31,7 +31,7 @@ pipeline {
 
                     if (downstream.result != 'SUCCESS') {
                         def upstreamBuildNumber = currentBuild.number
-                        def downstreamBuildNumber = downstreamDev.getNumber()
+                        def downstreamBuildNumber = downstream.getNumber()
                         def failedStage = "build-a-version"
                         slackSend(
                             channel: '#npgw-notification-jenkins',
@@ -145,11 +145,12 @@ pipeline {
                     script {
                         def repos = readJSON text: sh(script: "cat ${WORKSPACE}/${REPO_FILE}", returnStdout: true).trim()
 
-                        def versionMatch = env.RELEASE_VERSION =~ /^(\d+\.\d+)\./
-                        if (!versionMatch || !versionMatch[0]) {
+                        def version
+                        try {
+                            version = (env.RELEASE_VERSION =~ /^(\d+\.\d+)\./)[0][1]
+                        } catch (Exception e) {
                             error "Could not extract Major Version from ${env.RELEASE_VERSION}"
                         }
-                        def version = versionMatch[0][1]
                         def rcBranchName = "release/v${version}-rc"
 
                         repos.each { repo ->
