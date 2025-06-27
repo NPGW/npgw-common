@@ -26,6 +26,42 @@ pipeline {
             }
         }
 
+        stage('Define Major Version') {
+            steps {
+                withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
+                    script {
+                        if (params.MAJOR_VERSION == 'latest') {
+                            def repos = readJSON text: sh(script: "cat ${WORKSPACE}/${REPO_FILE}", returnStdout: true).trim()
+                            def branchesNames = []
+
+                            repos.each { repo ->
+                                def rawBranches = sh(
+                                    script: "gh api /repos/NPGW/${repo.repoName}/branches?per_page=100",
+                                    returnStdout: true
+                                ).trim()
+                                def branches = readJSON(text: rawBranches)
+                                def rcBranches = branches.findAll { it.name ==~ /^release\/.*-rc.*/ }
+
+                                if (rcBranches.size() != 1) {
+                                    def rcNames = rcBranches.collect { it.name }
+                                    error "Expected one release candidate candidate matching release/v<MAJOR_VERSION>-rc in NPGW/${repo.repoName}, but found ${rcNames.join(', ') ?: 'none'}"
+                                }
+                                branchesNames << rcBranches[0].name
+                            }
+                            if (branchesNames.toSet().size() > 1) {
+                                error "Inconsistent release versions found: ${branchesNames.join(', ')}"
+                            }
+                            def versionMatch = branchesNames[0] =~ /^release\/v(.+)-rc$/
+                            env.MAJOR_VERSION = versionMatch[0][1]
+                        } else {
+                            env.MAJOR_VERSION = params.MAJOR_VERSION
+                        }
+                    }
+                }
+            }
+        }
+
+
         stage('Checkout') {
             steps {
                 dir('npgw-services') {
@@ -45,7 +81,7 @@ pipeline {
         stage('Get Release Version') {
             steps {
                 script {
-                    env.RELEASE_VERSION_WITHOUT_TAG = params.MAJOR_VERSION + sh(script: "echo .\$(date -u +%y%m%d%H%M)", returnStdout: true).trim()
+                    env.RELEASE_VERSION_WITHOUT_TAG = env.MAJOR_VERSION + sh(script: "echo .\$(date -u +%y%m%d%H%M)", returnStdout: true).trim()
                     env.RELEASE_VERSION = "${env.RELEASE_VERSION_WITHOUT_TAG}-${params.TAG_VERSION}"
                 }
             }
