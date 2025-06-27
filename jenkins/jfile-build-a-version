@@ -76,7 +76,7 @@ pipeline {
 
                             gh workflow run build-draft-release.yml \\
                                 --repo NPGW/npgw-common \\
-                                --ref main \\
+                                --ref bugfix/wrong-indent \\
                                 -f version=${env.RELEASE_VERSION}
                         """
                     }
