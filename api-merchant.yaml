@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: NPGW Merchant API
-  version: 0.1.4
+  version: DEV
 
 externalDocs:
     url: https://docs.npgw.xyz
@@ -89,10 +89,12 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '405':
           $ref: '#/components/responses/NotAllowed'
-        '422':
-          $ref: '#/components/responses/Validation'
         '406':
           $ref: '#/components/responses/NotAcceptable'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/Validation'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         '500':
@@ -312,6 +314,12 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
       description: The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request.
+    Conflict:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: The requested resource could not be processed due to a conflict with this or related resources
     NotAllowed:
       content:
         application/json:
@@ -363,8 +371,6 @@ components:
         path:
           type: string
         code:
-          type: string
-        id:
           type: string
 
     ResponseToken:

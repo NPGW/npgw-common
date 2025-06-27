@@ -2,7 +2,7 @@ openapi: 3.0.3
 
 info:
   title: NPGW Portal API
-  version: 0.1.2
+  version: DEV
 
 servers:
   - url: https://npgw.xyz/portal-v1/
@@ -16,6 +16,39 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UserAuthorization'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseUserToken'
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /user/token/refresh:
+    post:
+      operationId: refreshToken
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
         required: true
       responses:
         '200':
@@ -367,6 +400,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
           $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../api-merchant.yaml#/components/responses/Conflict'
         '422':
           $ref: '../api-merchant.yaml#/components/responses/Validation'
         '429':
@@ -479,6 +514,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
           $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../api-merchant.yaml#/components/responses/Conflict'
         '422':
           $ref: '../api-merchant.yaml#/components/responses/Validation'
         '429':
@@ -741,6 +778,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
           $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../api-merchant.yaml#/components/responses/Conflict'
         '422':
           $ref: '../api-merchant.yaml#/components/responses/Validation'
         '429':
@@ -818,6 +857,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
           $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../api-merchant.yaml#/components/responses/Conflict'
         '422':
           $ref: '../api-merchant.yaml#/components/responses/Validation'
         '429':
@@ -852,6 +893,8 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
         '406':
           $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../api-merchant.yaml#/components/responses/Conflict'
         '422':
           $ref: '../api-merchant.yaml#/components/responses/Validation'
         '429':
