@@ -149,11 +149,9 @@ pipeline {
                         if (!versionMatch || !versionMatch[0]) {
                             error "Could not extract Major Version from ${env.RELEASE_VERSION}"
                         }
-                        echo "VIRSION MATH + ${versionMatch}"
                         def version = versionMatch[0][1]
                         def rcBranchName = "release/v${version}-rc"
 
-                        echo "Using RC branch name: ${rcBranchName}"
                         repos.each { repo ->
                             sh """
                                 gh api -X POST /repos/NPGW/${repo.repoName}/merges \\
