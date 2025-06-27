@@ -34,7 +34,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                         if (params.RELEASE_VERSION == 'latest') {
-                            env.RELEASE_VERSION = sh(script: """aws ecr describe-images --repository-name npgw/merchant --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text""", returnStdout: true).trim()
+                            env.RELEASE_VERSION = sh(script: """aws ecr describe-images --repository-name npgw/merchant --query 'reverse(sort_by(imageDetails,& imagePushedAt)[-1].imageTags)[0]' --output text""", returnStdout: true).trim()
                         } else {
                             env.RELEASE_VERSION = params.RELEASE_VERSION
                         }
@@ -119,24 +119,7 @@ pipeline {
             }
         }
 
-        stage('Fetch CloudFront Distribution ID') {
-                    steps {
-                        script {
-                            env.DISTRIBUTION_ID = sh(script: """
-                                aws cloudfront list-distributions \
-                                --region us-east-1 \
-                                --query "DistributionList.Items[0].Id" \
-                                --output text
-                            """, returnStdout: true).trim()
-
-                            if (!env.DISTRIBUTION_ID) {
-                                error("Error: No CloudFront Distribution ID found for environment ${params.ENVIRONMENT_NAME}")
-                            }
-                        }
-                    }
-                }
-
-        stage('Fetch portal UI build') {
+        stage('Fetch portal and docs builds') {
             steps {
                 script {
                     def targetBucketName = "${params.ENVIRONMENT_NAME}.npgw.xyz"
@@ -154,14 +137,26 @@ pipeline {
             }
         }
 
-        stage('Invalidate CloudFront Cache') {
+        stage('Invalidate CloudFront Caches') {
             steps {
-                sh """
-                    aws cloudfront create-invalidation --distribution-id \"${env.DISTRIBUTION_ID}\" --paths \"/*\"
-                """
+                script {
+                    def distributionIds = sh(script: """
+                        aws cloudfront list-distributions \
+                            --region us-east-1 \
+                            --query "DistributionList.Items[].Id" \
+                            --output text
+                    """, returnStdout: true).trim().split()
+
+                    if (!distributionIds) {
+                        error("Error: No CloudFront Distribution IDs found for environment ${params.ENVIRONMENT_NAME}")
+                    }
+
+                    distributionIds.each { distId ->
+                        sh "aws cloudfront create-invalidation --distribution-id ${distId} --paths '/*'"
+                    }
+                }
             }
         }
-
 
         stage('Test deployed service') {
             when {
