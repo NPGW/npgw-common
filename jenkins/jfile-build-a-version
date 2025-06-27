@@ -2,7 +2,7 @@ pipeline {
     agent { label 'build-node' }
 
     parameters {
-        string(name: 'MAJOR_VERSION', defaultValue: '0.1', description: 'Major version')
+        string(name: 'MAJOR_VERSION', defaultValue: 'latest', description: 'Major version')
         booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'If unchecked, API tests will be skipped')
         string(name: 'TAG_VERSION', defaultValue: 'draft', description: 'Tag version, ex. nightly, rc')
     }
@@ -14,6 +14,7 @@ pipeline {
         AWS_ROLE = 'arn:aws:iam::214404897309:role/npgw-jenkins-build-a-version-role'
 
         IMAGE_FILE = '.github/IMAGE_LIST.json'
+        REPO_FILE = 'pipeline/REPO_LIST.json'
     }
 
     stages {
@@ -22,6 +23,41 @@ pipeline {
                 sh """
                     docker system prune -a -f --volumes
                 """
+            }
+        }
+
+        stage('Define Major Version') {
+            steps {
+                withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
+                    script {
+                        if (params.MAJOR_VERSION == 'latest') {
+                            def repos = readJSON text: sh(script: "cat ${WORKSPACE}/${REPO_FILE}", returnStdout: true).trim()
+                            def branchesNames = []
+
+                            repos.each { repo ->
+                                def rawBranches = sh(
+                                    script: "gh api /repos/NPGW/${repo.repoName}/branches?per_page=100",
+                                    returnStdout: true
+                                ).trim()
+                                def branches = readJSON(text: rawBranches)
+                                def rcBranches = branches.findAll { it.name ==~ /^release\/.*-rc.*/ }
+
+                                if (rcBranches.size() != 1) {
+                                    def rcNames = rcBranches.collect { it.name }
+                                    error "Expected one release candidate candidate matching release/v<MAJOR_VERSION>-rc in NPGW/${repo.repoName}, but found ${rcNames.join(', ') ?: 'none'}"
+                                }
+                                branchesNames << rcBranches[0].name
+                            }
+                            if (branchesNames.toSet().size() > 1) {
+                                error "Inconsistent release versions found: ${branchesNames.join(', ')}"
+                            }
+                            def versionMatch = branchesNames[0] =~ /^release\/v(.+)-rc$/
+                            env.MAJOR_VERSION = versionMatch[0][1]
+                        } else {
+                            env.MAJOR_VERSION = params.MAJOR_VERSION
+                        }
+                    }
+                }
             }
         }
 
@@ -44,7 +80,7 @@ pipeline {
         stage('Get Release Version') {
             steps {
                 script {
-                    env.RELEASE_VERSION_WITHOUT_TAG = params.MAJOR_VERSION + sh(script: "echo .\$(date -u +%y%m%d%H%M)", returnStdout: true).trim()
+                    env.RELEASE_VERSION_WITHOUT_TAG = env.MAJOR_VERSION + sh(script: "echo .\$(date -u +%y%m%d%H%M)", returnStdout: true).trim()
                     env.RELEASE_VERSION = "${env.RELEASE_VERSION_WITHOUT_TAG}-${params.TAG_VERSION}"
                 }
             }

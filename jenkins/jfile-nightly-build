@@ -8,6 +8,7 @@ pipeline {
         AWS_ROLE = 'arn:aws:iam::214404897309:role/npgw-jenkins-build-a-version-role'
 
         IMAGE_FILE = '.github/IMAGE_LIST.json'
+        REPO_FILE = 'pipeline/REPO_LIST.json'
     }
 
     stages {
@@ -17,8 +18,6 @@ pipeline {
                     def downstream = build(
                         job: 'build-a-version',
                         parameters: [
-                            string(name: 'MAJOR_VERSION', value: '0.1'),
-                            booleanParam(name: 'RUN_TESTS', value: true),
                             string(name: 'TAG_VERSION', value: 'nightly')
                         ],
                         wait: true,
@@ -144,31 +143,23 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
-                        def repos = ['npgw-portal', 'npgw-services', 'npgw-terraform', 'npgw-common', 'npgw-ui-test']
+                        def repos = readJSON text: sh(script: "cat ${WORKSPACE}/${REPO_FILE}", returnStdout: true).trim()
+
+                        def version
+                        try {
+                            version = (env.RELEASE_VERSION =~ /^(\d+\.\d+)\./)[0][1]
+                        } catch (Exception e) {
+                            error "Could not extract Major Version from ${env.RELEASE_VERSION}"
+                        }
+                        def rcBranchName = "release/v${version}-rc"
 
                         repos.each { repo ->
-                            def rawBranches = sh(
-                                script: "gh api /repos/NPGW/${repo}/branches?per_page=100",
-                                returnStdout: true
-                            ).trim()
-                            def branches = readJSON(text: rawBranches)
-                            def rcBranches = branches.findAll { it.name ==~ /^release\/.*-rc.*/ }
-
-                            if (rcBranches.size() == 0) {
-                                error "No release/***-rc branch found in NPGW/${repo}"
-                            } else if (rcBranches.size() > 1) {
-                                def names = rcBranches*.name.join(', ')
-                                error "Multiple release/***-rc branches found in NPGW/${repo}: ${names}"
-                            }
-
-                            def rcBranch = rcBranches[0].name
-
                             sh """
-                                gh api -X POST /repos/NPGW/${repo}/merges \\
+                                gh api -X POST /repos/NPGW/${repo.repoName}/merges \\
                                     -H "Accept: application/vnd.github+json" \\
-                                    -f base=${rcBranch} \\
+                                    -f base=${rcBranchName} \\
                                     -f head=main \\
-                                    -f commit_message="Merge main into ${rcBranch}"
+                                    -f commit_message="Merge main into ${rcBranchName}"
                             """
                         }
                     }
