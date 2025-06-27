@@ -61,7 +61,6 @@ pipeline {
             }
         }
 
-
         stage('Checkout') {
             steps {
                 dir('npgw-services') {
