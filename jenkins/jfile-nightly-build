@@ -32,7 +32,7 @@ pipeline {
 
                     if (downstream.result != 'SUCCESS') {
                         def upstreamBuildNumber = currentBuild.number
-                        def downstreamBuildNumber = downstreamDev.getNumber()
+                        def downstreamBuildNumber = downstream.getNumber()
                         def failedStage = "build-a-version"
                         slackSend(
                             channel: '#npgw-notification-jenkins',
