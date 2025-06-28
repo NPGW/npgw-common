@@ -30,7 +30,11 @@ pipeline {
                               --output text
                         """, returnStdout: true).trim()
 
-                        def tags = tagsRaw ? tagsRaw.tokenize() : []
+                        def tags = tagsRaw ? tagsRaw.tokenize().collect { fullTag ->
+                            fullTag.split('-', 2)[0]
+                        } : []
+
+                        echo "${tags}"
 
                         if (tags.size() > keepCount) {
                           def sorted = tags.sort { tag ->
