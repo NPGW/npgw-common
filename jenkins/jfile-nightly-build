@@ -34,7 +34,7 @@ pipeline {
                         def tags = tagsRaw.tokenize() // по пробелам/табам
                                           .findAll { it ==~ /.*\\.(\\d{10})-${suf}$/ }
 
-                        if (tags.size() > keepCount) {
+                        if (tags.size() > 1) {
                             // сортируем по таймстампу (старые первыми)
                             def sorted = tags.sort { a, b ->
                                 def tA = (a =~ /.*\\.(\\d{10})-${suf}$/)[0][1]
