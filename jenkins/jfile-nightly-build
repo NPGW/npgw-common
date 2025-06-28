@@ -16,12 +16,18 @@ pipeline {
     stage('Cleanup old ECR & S3 builds') {
         steps {
             script {
-                def keepCount = 7
+                def keepCount = 15
                 def suffixes = ['nightly', 'draft', 'rc', 'release']
                 def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
 
-                imageList.each { image ->
-                    suffixes.each { suf ->
+
+
+                suffixes.each { suf ->
+
+                    echo "Starting ECR old images cleanup for ${suf}..."
+
+                    imageList.each { image ->
+
                         def tagsRaw = sh(script: """
                             aws ecr list-images \
                               --repository-name npgw/${image.repoName} \
@@ -38,22 +44,45 @@ pipeline {
                             def toDelete = sorted.take(sorted.size() - keepCount)
                             echo "${toDelete}"
 
-                                toDelete.each { tag ->
-                                    def fullTag = "0.1.${tag}-${suf}"
-                                    echo "Deleting old image: npgw/${image.repoName}:${tag}"
-                                    sh """
-                                        aws ecr batch-delete-image \
-                                          --repository-name npgw/${image.repoName} \
-                                          --image-ids imageTag=${fullTag}
-                                    """
+                            toDelete.each { tag ->
+                                def fullTag = "0.1.${tag}-${suf}"
+                                echo "Deleting old image: npgw/${image.repoName}:${tag}"
 
-                                }
+                            }
                         } else {
                             echo "Repository npgw/${image.repoName}: only ${tags.size()} '${suf}' tags, nothing to delete."
                         }
                     }
+
+                    echo "Starting S3 old build cleanup for ${suf}..."
+
+                    for (s3repo in ['npgw-portal', 'npgw-common']) {
+                        def s3ListRaw = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
+                        def s3Dirs = s3ListRaw.readLines()
+                            .findAll { it.startsWith('PRE ') && it.endsWith("${suf}/") }
+                            .collect { line -> line.split()[1].replaceAll('/','') }
+
+                            if (s3Dirs.size() > keepCount) {
+                                def s3Ts = s3Dirs.collect { full ->
+                                    full.split('-',2)[0].split('\\.').last()
+                                }
+                                def sortedS3Ts = s3Ts.sort()
+                                def oldS3Ts    = sortedS3Ts.take(sortedS3Ts.size() - keepCount)
+                                def toDeleteS3 = s3Dirs.findAll { d ->
+                                    def ts = d.split('-',2)[0].split('\\.').last()
+                                    oldS3Ts.contains(ts)
+                                }
+
+                                toDeleteS3.each { dir ->
+                                    echo "Deleting S3 dir: s3://${AWS_BUCKET_NAME}/${s3repo}/${dir}/"
+                                }
+                            } else {
+                                echo "Nothing to delete in S3 for ${s3repo}/${suf} (found ${s3Dirs.size()})"
+                            }
+
                 }
             }
+        }
         }
     }
 
