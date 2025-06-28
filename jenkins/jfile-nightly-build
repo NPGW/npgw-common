@@ -26,7 +26,7 @@ pipeline {
                             aws ecr list-images \
                               --repository-name npgw/${image.repoName} \
                               --filter "tagStatus=TAGGED" \
-                              --query 'imageIds[].imageTag' \
+                              --query 'imageIds[?ends_with(imageTag, `-${suf}`)' \
                               --output text
                         """, returnStdout: true).trim()
 
