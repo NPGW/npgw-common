@@ -34,8 +34,8 @@ pipeline {
                             fullTag.split('-', 2)[0]} : []
                         def timestamps = tags.collect { it.split('\\.').last() }
 
-                        if (timestamps.size() > keepCount) {
-                            def sorted = timestamps.sort()
+                        if (tagsRaw.size() > keepCount) {
+                            def sorted = tagsRaw.sort()
                             def toDelete = sorted.take(sorted.size() - keepCount)
 
                                 toDelete.each { tag ->
