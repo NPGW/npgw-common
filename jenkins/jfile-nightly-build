@@ -39,7 +39,7 @@ pipeline {
                         echo "${timestamps}"
 
                         if (timestamps.size() > keepCount) {
-                          def sorted = timestamps.sort { it.toLong() }
+                          def sorted = timestamps.sort()
 
                           echo "${sorted}"
 
