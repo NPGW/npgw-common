@@ -17,7 +17,7 @@ pipeline {
         steps {
             script {
                 def keepCount = 5
-                def suffixes = ['rc', 'release', 'draft']
+                def suffixes = ['nightly', 'draft', 'rc', 'release']
                 def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
 
                 imageList.each { image ->
@@ -29,22 +29,34 @@ pipeline {
                               --query 'imageIds[].imageTag' \
                               --output text
                         """, returnStdout: true).trim()
-                        echo "${tagsRaw}"
 
-                        def tags = tagsRaw.tokenize().findAll { it ==~ /.+\\.\\d{10}-${suf}$/ }
-                        echo "${tags}"
+                        // из всего вывода оставляем те, что заканчиваются на "-suf" и содержат 10-значный таймстамп
+                        def tags = tagsRaw.tokenize() // по пробелам/табам
+                                          .findAll { it ==~ /.*\\.(\\d{10})-${suf}$/ }
 
                         if (tags.size() > keepCount) {
-                            def sorted = tags.sort()
-                            def toDelete = sorted.take(sorted.size() - keepCount)
-                            echo "${sorted}"
-                            echo "${toDelete}"
+                            // сортируем по таймстампу (старые первыми)
+                            def sorted = tags.sort { a, b ->
+                                def tA = (a =~ /.*\\.(\\d{10})-${suf}$/)[0][1]
+                                def tB = (b =~ /.*\\.(\\d{10})-${suf}$/)[0][1]
+                                return tA <=> tB
+                            }
+                            // получаем на удаление — все, кроме 5 последних
+                            def toDelete = sorted[0..<(sorted.size() - keepCount)]
+
+                            toDelete.each { tag ->
+                                echo "Deleting old image: npgw/${image.repoName}:${tag}"
+
+                            }
+                        } else {
+                            echo "Repository npgw/${image.repoName}: only ${tags.size()} '${suf}' tags, nothing to delete."
                         }
                     }
                 }
             }
         }
-        }
+    }
+
     }
 
 
