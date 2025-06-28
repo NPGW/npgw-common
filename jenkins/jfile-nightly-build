@@ -11,6 +11,8 @@ pipeline {
         REPO_FILE = 'pipeline/REPO_LIST.json'
     }
 
+    stages {
+
     stage('Cleanup old ECR & S3 builds') {
         steps {
             script {
@@ -41,6 +43,7 @@ pipeline {
                     }
                 }
             }
+        }
         }
     }
 
