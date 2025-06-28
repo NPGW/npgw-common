@@ -32,19 +32,12 @@ pipeline {
 
                         def tags = tagsRaw ? tagsRaw.tokenize() : []
 
-                        echo "Found ${tags.size()} '${suf}' tags in npgw/${image.repoName}: ${tags}"
+                        if (tags.size() > keepCount) {
+                          def sorted = tags.sort { tag ->
+                              (tag =~ /.*\.(\d{10})-${suf}$/)[0][1]
+                          }
 
-                        if (tags.size() > 1) {
-                            // сортируем по таймстампу (старые первыми)
-                            def sorted = tags.sort { a, b ->
-                                def tA = (a =~ /.*\\.(\\d{10})-${suf}$/)[0][1]
-                                def tB = (b =~ /.*\\.(\\d{10})-${suf}$/)[0][1]
-                                return tA <=> tB
-                            }
-                            echo "sorted"
-                            echo "${sorted}"
-                            // получаем на удаление — все, кроме 5 последних
-                            def toDelete = sorted[0..<(sorted.size() - keepCount)]
+                          def toDelete = sorted.take(sorted.size() - keepCount)
 
                             toDelete.each { tag ->
                                 echo "Deleting old image: npgw/${image.repoName}:${tag}"
