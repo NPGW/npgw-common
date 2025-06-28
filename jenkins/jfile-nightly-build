@@ -16,7 +16,7 @@ pipeline {
     stage('Cleanup old ECR & S3 builds') {
         steps {
             script {
-                def keepCount = 5
+                def keepCount = 7
                 def suffixes = ['nightly', 'draft', 'rc', 'release']
                 def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
 
@@ -31,26 +31,17 @@ pipeline {
                         """, returnStdout: true).trim()
 
                         def tags = tagsRaw ? tagsRaw.tokenize().collect { fullTag ->
-                            fullTag.split('-', 2)[0]
-                        } : []
-
+                            fullTag.split('-', 2)[0]} : []
                         def timestamps = tags.collect { it.split('\\.').last() }
 
-                        echo "${timestamps}"
-
                         if (timestamps.size() > keepCount) {
-                          def sorted = timestamps.sort()
+                            def sorted = timestamps.sort()
+                            def toDelete = sorted.take(sorted.size() - keepCount)
 
-                          echo "${sorted}"
+                                toDelete.each { tag ->
+                                    echo "Deleting old image: npgw/${image.repoName}:${tag}"
 
-                          def toDelete = sorted.take(sorted.size() - keepCount)
-
-                          echo "${toDelete}"
-
-                            toDelete.each { tag ->
-                                echo "Deleting old image: npgw/${image.repoName}:${tag}"
-
-                            }
+                                }
                         } else {
                             echo "Repository npgw/${image.repoName}: only ${tags.size()} '${suf}' tags, nothing to delete."
                         }
