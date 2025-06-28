@@ -1,0 +1,17 @@
+[
+  {
+    "repoName": "npgw-portal"
+  },
+  {
+    "repoName": "npgw-services"
+  },
+  {
+    "repoName": "npgw-terraform"
+  },
+  {
+    "repoName": "npgw-common"
+  },
+  {
+    "repoName": "npgw-ui-test"
+  }
+]
