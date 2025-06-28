@@ -34,16 +34,18 @@ pipeline {
                             fullTag.split('-', 2)[0]
                         } : []
 
-                        echo "${tags}"
+                        def timestamps = tags.collect { it.split('\\.').last() }
 
-                        if (tags.size() > keepCount) {
-                          def sorted = tags.sort { tag ->
-                              (tag =~ /.*\.(\d{10})-${suf}$/)[0][1]
-                          }
+                        echo "${timestamps}"
+
+                        if (timestamps.size() > keepCount) {
+                          def sorted = timestamps.sort { it.toLong() }
 
                           echo "${sorted}"
 
                           def toDelete = sorted.take(sorted.size() - keepCount)
+
+                          echo "${toDelete}"
 
                             toDelete.each { tag ->
                                 echo "Deleting old image: npgw/${image.repoName}:${tag}"
