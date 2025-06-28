@@ -36,7 +36,9 @@ pipeline {
 
                         if (tagsRaw.size() > keepCount) {
                             def sorted = tagsRaw.sort()
+                            echo "${sorted}"
                             def toDelete = sorted.take(sorted.size() - keepCount)
+                            echo "${toDelete}"
 
                                 toDelete.each { tag ->
                                     def fullTag = "0.1.${tag}-${suf}"
