@@ -30,14 +30,11 @@ pipeline {
                               --output text
                         """, returnStdout: true).trim()
 
-                        // из всего вывода оставляем те, что заканчиваются на "-suf" и содержат 10-значный таймстамп
-                        def tags = tagsRaw.tokenize() // по пробелам/табам
-                                          .findAll { it ==~ /.*\\.(\\d{10})-${suf}$/ }
-                        echo "${tags}"
+                        echo "${tagsRaw}"
 
-                        if (tags.size() > 1) {
+                        if (tagsRaw.size() > 1) {
                             // сортируем по таймстампу (старые первыми)
-                            def sorted = tags.sort { a, b ->
+                            def sorted = tagsRaw.sort { a, b ->
                                 def tA = (a =~ /.*\\.(\\d{10})-${suf}$/)[0][1]
                                 def tB = (b =~ /.*\\.(\\d{10})-${suf}$/)[0][1]
                                 return tA <=> tB
@@ -50,7 +47,7 @@ pipeline {
 
                             }
                         } else {
-                            echo "Repository npgw/${image.repoName}: only ${tags.size()} '${suf}' tags, nothing to delete."
+                            echo "Repository npgw/${image.repoName}: only ${tagsRaw.size()} '${suf}' tags, nothing to delete."
                         }
                     }
                 }
