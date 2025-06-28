@@ -37,6 +37,8 @@ pipeline {
                               (tag =~ /.*\.(\d{10})-${suf}$/)[0][1]
                           }
 
+                          echo "${sorted}"
+
                           def toDelete = sorted.take(sorted.size() - keepCount)
 
                             toDelete.each { tag ->
