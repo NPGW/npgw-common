@@ -12,55 +12,24 @@ pipeline {
     }
 
     stages {
+        stage('Cleanup old ECR & S3 builds') {
+            steps {
+                script {
+                    def keepCount = 15
+                    def suffixes = ['nightly', 'draft', 'rc', 'release']
+                    def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
 
-    stage('Cleanup old ECR & S3 builds') {
-        steps {
-            script {
-                def keepCount = 15
-                def suffixes = ['nightly', 'draft', 'rc', 'release']
-                def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
+                    suffixes.each { suf ->
 
+                        echo "Starting S3 old build cleanup for ${suf}..."
 
+                        for (s3repo in ['npgw-portal', 'npgw-common']) {
+                            def s3ListRaw = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
+                            def s3Dirs = s3ListRaw.readLines()
+                                .findAll { it.startsWith("${suf}/") }
+                                .collect { line -> line.split()[1].replaceAll('/','') }
 
-                suffixes.each { suf ->
-
-                    echo "Starting ECR old images cleanup for ${suf}..."
-
-                    imageList.each { image ->
-
-                        def tagsRaw = sh(script: """
-                            aws ecr list-images \
-                              --repository-name npgw/${image.repoName} \
-                              --filter "tagStatus=TAGGED" \
-                              --query 'imageIds[?ends_with(imageTag, `-${suf}`)].imageTag' \
-                              --output text
-                        """, returnStdout: true).trim()
-
-                        def tags = tagsRaw ? tagsRaw.tokenize() : []
-
-                        if (tags.size() > keepCount) {
-                            def sorted = tags.sort()
-                            echo "${sorted}"
-                            def toDelete = sorted.take(sorted.size() - keepCount)
-                            echo "${toDelete}"
-
-                            toDelete.each { tag ->
-                                def fullTag = "0.1.${tag}-${suf}"
-                                echo "Deleting old image: npgw/${image.repoName}:${tag}"
-
-                            }
-                        } else {
-                            echo "Repository npgw/${image.repoName}: only ${tags.size()} '${suf}' tags, nothing to delete."
-                        }
-                    }
-
-                    echo "Starting S3 old build cleanup for ${suf}..."
-
-                    for (s3repo in ['npgw-portal', 'npgw-common']) {
-                        def s3ListRaw = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
-                        def s3Dirs = s3ListRaw.readLines()
-                            .findAll { it.startsWith('PRE ') && it.endsWith("${suf}/") }
-                            .collect { line -> line.split()[1].replaceAll('/','') }
+                            echo "${s3Dirs}"
 
                             if (s3Dirs.size() > keepCount) {
                                 def s3Ts = s3Dirs.collect { full ->
@@ -79,15 +48,11 @@ pipeline {
                             } else {
                                 echo "Nothing to delete in S3 for ${s3repo}/${suf} (found ${s3Dirs.size()})"
                             }
-
+                        }
+                    }
                 }
             }
         }
-        }
     }
-
-    }
-
-
 
 }
