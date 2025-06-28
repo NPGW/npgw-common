@@ -41,6 +41,8 @@ pipeline {
                                 def tB = (b =~ /.*\\.(\\d{10})-${suf}$/)[0][1]
                                 return tA <=> tB
                             }
+                            echo "sorted"
+                            echo "${sorted}"
                             // получаем на удаление — все, кроме 5 последних
                             def toDelete = sorted[0..<(sorted.size() - keepCount)]
 
