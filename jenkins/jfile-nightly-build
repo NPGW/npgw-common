@@ -30,11 +30,13 @@ pipeline {
                               --output text
                         """, returnStdout: true).trim()
 
-                        echo "${tagsRaw}"
+                        def tags = tagsRaw ? tagsRaw.tokenize() : []
 
-                        if (tagsRaw.size() > 1) {
+                        echo "Found ${tags.size()} '${suf}' tags in npgw/${image.repoName}: ${tags}"
+
+                        if (tags.size() > 1) {
                             // сортируем по таймстампу (старые первыми)
-                            def sorted = tagsRaw.sort { a, b ->
+                            def sorted = tags.sort { a, b ->
                                 def tA = (a =~ /.*\\.(\\d{10})-${suf}$/)[0][1]
                                 def tB = (b =~ /.*\\.(\\d{10})-${suf}$/)[0][1]
                                 return tA <=> tB
@@ -47,7 +49,7 @@ pipeline {
 
                             }
                         } else {
-                            echo "Repository npgw/${image.repoName}: only ${tagsRaw.size()} '${suf}' tags, nothing to delete."
+                            echo "Repository npgw/${image.repoName}: only ${tags.size()} '${suf}' tags, nothing to delete."
                         }
                     }
                 }
