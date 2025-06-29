@@ -12,6 +12,97 @@ pipeline {
     }
 
     stages {
+        stage('Cleanup old ECR & S3 builds') {
+            steps {
+                script {
+                    def keepCount = 7
+
+                    def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
+
+                    def suffixesEcr = [] as Set
+                    imageList.each { image ->
+                        def allTagsRaw = sh(script: """
+                            aws ecr list-images \
+                              --repository-name npgw/${image.repoName} \
+                              --query 'imageIds[].imageTag' \
+                              --output text
+                        """, returnStdout: true).trim()
+                        def allTags = allTagsRaw ? allTagsRaw.tokenize() : []
+                        allTags.findAll { it.contains('-') }.each { tag ->
+                            suffixesEcr << tag.tokenize('-').last()
+                        }
+                    }
+
+                    def suffixesS3 = [] as Set
+                    ['npgw-portal', 'npgw-common', 'npgw-terraform'].each { s3repo ->
+                        def prefixesRaw = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
+                        def prefixes = prefixesRaw
+                            ? prefixesRaw.readLines().collect { it.split()[1].replaceAll('/', '') }
+                            : []
+                        prefixes.findAll { it.contains('-') }.each { prefix ->
+                            suffixesS3 << prefix.tokenize('-').last()
+                        }
+                    }
+
+                    echo "ECR suffixes: ${suffixesEcr.sort()}"
+                    echo "S3  suffixes: ${suffixesS3.sort()}"
+
+                    suffixesEcr.each { suf ->
+                        echo "Starting ECR old images cleanup for ${suf}..."
+                        imageList.each { image ->
+                            def tagsRaw = sh(script: """
+                                aws ecr list-images \
+                                  --repository-name npgw/${image.repoName} \
+                                  --filter "tagStatus=TAGGED" \
+                                  --query 'imageIds[?ends_with(imageTag, `-${suf}`)].imageTag' \
+                                  --output text
+                            """, returnStdout: true).trim()
+
+                            def tags = tagsRaw ? tagsRaw.tokenize() : []
+
+                            if (tags.size() > keepCount) {
+                                def sorted = tags.sort()
+                                def toDelete = sorted.take(sorted.size() - keepCount)
+                                toDelete.each { tag ->
+                                    echo "Deleting old image: npgw/${image.repoName}:${tag}"
+                                    sh """
+                                        aws ecr batch-delete-image \
+                                          --repository-name npgw/${image.repoName} \
+                                          --image-ids imageTag=${tag}
+                                    """
+                                }
+                            } else {
+                                echo "Repository npgw/${image.repoName}: only ${tags.size()} '${suf}' tags, nothing to delete."
+                            }
+                        }
+                    }
+
+                    suffixesS3.each { suf ->
+                        echo "Starting S3 old build cleanup for ${suf}..."
+                        for (s3repo in ['npgw-portal', 'npgw-common', 'npgw-terraform']) {
+                            def prefixesRaw = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
+                            def prefixes = prefixesRaw.readLines()
+                                .findAll { it.endsWith("${suf}/") }
+                                .collect { line -> line.split()[1].replaceAll('/','') }
+
+                            if (prefixes.size() > keepCount) {
+                                def sorted = prefixes.sort()
+                                def toDelete = sorted.take(sorted.size() - keepCount)
+                                toDelete.each { tag ->
+                                    echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/${tag}/"
+                                    sh """
+                                        aws s3 rm s3://${AWS_BUCKET_NAME}/${s3repo}/${tag}/ --recursive
+                                    """
+                                }
+                            } else {
+                                echo "Prefix ${s3repo}: only ${prefixes.size()} '${suf}' tags, nothing to delete."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Trigger build-a-version pipeline') {
             steps {
                 script {
