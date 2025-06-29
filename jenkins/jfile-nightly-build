@@ -24,31 +24,28 @@ pipeline {
                         echo "Starting S3 old build cleanup for ${suf}..."
 
                         for (s3repo in ['npgw-portal', 'npgw-common']) {
-                            def s3ListRaw = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
-                            def s3Dirs = s3ListRaw.readLines()
+                            def s3AllPrefixes = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
+                            def s3SufPrefixes = s3ListRaw.readLines()
                                 .findAll { it.endsWith("${suf}/") }
                                 .collect { line -> line.split()[1].replaceAll('/','') }
 
-                            echo "${s3Dirs}"
-
-                            if (s3Dirs.size() > keepCount) {
-                                def s3Ts = s3Dirs.collect { full ->
+                            if (s3SufPrefixes.size() > keepCount) {
+                                def s3ToSortPrefixes = s3SufPrefixes.collect { full ->
                                     full.split('-',2)[0].split('\\.').last()
                                 }
-                                def sortedS3Ts = s3Ts.sort()
-                                def oldS3Ts    = sortedS3Ts.take(sortedS3Ts.size() - keepCount)
-                                def toDeleteS3 = s3Dirs.findAll { d ->
+                                def sorted = s3ToSortPrefixes.sort()
+                                def s3OldPrefixes = sorted.take(sorted.size() - keepCount)
+                                def s3ToDelete = s3ToSortPrefixes.findAll { d ->
                                     def ts = d.split('-',2)[0].split('\\.').last()
-                                    oldS3Ts.contains(ts)
+                                    s3OldPrefixes.contains(ts)
                                 }
 
-                                echo "${toDeleteS3}"
+                                s3ToDelete.each { prefix ->
+                                    echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/${prefix}/"
 
-                                toDeleteS3.each { dir ->
-                                    echo "Deleting S3 dir: s3://${AWS_BUCKET_NAME}/${s3repo}/${dir}/"
                                 }
                             } else {
-                                echo "Nothing to delete in S3 for ${s3repo}/${suf} (found ${s3Dirs.size()})"
+                                echo "Nothing to delete in S3 for ${s3repo}/${suf} (found ${s3SufPrefixes.size()})"
                             }
                         }
                     }
