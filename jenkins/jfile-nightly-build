@@ -51,13 +51,13 @@ pipeline {
 
                         echo "Starting S3 old build cleanup for ${suf}..."
                         for (s3repo in ['npgw-portal', 'npgw-common']) {
-                            def s3AllPrefixes = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
-                            def s3SufPrefixes = s3AllPrefixes.readLines()
+                            def prefixesRaw = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
+                            def prefixes = prefixesRaw.readLines()
                                 .findAll { it.endsWith("${suf}/") }
                                 .collect { line -> line.split()[1].replaceAll('/','') }
 
-                            if (s3SufPrefixes.size() > keepCount) {
-                                def sorted = s3SufPrefixes.sort()
+                            if (prefixes.size() > keepCount) {
+                                def sorted = prefixes.sort()
                                 def toDelete = sorted.take(sorted.size() - keepCount)
                                 toDelete.each { tag ->
                                     echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/${tag}/"
@@ -66,7 +66,7 @@ pipeline {
                                     """
                                 }
                             } else {
-                                echo "Nothing to delete in S3 for ${s3repo}/${suf} (found ${s3SufPrefixes.size()})"
+                                echo "Nothing to delete in S3 for ${s3repo}/${suf} (found ${prefixes.size()})"
                             }
                         }
                     }
