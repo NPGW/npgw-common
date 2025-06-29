@@ -25,7 +25,6 @@ pipeline {
 
                         for (s3repo in ['npgw-portal', 'npgw-common']) {
                             def s3ListRaw = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
-                            echo "${s3ListRaw}"
                             def s3Dirs = s3ListRaw.readLines()
                                 .findAll { it.endsWith("${suf}/") }
                                 .collect { line -> line.split()[1].replaceAll('/','') }
@@ -42,6 +41,8 @@ pipeline {
                                     def ts = d.split('-',2)[0].split('\\.').last()
                                     oldS3Ts.contains(ts)
                                 }
+
+                                echo "${toDeleteS3}"
 
                                 toDeleteS3.each { dir ->
                                     echo "Deleting S3 dir: s3://${AWS_BUCKET_NAME}/${s3repo}/${dir}/"
