@@ -22,9 +22,7 @@ pipeline {
                     suffixes.each { suf ->
 
                         echo "Starting ECR old images cleanup for ${suf}..."
-
                         imageList.each { image ->
-
                             def tagsRaw = sh(script: """
                                 aws ecr list-images \
                                   --repository-name npgw/${image.repoName} \
@@ -38,19 +36,20 @@ pipeline {
                             if (tags.size() > keepCount) {
                                 def sorted = tags.sort()
                                 def toDelete = sorted.take(sorted.size() - keepCount)
-
                                 toDelete.each { tag ->
                                     echo "Deleting old image: npgw/${image.repoName}:${tag}"
-
+                                    sh """
+                                        aws ecr batch-delete-image \
+                                          --repository-name npgw/${image.repoName} \
+                                          --image-ids imageTag=${tag}
+                                    """
                                 }
                             } else {
                                 echo "Repository npgw/${image.repoName}: only ${tags.size()} '${suf}' tags, nothing to delete."
                             }
                         }
 
-
                         echo "Starting S3 old build cleanup for ${suf}..."
-
                         for (s3repo in ['npgw-portal', 'npgw-common']) {
                             def s3AllPrefixes = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
                             def s3SufPrefixes = s3AllPrefixes.readLines()
@@ -60,7 +59,6 @@ pipeline {
                             if (s3SufPrefixes.size() > keepCount) {
                                 def sorted = s3SufPrefixes.sort()
                                 def toDelete = sorted.take(sorted.size() - keepCount)
-
                                 toDelete.each { tag ->
                                     echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/${tag}/"
                                     sh """
