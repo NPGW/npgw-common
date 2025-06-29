@@ -56,7 +56,7 @@ pipeline {
         stage('Cleanup old ECR & S3 builds') {
             steps {
                 script {
-                    def keepCount = 13
+                    def keepCount = 7
                     def suffixes = ['nightly', 'draft', 'rc', 'release']
                     def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
 
