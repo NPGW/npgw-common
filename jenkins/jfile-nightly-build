@@ -50,7 +50,7 @@ pipeline {
                         }
 
                         echo "Starting S3 old build cleanup for ${suf}..."
-                        for (s3repo in ['npgw-portal', 'npgw-common']) {
+                        for (s3repo in ['npgw-portal', 'npgw-common', 'npgw-terraform']) {
                             def prefixesRaw = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
                             def prefixes = prefixesRaw.readLines()
                                 .findAll { it.endsWith("${suf}/") }
