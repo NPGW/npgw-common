@@ -29,7 +29,7 @@ pipeline {
                         """, returnStdout: true).trim()
                         def allTags = allTagsRaw ? allTagsRaw.tokenize() : []
                         allTags.findAll { it.contains('-') }.each { tag ->
-                            suffixes << tag.tokenize('-').last()
+                            suffixesEcr << tag.tokenize('-').last()
                         }
                     }
 
