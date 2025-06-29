@@ -25,7 +25,7 @@ pipeline {
 
                         for (s3repo in ['npgw-portal', 'npgw-common']) {
                             def s3AllPrefixes = sh(script: "aws s3 ls s3://${AWS_BUCKET_NAME}/${s3repo}/", returnStdout: true).trim()
-                            def s3SufPrefixes = s3ListRaw.readLines()
+                            def s3SufPrefixes = s3AllPrefixes.readLines()
                                 .findAll { it.endsWith("${suf}/") }
                                 .collect { line -> line.split()[1].replaceAll('/','') }
 
