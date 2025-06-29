@@ -15,11 +15,12 @@ pipeline {
         stage('Cleanup old ECR & S3 builds') {
             steps {
                 script {
-                    def keepCount = 15
+                    def keepCount = 14
                     def suffixes = ['nightly', 'draft', 'rc', 'release']
                     def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
 
                     suffixes.each { suf ->
+
 
                         echo "Starting S3 old build cleanup for ${suf}..."
 
@@ -33,10 +34,12 @@ pipeline {
                                 def timestampsToSort = s3SufPrefixes.collect { full ->
                                     full.split('-',2)[0].split('\\.').last()
                                 }
+                                echo "${s3SufPrefixes}"
+                                echo "${timestampsToSort}"
                                 def sorted = timestampsToSort.sort()
-                                def timestampsToDelete = sorted.take(sorted.size() - keepCount)
+                                def toDelete = sorted.take(sorted.size() - keepCount)
 
-                                timestampsToDelete.each { timestamp ->
+                                toDelete.each { timestamp ->
                                     echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/0.1.${timestamp}-${suf}/"
                                     sh """
                                         aws s3 rm s3://${AWS_BUCKET_NAME}/${s3repo}/0.1.${timestamp}-${suf}/ --recursive
