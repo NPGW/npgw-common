@@ -34,12 +34,7 @@ pipeline {
                                     full.split('-',2)[0].split('\\.').last()
                                 }
                                 def sorted = s3ToSortPrefixes.sort()
-                                def s3OldPrefixes = sorted.take(sorted.size() - keepCount)
-                                echo "${s3OldPrefixes}"
-                                def s3ToDelete = s3ToSortPrefixes.findAll { d ->
-                                    def ts = d.split('-',2)[0].split('\\.').last()
-                                    s3OldPrefixes.contains(ts)
-                                }
+                                def s3ToDelete = sorted.take(sorted.size() - keepCount)
 
                                 s3ToDelete.each { prefix ->
                                     echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/0.1.${prefix}-${suf}/"
