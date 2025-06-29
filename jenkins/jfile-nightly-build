@@ -65,11 +65,7 @@ pipeline {
                                 def toDelete = sorted.take(sorted.size() - keepCount)
                                 toDelete.each { tag ->
                                     echo "Deleting old image: npgw/${image.repoName}:${tag}"
-                                    sh """
-                                        aws ecr batch-delete-image \
-                                          --repository-name npgw/${image.repoName} \
-                                          --image-ids imageTag=${tag}
-                                    """
+
                                 }
                             } else {
                                 echo "Repository npgw/${image.repoName}: only ${tags.size()} '${suf}' tags, nothing to delete."
