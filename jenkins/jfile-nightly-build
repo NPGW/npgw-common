@@ -30,15 +30,17 @@ pipeline {
                                 .collect { line -> line.split()[1].replaceAll('/','') }
 
                             if (s3SufPrefixes.size() > keepCount) {
-                                def s3ToSortPrefixes = s3SufPrefixes.collect { full ->
+                                def timestampsToSort = s3SufPrefixes.collect { full ->
                                     full.split('-',2)[0].split('\\.').last()
                                 }
-                                def sorted = s3ToSortPrefixes.sort()
-                                def s3ToDelete = sorted.take(sorted.size() - keepCount)
+                                def sorted = timestampsToSort.sort()
+                                def timestampsToDelete = sorted.take(sorted.size() - keepCount)
 
-                                s3ToDelete.each { prefix ->
-                                    echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/0.1.${prefix}-${suf}/"
-
+                                timestampsToDelete.each { timestamp ->
+                                    echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/0.1.${timestamp}-${suf}/"
+                                    sh """
+                                        aws s3 rm s3://${AWS_BUCKET_NAME}/${s3repo}/0.1.${timestamp}-${suf}/ --recursive
+                                    """
                                 }
                             } else {
                                 echo "Nothing to delete in S3 for ${s3repo}/${suf} (found ${s3SufPrefixes.size()})"
