@@ -41,7 +41,7 @@ pipeline {
                                 }
 
                                 s3ToDelete.each { prefix ->
-                                    echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/${prefix}/"
+                                    echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/0.1.${prefix}-${suf}/"
 
                                 }
                             } else {
