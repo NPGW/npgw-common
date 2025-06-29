@@ -91,7 +91,7 @@ pipeline {
                                     """
                                 }
                             } else {
-                                echo "Nothing to delete in S3 for ${s3repo}/${suf} (found ${prefixes.size()})"
+                                echo "Prefix ${s3repo}: only ${prefixes.size()} '${suf}' tags, nothing to delete."
                             }
                         }
                     }
