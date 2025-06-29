@@ -35,6 +35,7 @@ pipeline {
                                 }
                                 def sorted = s3ToSortPrefixes.sort()
                                 def s3OldPrefixes = sorted.take(sorted.size() - keepCount)
+                                echo "${s3OldPrefixes}"
                                 def s3ToDelete = s3ToSortPrefixes.findAll { d ->
                                     def ts = d.split('-',2)[0].split('\\.').last()
                                     s3OldPrefixes.contains(ts)
