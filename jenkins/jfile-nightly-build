@@ -15,7 +15,7 @@ pipeline {
         stage('Cleanup old ECR & S3 builds') {
             steps {
                 script {
-                    def keepCount = 14
+                    def keepCount = 13
                     def suffixes = ['nightly', 'draft', 'rc', 'release']
                     def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
 
@@ -31,18 +31,14 @@ pipeline {
                                 .collect { line -> line.split()[1].replaceAll('/','') }
 
                             if (s3SufPrefixes.size() > keepCount) {
-                                def timestampsToSort = s3SufPrefixes.collect { full ->
-                                    full.split('-',2)[0].split('\\.').last()
-                                }
-                                echo "${s3SufPrefixes}"
-                                echo "${timestampsToSort}"
-                                def sorted = timestampsToSort.sort()
+                                def sorted = s3SufPrefixes.sort()
                                 def toDelete = sorted.take(sorted.size() - keepCount)
 
-                                toDelete.each { timestamp ->
-                                    echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/0.1.${timestamp}-${suf}/"
+                                toDelete.each { tag ->
+                                    def fullTag = "0.1.${tag}-${suf}"
+                                    echo "Deleting S3 prefix: s3://${AWS_BUCKET_NAME}/${s3repo}/${fullTag}/"
                                     sh """
-                                        aws s3 rm s3://${AWS_BUCKET_NAME}/${s3repo}/0.1.${timestamp}-${suf}/ --recursive
+                                        aws s3 rm s3://${AWS_BUCKET_NAME}/${s3repo}/${fullTag}/ --recursive
                                     """
                                 }
                             } else {
