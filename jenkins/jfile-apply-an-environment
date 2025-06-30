@@ -144,7 +144,7 @@ pipeline {
     stage('Terraform Init') {
       steps {
         dir("infra-${params.ENVIRONMENT_NAME}") {
-          sh 'terraform init -upgrade'
+          sh 'terraform init'
         }
       }
     }
