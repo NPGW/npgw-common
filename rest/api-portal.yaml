@@ -1242,6 +1242,436 @@ paths:
               schema:
                 $ref: '#/components/schemas/MerchantAcquirer'
           description: Ok
+        '204':
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /control:
+    get:
+      operationId: getAllControls
+      security:
+        - apiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Control'
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../api-merchant.yaml#/components/responses/Conflict'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    post:
+      operationId: createControl
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Control'
+        description: Creating control
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Control'
+          description: Created control
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '409':
+          $ref: '../api-merchant.yaml#/components/responses/Conflict'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /control/{controlName}:
+    get:
+      operationId: getOneControl
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - description: The control name
+          in: path
+          name: controlName
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Control'
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    patch:
+      operationId: updateControl
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - description: The control name
+          in: path
+          name: controlName
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Control'
+        description: Updating control
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Control'
+          description: Updated acquirer
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    delete:
+      operationId: deleteControl
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - description: The control name
+          in: path
+          name: controlName
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /merchant-control:
+    post:
+      operationId: addMerchantControlItem
+      security:
+        - apiKeyAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMerchantControlItem'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MerchantControl'
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /merchant-control/{merchantId}:
+    get:
+      operationId: getOneMerchantControl
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - description: The merchant Id
+          in: path
+          name: merchantId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MerchantControl'
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    delete:
+      operationId: deleteMerchantControl
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - description: The merchant Id
+          in: path
+          name: merchantId
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /merchant-control/{merchantId}/{priority}:
+    get:
+      operationId: getOneMerchantControlItem
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: path
+          name: merchantId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: priority
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MerchantControlItem'
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    patch:
+      operationId: updateMerchantControlItem
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: path
+          name: merchantId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: priority
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: up
+          schema:
+            type: string
+        - in: query
+          name: down
+          schema:
+            type: string
+        - in: query
+          name: active
+          schema:
+            type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MerchantControl'
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+    delete:
+      operationId: deleteMerchantControlItem
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: path
+          name: merchantId
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: priority
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MerchantControl'
+          description: Ok
+        '204':
+          description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
         '401':
@@ -1659,6 +2089,63 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MerchantAcquirerItem'
+
+    BaseControl:
+      type: object
+      required:
+        - controlCode
+      properties:
+        controlDisplayName:
+          type: string
+        controlCode:
+          type: string
+        controlConfig:
+          type: string
+        isActive:
+          type: boolean
+          default: true
+
+    Control:
+      allOf:
+        - $ref: '#/components/schemas/BaseControl'
+        - type: object
+          required:
+            - controlName
+          properties:
+            controlName:
+              type: string
+
+    MerchantControlItem:
+      allOf:
+        - $ref: '#/components/schemas/BaseControl'
+        - type: object
+          properties:
+            priority:
+              type: integer
+
+    AddMerchantControlItem:
+      type: object
+      required:
+        - merchantId
+        - controlName
+      properties:
+        merchantId:
+          type: string
+        controlName:
+          type: string
+        isActive:
+          type: boolean
+          default: true
+
+    MerchantControl:
+      type: object
+      properties:
+        merchantId:
+          type: string
+        controlList:
+          type: array
+          items:
+            $ref: '#/components/schemas/MerchantControlItem'
 
     TransactionHistoryFilter:
       type: object
