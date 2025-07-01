@@ -576,7 +576,6 @@ components:
         - PENDING
         - SUCCESS
         - FAILED
-        - CANCELLED
 
     ThreeDSecureDetails:
       type: object
