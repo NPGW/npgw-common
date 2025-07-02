@@ -70,6 +70,10 @@ pipeline {
                             def OtherTagsToDelete = []
                         }
 
+                        echo "${ReleaseTagsToDelete}"
+                        echo "${RcTagsToDelete}"
+                        echo "${OtherTagsToDelete}"
+
                         for (tag in ReleaseTagsToDelete + RcTagsToDelete + OtherTagsToDelete) {
                             echo "Deleting image npgw/portal:${tag}"
 
