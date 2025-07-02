@@ -14,41 +14,72 @@ pipeline {
     stages {
             stage('Test') {
                 steps {
-                      script {
-                                def allTags2 = sh(
-                                  script: """
-                                    aws ecr describe-images \
-                                      --repository-name npgw/portal \
-                                      --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[] | [? !ends_with(@, `-rc`) && !ends_with(@, `-release`)]' \
-                                      --output text
-                                  """,
-                                  returnStdout: true
-                                ).trim().split().toList()
+                script {
 
-                                def allTags = sh(
-                                  script: """
-                                    aws ecr describe-images \
-                                      --repository-name npgw/portal \
-                                      --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[] | [? ends_with(@, `-rc`)]' \
-                                      --output text
-                                  """,
-                                  returnStdout: true
-                                ).trim().split().toList()
+                    def keepCount = 7
 
-                                def tagsToDelete = allTags.take(allTags.size() - 5)
+                    echo "Starting ECR old images cleanup..."
+                    def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
 
-                                echo "${tagsToDelete}"
+                    imageList.each { image ->
+                        def ReleaseTagsAll = sh(
+                          script: """
+                            aws ecr describe-images \
+                              --repository-name npgw/${image.repoName} \
+                              --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[] | [? ends_with(@, `-release`)]' \
+                              --output text
+                          """,
+                          returnStdout: true
+                        ).trim().split().toList()
 
-                                for (tag in tagsToDelete) {
-                                    echo "Deleting image npgw/portal:${tag}"
-                                    sh """
-                                        laws ecr batch-delete-image \
-                                          --repository-name npgw/portal \
-                                          --image-ids imageTag=${tag}
-                                    """
-                                }
+                        if (ReleaseTagsAll.size() > keepCount) {
+                            def ReleaseTagsToDelete = OtherTagsAll.take(OtherTagsAll.size() - 5)
+                        } else {
+                            def ReleaseTagsToDelete = []
+                        }
 
-                      }
+                        def RcTagsAll = sh(
+                          script: """
+                            aws ecr describe-images \
+                              --repository-name npgw/${image.repoName} \
+                              --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[] | [? ends_with(@, `-rc`)]' \
+                              --output text
+                          """,
+                          returnStdout: true
+                        ).trim().split().toList()
+
+                        if (RcTagsAll.size() > keepCount) {
+                            def RcTagsToDelete = RcTagsAll.take(RcTagsAll.size() - 5)
+                        } else {
+                            def RcTagsToDelete = []
+                        }
+
+                        def OtherTagsAll = sh(
+                          script: """
+                            aws ecr describe-images \
+                              --repository-name npgw/${image.repoName} \
+                              --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[] | [? !ends_with(@, `-rc`) && !ends_with(@, `-release`)]' \
+                              --output text
+                          """,
+                          returnStdout: true
+                        ).trim().split().toList()
+
+                        if (OtherTagsAll.size() > keepCount) {
+                            def OtherTagsToDelete = OtherTagsAll.take(OtherTagsAll.size() - 5)
+                        } else {
+                            def OtherTagsToDelete = []
+                        }
+
+                        for (tag in ReleaseTagsToDelete + RcTagsToDelete + OtherTagsToDelete) {
+                            echo "Deleting image npgw/portal:${tag}"
+
+                        }
+
+                    }
+
+                    echo "Starting S3 old build cleanup..."
+
+                  }
                 }
             }
     }
