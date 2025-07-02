@@ -30,6 +30,20 @@ pipeline {
                                 echo "${allTags}"
 
 
+                                def allTags2 = sh(
+                                  script: """
+                                    aws ecr describe-images \
+                                      --repository-name my-repo \
+                                      --image-ids imageTag=latest \
+                                      --query 'imageDetails[0].imagePushedAt' \
+                                      --output text
+                                  """,
+                                  returnStdout: true
+                                ).trim().split()
+
+                                echo "${allTags2}"
+
+
                                 // 3. Build a map tag -> numeric date‐string
                                 def dateMap = [:]
                                 allTags.each { tag ->
