@@ -34,7 +34,6 @@ pipeline {
                                   script: """
                                     aws ecr describe-images \
                                       --repository-name npgw/portal \
-                                      --image-ids imageTag=latest \
                                       --query 'imageDetails[0].imagePushedAt' \
                                       --output text
                                   """,
