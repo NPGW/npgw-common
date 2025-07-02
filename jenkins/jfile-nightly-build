@@ -38,7 +38,7 @@ pipeline {
                         ).trim().split().toList()
 
                         if (ReleaseTagsAll.size() > keepCount) {
-                            def ReleaseTagsToDelete = ReleaseTagsAll.take(ReleaseTagsAll.size() - 5)
+                             ReleaseTagsToDelete = ReleaseTagsAll.take(ReleaseTagsAll.size() - 5)
                         }
 
                         def RcTagsAll = sh(
@@ -52,7 +52,7 @@ pipeline {
                         ).trim().split().toList()
 
                         if (RcTagsAll.size() > keepCount) {
-                            def RcTagsToDelete = RcTagsAll.take(RcTagsAll.size() - 5)
+                             RcTagsToDelete = RcTagsAll.take(RcTagsAll.size() - 5)
                         }
 
                         def OtherTagsAll = sh(
@@ -66,7 +66,7 @@ pipeline {
                         ).trim().split().toList()
 
                         if (OtherTagsAll.size() > keepCount) {
-                            def OtherTagsToDelete = OtherTagsAll.take(OtherTagsAll.size() - 5)
+                             OtherTagsToDelete = OtherTagsAll.take(OtherTagsAll.size() - 5)
                         }
 
                         echo "${ReleaseTagsToDelete}"
