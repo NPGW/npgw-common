@@ -42,6 +42,18 @@ pipeline {
 
                                 echo "${allTags2}"
 
+                                def allTags3 = sh(
+                                  script: """
+                                    aws ecr describe-images \
+                                      --repository-name npgw/portal \
+                                      --query 'sort_by(imageDetails,&imagePushedAt)[*].[imageTags,imagePushedAt]' \
+                                      --output table
+                                  """,
+                                  returnStdout: true
+                                ).trim().split()
+
+                                echo "${allTags3}"
+
 
                                 // 3. Build a map tag -> numeric date‐string
                                 def dateMap = [:]
