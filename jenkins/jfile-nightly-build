@@ -33,7 +33,7 @@ pipeline {
                         ).trim().split().toList()
 
                         if (ReleaseTagsAll.size() > keepCount) {
-                            def ReleaseTagsToDelete = OtherTagsAll.take(OtherTagsAll.size() - 5)
+                            def ReleaseTagsToDelete = ReleaseTagsAll.take(ReleaseTagsAll.size() - 5)
                         } else {
                             def ReleaseTagsToDelete = []
                         }
