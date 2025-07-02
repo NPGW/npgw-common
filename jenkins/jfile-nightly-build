@@ -23,7 +23,7 @@ pipeline {
                                       --output text
                                   """,
                                   returnStdout: true
-                                ).trim().split()
+                                ).trim().split().toList()
 
                                 echo "${allTags}"
 
