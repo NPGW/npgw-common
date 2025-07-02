@@ -23,69 +23,13 @@ pipeline {
                     def OtherTagsToDelete   = []
 
 
-                    echo "Starting ECR old images cleanup..."
-                    def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
-
-                    imageList.each { image ->
-                        def ReleaseTagsAll = sh(
-                          script: """
-                            aws ecr describe-images \
-                              --repository-name npgw/${image.repoName} \
-                              --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[] | [? ends_with(@, `-release`)]' \
-                              --output text
-                          """,
-                          returnStdout: true
-                        ).trim().split().toList()
-
-                        if (ReleaseTagsAll.size() > keepCount) {
-                             ReleaseTagsToDelete = ReleaseTagsAll.take(ReleaseTagsAll.size() - 5)
-                        }
-
-                        def RcTagsAll = sh(
-                          script: """
-                            aws ecr describe-images \
-                              --repository-name npgw/${image.repoName} \
-                              --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[] | [? ends_with(@, `-rc`)]' \
-                              --output text
-                          """,
-                          returnStdout: true
-                        ).trim().split().toList()
-
-                        if (RcTagsAll.size() > keepCount) {
-                             RcTagsToDelete = RcTagsAll.take(RcTagsAll.size() - 5)
-                        }
-
-                        def OtherTagsAll = sh(
-                          script: """
-                            aws ecr describe-images \
-                              --repository-name npgw/${image.repoName} \
-                              --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[] | [? !ends_with(@, `-rc`) && !ends_with(@, `-release`)]' \
-                              --output text
-                          """,
-                          returnStdout: true
-                        ).trim().split().toList()
-
-                        if (OtherTagsAll.size() > keepCount) {
-                             OtherTagsToDelete = OtherTagsAll.take(OtherTagsAll.size() - 5)
-                        }
-
-                        echo "${ReleaseTagsToDelete}"
-                        echo "${RcTagsToDelete}"
-                        echo "${OtherTagsToDelete}"
-
-                        for (tag in ReleaseTagsToDelete + RcTagsToDelete + OtherTagsToDelete) {
-                            echo "Deleting image npgw/portal:${tag}"
-
-                        }
-
-                    }
-
                     echo "Starting S3 old build cleanup..."
 
                     def allKeys = sh(
                       script: """
                         aws s3api list-objects-v2 \
-                          --bucket npgw-common \
+                          --bucket npgw-versions \
+                          --prefix npgw-common \
                           --query "sort_by(Contents,&LastModified)[*].Key" \
                           --output text
                       """, returnStdout: true
