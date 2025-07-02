@@ -14,30 +14,29 @@ pipeline {
     stages {
             stage('Test') {
                 steps {
-                    script {
-                        // List all tagged images, extract tags
-                        def allTags = sh(returnStdout: true, script: '''
-                            aws ecr list-images \
-                                --repository-name npgw/portal \
-                                --filter tagStatus=TAGGED \
-                                --query 'imageIds[*].imageTag' \
-                                --output text
-                        ''').trim().split()
+                                    script {
+                                        // List all tagged images
+                                        def allTags = sh(returnStdout: true, script: '''
+                                            aws ecr list-images \
+                                                --repository-name npgw/portal \
+                                                --filter tagStatus=TAGGED \
+                                                --query 'imageIds[*].imageTag' \
+                                                --output text
+                                        ''').trim().split()
 
-                        // Filter tags matching the pattern and attach date prefix
-                        def datedTags = allTags.collect { tag ->
-                            def m = tag =~ /.*\.([0-9]{10})-.*/
-                            if (m) { return [date: m[0][1], tag: tag] }
-                            return null
-                        }.findAll { it }
+                                        // Filter tags matching our pattern (extract date portion)
+                                        def datedTags = allTags.collect { tag ->
+                                            def matcher = (tag =~ /.*\.([0-9]{10})-.*/)
+                                            matcher ? [date: matcher[0][1], tag: tag] : null
+                                        }.findAll { it }
 
-                        // Sort descending by date and pick the top 5
-                        def latestFive = datedTags.sort { a, b ->
-                            b.date <=> a.date
-                        }.take(5).collect { it.tag }
+                                        // Sort by date ascending, then take the last 5 and reverse for descending order
+                                        def sorted = datedTags.sort { it.date }
+                                        def lastFive = sorted.size() > 5 ? sorted[-5..-1] : sorted
+                                        def latestFive = lastFive.reverse().collect { it.tag }
 
-                        echo "Latest 5 image tags: ${latestFive.join(', ')}"
-                    }
+                                        echo "Latest 5 image tags: ${latestFive.join(', ')}"
+                                    }
                 }
             }
     }
