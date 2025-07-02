@@ -29,6 +29,8 @@ pipeline {
 
                                 def tagsToDelete = allTags.take(allTags.size() - 5)
 
+                                echo "${tagsToDelete}"
+
                                 for (tag in tagsToDelete) {
                                     echo "Deleting image npgw/portal:${tag}"
                                     sh """
