@@ -33,7 +33,7 @@ pipeline {
                                 // 3. Build a map tag -> numeric date‐string
                                 def dateMap = [:]
                                 allTags.each { tag ->
-                                  def m = (tag =~ /.+\\.(\\d{10})-.+$/)
+                                  def m = (tag =~ /.+\.(\d{10})-.+$/)
                                   dateMap[tag] = m[0][1]
                                 }
 
