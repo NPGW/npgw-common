@@ -27,8 +27,12 @@ pipeline {
                                   returnStdout: true
                                 ).trim().split()
 
+                                echo "${allTags}"
+
                                 // 2. Keep only tags like X.Y.<10-digit>-suffix
                                 def filtered = allTags.findAll { it ==~ /^[0-9]+\\.[0-9]+\\.(\\d{10})-.+$/ }
+
+                                echo "${filtered}"
 
                                 // 3. Build a map tag -> numeric date‐string
                                 def dateMap = [:]
