@@ -48,9 +48,14 @@ pipeline {
                                          !idx.endsWith('-rc') && !idx.endsWith('-release')
                                        }
 
-                    echo "${rcKeys}"
-                    echo "${releaseKeys}"
-                    echo "${otherKeys}"
+                    def rcKeysToDelete      = rcKeys.take(rcKeys.size() - 5)
+                    def releaseKeysToDelete      = releaseKeys.take(rcKeys.size() - 5)
+                    def otherKeysToDelete      = otherKeys.take(rcKeys.size() - 5)
+
+
+                    echo "${rcKeysToDelete}"
+                    echo "${releaseKeysToDelete}"
+                    echo "${otherKeysToDelete}"
                   }
                 }
             }
