@@ -18,6 +18,11 @@ pipeline {
 
                     def keepCount = 7
 
+                    def releaseToDelete = []
+                    def rcToDelete      = []
+                    def otherToDelete   = []
+
+
                     echo "Starting ECR old images cleanup..."
                     def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
 
@@ -34,8 +39,6 @@ pipeline {
 
                         if (ReleaseTagsAll.size() > keepCount) {
                             def ReleaseTagsToDelete = ReleaseTagsAll.take(ReleaseTagsAll.size() - 5)
-                        } else {
-                            def ReleaseTagsToDelete = []
                         }
 
                         def RcTagsAll = sh(
@@ -50,8 +53,6 @@ pipeline {
 
                         if (RcTagsAll.size() > keepCount) {
                             def RcTagsToDelete = RcTagsAll.take(RcTagsAll.size() - 5)
-                        } else {
-                            def RcTagsToDelete = []
                         }
 
                         def OtherTagsAll = sh(
@@ -66,8 +67,6 @@ pipeline {
 
                         if (OtherTagsAll.size() > keepCount) {
                             def OtherTagsToDelete = OtherTagsAll.take(OtherTagsAll.size() - 5)
-                        } else {
-                            def OtherTagsToDelete = []
                         }
 
                         echo "${ReleaseTagsToDelete}"
