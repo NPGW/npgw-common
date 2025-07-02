@@ -14,29 +14,39 @@ pipeline {
     stages {
             stage('Test') {
                 steps {
-                                    script {
-                                        // List all tagged images
-                                        def allTags = sh(returnStdout: true, script: '''
-                                            aws ecr list-images \
-                                                --repository-name npgw/portal \
-                                                --filter tagStatus=TAGGED \
-                                                --query 'imageIds[*].imageTag' \
-                                                --output text
-                                        ''').trim().split()
+                      script {
+                                // 1. List all tags (tab-separated), one per line
+                                def allTags = sh(
+                                  script: """
+                                    aws ecr list-images \
+                                      --repository-name ${params.ECR_REPOSITORY} \
+                                      --filter tagStatus=TAGGED \
+                                      --query 'imageIds[].imageTag' \
+                                      --output text | tr '\\t' '\\n'
+                                  """,
+                                  returnStdout: true
+                                ).trim().split('\\n')
 
-                                        // Filter tags matching our pattern (extract date portion)
-                                        def datedTags = allTags.collect { tag ->
-                                            def matcher = (tag =~ /.*\.([0-9]{10})-.*/)
-                                            matcher ? [date: matcher[0][1], tag: tag] : null
-                                        }.findAll { it }
+                                // 2. Keep only tags like X.Y.<10-digit>-suffix
+                                def filtered = allTags.findAll { it ==~ /^[0-9]+\\.[0-9]+\\.(\\d{10})-.+$/ }
 
-                                        // Sort by date ascending, then take the last 5 and reverse for descending order
-                                        def sorted = datedTags.sort { it.date }
-                                        def lastFive = sorted.size() > 5 ? sorted[-5..-1] : sorted
-                                        def latestFive = lastFive.reverse().collect { it.tag }
+                                // 3. Build a map tag -> numeric date‐string
+                                def dateMap = [:]
+                                filtered.each { tag ->
+                                  def m = (tag =~ /^[0-9]+\\.[0-9]+\\.(\\d{10})-.+$/)
+                                  dateMap[tag] = m[0][1].toLong()   // e.g. "2506281212" -> 2506281212L
+                                }
 
-                                        echo "Latest 5 image tags: ${latestFive.join(', ')}"
-                                    }
+                                // 4. Sort by that numeric key, descending
+                                def sortedTags = dateMap.sort { a, b -> b.value <=> a.value }.keySet()
+
+                                // 5. Take the 5 newest
+                                def latest5 = sortedTags.take(5)
+                                echo "Latest 5 ECR tags: ${latest5.join(', ')}"
+
+                                // make it available for downstream stages if needed
+                                env.LATEST_5_TAGS = latest5.join(',')
+                              }
                 }
             }
     }
