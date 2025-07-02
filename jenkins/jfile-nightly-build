@@ -27,28 +27,27 @@ pipeline {
                                   returnStdout: true
                                 ).trim().split()
 
-                                echo "${allTags}"
+                                 // 2. Define your regex once
+                                 def regex = /^[0-9]+\.[0-9]+\.(\d{10})-.+$/
 
+                                 // 3. Build a map of tag -> timestamp only for matching tags
+                                 def dateMap = allTags
+                                   .findAll { tag -> tag ==~ regex }               // keep only tags that match
+                                   .collectEntries { tag ->
+                                     def matcher = (tag =~ regex)
+                                     [ (tag) : matcher[0][1] ]                     // safe: we know it matches
+                                   }
 
-                                // 3. Build a map tag -> numeric date‐string
-                                def dateMap = [:]
-                                allTags.each { tag ->
-                                  def m = (tag =~ /^[0-9]+\\.[0-9]+\\.(\\d{10})-.+$/)
-                                  dateMap[tag] = m[0][1]
-                                }
+                                 // 4. Sort by the timestamp, descending
+                                 def sortedTags = dateMap
+                                   .sort { a, b -> b.value.toLong() <=> a.value.toLong() }
+                                   .keySet()
 
-                                echo "${dateMap}"
+                                 // 5. Take the top 5
+                                 def latest5 = sortedTags.take(5)
 
-                                // 4. Sort by that numeric key, descending
-                                def sortedTags = dateMap.sort { a, b -> b.value <=> a.value }.keySet()
-
-                                // 5. Take the 5 newest
-                                def latest5 = sortedTags.take(5)
-                                echo "Latest 5 ECR tags: ${latest5.join(', ')}"
-
-                                // make it available for downstream stages if needed
-                                env.LATEST_5_TAGS = latest5.join(',')
-                              }
+                                 echo "Latest 5 ECR tags: ${latest5.join(', ')}"
+                                 env.LATEST_5_TAGS = latest5.join(',')
                 }
             }
     }
