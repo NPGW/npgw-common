@@ -37,16 +37,17 @@ pipeline {
                                   dateMap[tag] = m[0][1]
                                 }
 
-                                echo "${dateMap}"
+                                // 4. Sort by that numeric key, descending—work on a List, not the Map itself
+                                def sortedEntries = dateMap.entrySet()
+                                                          .toList()
+                                                          .sort { e1, e2 -> e2.value <=> e1.value }
 
-                                // 4. Sort by that numeric key, descending
-                                def sortedTags = dateMap.sort { a, b -> b.value <=> a.value }.keySet()
+                                // 5. Take the 5 newest, then collect their tags
+                                def latest5 = sortedEntries
+                                                .take(5)
+                                                .collect { it.key }
 
-                                // 5. Take the 5 newest
-                                def latest5 = sortedTags.take(5)
                                 echo "Latest 5 ECR tags: ${latest5.join(', ')}"
-
-                                // make it available for downstream stages if needed
                                 env.LATEST_5_TAGS = latest5.join(',')
                               }
                 }
