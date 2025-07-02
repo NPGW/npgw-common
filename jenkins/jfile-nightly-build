@@ -19,7 +19,7 @@ pipeline {
                                 def allTags = sh(
                                   script: """
                                     aws ecr list-images \
-                                      --repository-name ${params.ECR_REPOSITORY} \
+                                      --repository-name npgw/portal \
                                       --filter tagStatus=TAGGED \
                                       --query 'imageIds[].imageTag' \
                                       --output text
