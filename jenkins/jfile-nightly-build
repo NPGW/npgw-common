@@ -28,7 +28,7 @@ pipeline {
                                 echo "${allTags}"
 
                                 def cutoff = allTags.size() - 5
-                                def tagsToDelete = cutoff > 0 ? allTags.subList(0, cutoff) : []
+                                def tagsToDelete = allTags.take(allTags.size() - 5)
 
                                 echo "${tagsToDelete}"
 
