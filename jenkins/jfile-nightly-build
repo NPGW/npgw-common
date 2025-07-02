@@ -38,9 +38,13 @@ pipeline {
                      .toList()
                   echo "${allKeys}"
 
-                    def rcKeys      = allKeys.findAll { it.endsWith('-rc') }
-                    def releaseKeys = allKeys.findAll { it.endsWith('-release') }
-                    def otherKeys   = allKeys.findAll { idx ->
+                  def midSegments = allKeys.collect { key ->
+                      key.split('/')[1]
+                    }
+
+                    def rcKeys      = midSegments.findAll { it.endsWith('-rc') }
+                    def releaseKeys = midSegments.findAll { it.endsWith('-release') }
+                    def otherKeys   = midSegments.findAll { idx ->
                                          !idx.endsWith('-rc') && !idx.endsWith('-release')
                                        }
 
