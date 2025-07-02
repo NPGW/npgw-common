@@ -82,11 +82,11 @@ pipeline {
                             key.split('/')[1]
                         }
 
-                        def ReleasePrefixes      = versionsPrefixes.findAll { it.endsWith('-release') }
-                        def RcPrefixes           = versionsPrefixes.findAll { it.endsWith('-rc') }
+                        def ReleasePrefixes      = versionsPrefixes.findAll { it.endsWith('-release') }.toSet()
+                        def RcPrefixes           = versionsPrefixes.findAll { it.endsWith('-rc') }.toSet()
                         def OtherPrefixes        = versionsPrefixes.findAll { idx ->
                                                  !idx.endsWith('-rc') && !idx.endsWith('-release')
-                                                 }
+                                                 }.toSet()
 
                         if (ReleasePrefixes.size() > keepCount) {
                              ReleasePrefixesToDelete = ReleasePrefixes.take(ReleasePrefixes.size() - keepCount)
