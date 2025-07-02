@@ -78,6 +78,9 @@ pipeline {
                         ).trim().split().toList()
 
 
+                        echo "${allPrefixes}"
+
+
 
                         def versionsPrefixes = allPrefixes.collect { key ->
                             key.split('/')[1]
