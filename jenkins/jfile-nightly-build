@@ -12,7 +12,7 @@ pipeline {
     }
 
     stages {
-        stage('Cleanup old ECR and S3 builds') {
+        stage('Cleanup old ECR & S3 builds') {
             steps {
                 script {
 
