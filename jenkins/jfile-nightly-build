@@ -34,7 +34,7 @@ pipeline {
                         def ReleaseTagsAll = sh(
                           script: """
                             aws ecr describe-images \
-                              --repository-name npgw-${image.repoName} \
+                              --repository-name npgw/${image.repoName} \
                               --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[]' \
                               --output text
                           """,
