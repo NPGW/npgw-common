@@ -35,11 +35,12 @@ pipeline {
                           script: """
                             aws ecr describe-images \
                               --repository-name npgw/${image.repoName} \
+                              --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[]' \
                               --output text
                           """,
                           returnStdout: true
                         ).trim().split().toList()
-                        
+
                         def ReleaseTags      = ReleaseTagsAll.findAll { it.endsWith('-release') }
                         def RcTags           = ReleaseTagsAll.findAll { it.endsWith('-rc') }
                         def OtherTags        = ReleaseTagsAll.findAll { idx ->
