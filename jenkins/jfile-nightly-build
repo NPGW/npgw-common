@@ -105,9 +105,9 @@ pipeline {
                              echo "Other folders to be deleted: ${OtherPrefixesToDelete}"
                         }
 
-                        for (tag in ReleasePrefixesToDelete + RcPrefixesToDelete + OtherPrefixesToDelete) {
+                        for (prefix in ReleasePrefixesToDelete + RcPrefixesToDelete + OtherPrefixesToDelete) {
                             sh """
-                                aws s3 rm s3://${AWS_BUCKET_NAME}/${tag} --recursive
+                                aws s3 rm s3://${AWS_BUCKET_NAME}/${prefix} --recursive
                             """
                         }
                     }
