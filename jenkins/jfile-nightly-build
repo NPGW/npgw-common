@@ -76,7 +76,7 @@ pipeline {
                             """, returnStdout: true
                         ).trim().split().toList()
 
-                        echo "${allPrefixes}"
+
 
                         def versionsPrefixes = allPrefixes.collect { key ->
                             key.split('/')[1]
@@ -99,6 +99,10 @@ pipeline {
                         if (OtherPrefixes.size() > keepCount) {
                              OtherPrefixesToDelete = OtherPrefixes.take(OtherPrefixes.size() - keepCount)
                         }
+
+                        echo "${ReleasePrefixesToDelete}"
+                        echo "${RcPrefixesToDelete}"
+                        echo "${OtherPrefixesToDelete}"
 
                         for (tag in ReleasePrefixes + RcPrefixes + OtherPrefixes) {
                             def folder = "${s3Repo}/${tag}/"
