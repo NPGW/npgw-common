@@ -49,18 +49,20 @@ pipeline {
                     
                         if (ReleaseTags.size() > keepCount) {
                             ReleaseTagsToDelete = ReleaseTags.take(ReleaseTags.size() - keepCount)
+                            echo "-release images for ${image.repoName} to be deleted: {ReleaseTagsToDelete}"
                         }
                         
                         if (RcTags.size() > keepCount) {
                             RcTagsToDelete = RcTags.take(RcTags.size() - keepCount)
+                            echo "-rc images for ${image.repoName} to be deleted: {RcTagsToDelete}"
                         }
                         
                         if (OtherTags.size() > keepCount) {
                             OtherTagsToDelete = OtherTags.take(OtherTags.size() - keepCount)
+                            echo "Other images for ${image.repoName} to be deleted: {OtherTagsToDelete}"
                         }
                         
                         for (tag in ReleaseTagsToDelete + RcTagsToDelete + OtherTagsToDelete) {
-                            echo "Deleting image npgw/${image.repoName}:${tag}"
                         }
                     }
 
@@ -77,10 +79,6 @@ pipeline {
                             """, returnStdout: true
                         ).trim().split().toList()
 
-
-                        echo "${allPrefixes}"
-
-
                         def ReleasePrefixes      = allPrefixes.findAll { it.endsWith('-release/') }.toSet()
                         def RcPrefixes           = allPrefixes.findAll { it.endsWith('-rc/') }.toSet()
                         def OtherPrefixes        = allPrefixes.findAll { idx ->
@@ -89,23 +87,21 @@ pipeline {
 
                         if (ReleasePrefixes.size() > keepCount) {
                              ReleasePrefixesToDelete = ReleasePrefixes.take(ReleasePrefixes.size() - keepCount)
+                             echo "-release folders to be deleted: ${ReleasePrefixesToDelete}"
                         }
 
                         if (RcPrefixes.size() > keepCount) {
                              RcPrefixesToDelete = RcPrefixes.take(RcPrefixes.size() - keepCount)
+                             echo "-rc folders to be deleted: ${RcPrefixesToDelete}"
                         }
 
                         if (OtherPrefixes.size() > keepCount) {
                              OtherPrefixesToDelete = OtherPrefixes.take(OtherPrefixes.size() - keepCount)
+                             echo "Other folders to be deleted: ${OtherPrefixesToDelete}"
                         }
-
-                        echo "${ReleasePrefixesToDelete}"
-                        echo "${RcPrefixesToDelete}"
-                        echo "${OtherPrefixesToDelete}"
 
                         for (tag in ReleasePrefixesToDelete + RcPrefixesToDelete + OtherPrefixesToDelete) {
                             def folder = "${s3Repo}/${tag}/"
-                            echo "Deleting s3://${AWS_BUCKET_NAME}/${s3Repo}/${tag}/"
                         }
                   }
                 }
