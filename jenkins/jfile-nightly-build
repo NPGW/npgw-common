@@ -46,7 +46,7 @@ pipeline {
                                   script: """
                                     aws ecr describe-images \
                                       --repository-name npgw/portal \
-                                      --query 'sort_by(imageDetails,&imagePushedAt)[*].[imageTags,imagePushedAt]' \
+                                      --query 'sort_by(imageDetails,&imagePushedAt)[*].[imageTags]' \
                                       --output text
                                   """,
                                   returnStdout: true
