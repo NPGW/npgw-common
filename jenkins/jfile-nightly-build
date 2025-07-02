@@ -81,17 +81,10 @@ pipeline {
                         echo "${allPrefixes}"
 
 
-
-                        def versionsPrefixes = allPrefixes.collect { key ->
-                            key.split('/')[1]
-                        }
-
-                        echo "${versionsPrefixes}"
-
-                        def ReleasePrefixes      = versionsPrefixes.findAll { it.endsWith('-release') }.toSet()
-                        def RcPrefixes           = versionsPrefixes.findAll { it.endsWith('-rc') }.toSet()
-                        def OtherPrefixes        = versionsPrefixes.findAll { idx ->
-                                                 !idx.endsWith('-rc') && !idx.endsWith('-release')
+                        def ReleasePrefixes      = allPrefixes.findAll { it.endsWith('-release/') }.toSet()
+                        def RcPrefixes           = allPrefixes.findAll { it.endsWith('-rc/') }.toSet()
+                        def OtherPrefixes        = allPrefixes.findAll { idx ->
+                                                 !idx.endsWith('-rc/') && !idx.endsWith('-release/')
                                                  }.toSet()
 
                         if (ReleasePrefixes.size() > keepCount) {
