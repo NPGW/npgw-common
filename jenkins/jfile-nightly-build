@@ -21,43 +21,92 @@ pipeline {
                     def ReleaseTagsToDelete = []
                     def RcTagsToDelete      = []
                     def OtherTagsToDelete   = []
-
-
-                    echo "Starting S3 old build cleanup..."
-
-                    def allKeys = sh(
-                      script: """
-                        aws s3api list-objects-v2 \
-                          --bucket npgw-versions \
-                          --prefix npgw-common \
-                          --query "sort_by(Contents,&LastModified)[*].Key" \
-                          --output text
-                      """, returnStdout: true
-                    ).trim()
-                     .split()
-                     .toList()
-                  echo "${allKeys}"
-
-                  def midSegments = allKeys.collect { key ->
-                      key.split('/')[1]
+                    
+                    def ReleasePrefixesToDelete = []
+                    def RcPrefixesToDelete = []
+                    def OtherPrefixesToDelete = []
+                    
+                    echo "Starting ECR old images cleanup..."
+                    def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
+                    
+                    imageList.each { image ->
+                        def ReleaseTagsAll = sh(
+                          script: """
+                            aws ecr describe-images \
+                              --repository-name npgw/${image.repoName} \
+                              --output text
+                          """,
+                          returnStdout: true
+                        ).trim().split().toList()
+                        
+                        def ReleaseTags      = ReleaseTagsAll.findAll { it.endsWith('-release') }
+                        def RcTags           = ReleaseTagsAll.findAll { it.endsWith('-rc') }
+                        def OtherTags        = ReleaseTagsAll.findAll { idx ->
+                                             !idx.endsWith('-rc') && !idx.endsWith('-release')
+                                             }
+                    
+                        if (ReleaseTags.size() > keepCount) {
+                            ReleaseTagsToDelete = ReleaseTags.take(ReleaseTags.size() - keepCount)
+                        }
+                        
+                        if (RcTags.size() > keepCount) {
+                            RcTagsToDelete = RcTags.take(RcTags.size() - keepCount)
+                        }
+                        
+                        if (OtherTags.size() > keepCount) {
+                            OtherTagsToDelete = OtherTags.take(OtherTags.size() - keepCount)
+                        }
+                        
+                        for (tag in ReleaseTagsToDelete + RcTagsToDelete + OtherTagsToDelete) {
+                            echo "Deleting image npgw/${image.repoName}:${tag}"
+                        }
                     }
 
-                    def rcKeys      = midSegments.findAll { it.endsWith('-rc') }
-                    def releaseKeys = midSegments.findAll { it.endsWith('-release') }
-                    def otherKeys   = midSegments.findAll { idx ->
-                                         !idx.endsWith('-rc') && !idx.endsWith('-release')
-                                       }
+                    echo "Starting S3 old build cleanup..."
+                    def allPrefixes = sh(
+                        script: """
+                            aws s3api list-objects-v2 \
+                                --bucket ${AWS_BUCKET_NAME} \
+                                --prefix npgw-common \
+                                --query "sort_by(Contents,&LastModified)[*].Key" \
+                                --output text
+                        """, returnStdout: true
+                    ).trim().split().toList()
 
-                    def rcKeysToDelete      = rcKeys.take(rcKeys.size() - 5)
-                    def releaseKeysToDelete      = releaseKeys.take(rcKeys.size() - 5)
-                    def otherKeysToDelete      = otherKeys.take(rcKeys.size() - 5)
+                    echo "${allPrefixes}"
 
+                    def versionsPrefixes = allPrefixes.collect { key ->
+                        key.split('/')[1]
+                    }
 
-                    echo "${rcKeysToDelete}"
-                    echo "${releaseKeysToDelete}"
-                    echo "${otherKeysToDelete}"
-                  }
+                    def ReleasePrefixes      = versionsPrefixes.findAll { it.endsWith('-release') }
+                    def RcPrefixes           = versionsPrefixes.findAll { it.endsWith('-rc') }
+                    def OtherPrefixes        = versionsPrefixes.findAll { idx ->
+                                             !idx.endsWith('-rc') && !idx.endsWith('-release')
+                                             }
+
+                    if (ReleasePrefixes.size() > keepCount) {
+                         ReleasePrefixesToDelete = ReleasePrefixes.take(ReleasePrefixes.size() - keepCount)
+                    }
+                    
+                    if (RcPrefixes.size() > keepCount) {
+                         RcPrefixesToDelete = RcPrefixes.take(RcPrefixes.size() - keepCount)
+                    }
+                    
+                    if (OtherPrefixes.size() > keepCount) {
+                         OtherPrefixesToDelete = OtherPrefixes.take(OtherPrefixes.size() - keepCount)
+                    }
+
+                    for (tag in ReleasePrefixes + RcPrefixes + OtherPrefixes) {
+                        def folder = "npgw-common/${version}/"
+                        echo "Deleting s3://${AWS_BUCKET_NAME}/${folder}"
+                        sh """
+                            aws s3 rm s3://${AWS_BUCKET_NAME}/${folder} --recursive
+                        """
+                    }
+
                 }
             }
     }
+}
 }
