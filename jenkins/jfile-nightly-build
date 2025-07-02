@@ -270,4 +270,24 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            slackSend channel: '#npgw-notification-jenkins',
+                      color: 'good',
+                      message: ":v: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
+        }
+        failure {
+            script {
+                if (currentBuild.description != 'FAILURE_NOTIFIED') {
+                    slackSend channel: '#npgw-notification-jenkins',
+                              color: 'danger',
+                              message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
+                }
+            }
+        }
+        always {
+            cleanWs()
+        }
+    }
 }
