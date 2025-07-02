@@ -27,27 +27,18 @@ pipeline {
 
                                 echo "${allTags}"
 
+                                def tagsToDelete = allTags.take(allTags.size() - 5)
 
-                                // 3. Build a map tag -> numeric date‐string
-                                def dateMap = [:]
-                                allTags.each { tag ->
-                                  def m = (tag =~ /.+\.(\d{10})-.+$/)
-                                  dateMap[tag] = m[0][1]
+                                for (tag in tagsToDelete) {
+                                    echo "Deleting image npgw/portal:${tag}"
+                                    sh """
+                                        aws ecr batch-delete-image \
+                                          --repository-name npgw/portal \
+                                          --image-ids imageTag=${tag}
+                                    """
                                 }
 
-                                // 4. Sort by that numeric key, descending—work on a List, not the Map itself
-                                def sortedEntries = dateMap.entrySet()
-                                                          .toList()
-                                                          .sort { e1, e2 -> e2.value <=> e1.value }
-
-                                // 5. Take the 5 newest, then collect their tags
-                                def latest5 = sortedEntries
-                                                .take(5)
-                                                .collect { it.key }
-
-                                echo "Latest 5 ECR tags: ${latest5.join(', ')}"
-                                env.LATEST_5_TAGS = latest5.join(',')
-                              }
+                      }
                 }
             }
     }
