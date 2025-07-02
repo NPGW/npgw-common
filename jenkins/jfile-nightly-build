@@ -33,7 +33,7 @@ pipeline {
                                 def allTags2 = sh(
                                   script: """
                                     aws ecr describe-images \
-                                      --repository-name my-repo \
+                                      --repository-name npgw/portal \
                                       --image-ids imageTag=latest \
                                       --query 'imageDetails[0].imagePushedAt' \
                                       --output text
