@@ -15,44 +15,17 @@ pipeline {
             stage('Test') {
                 steps {
                       script {
-                                // 1. List all tags (tab-separated), one per line
                                 def allTags = sh(
                                   script: """
-                                    aws ecr list-images \
+                                    aws ecr describe-images \
                                       --repository-name npgw/portal \
-                                      --filter tagStatus=TAGGED \
-                                      --query 'imageIds[].imageTag' \
+                                      --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[] | [? !ends_with(@, `-rc`) && !ends_with(@, `-release`)]' \
                                       --output text
                                   """,
                                   returnStdout: true
                                 ).trim().split()
 
                                 echo "${allTags}"
-
-
-                                def allTags2 = sh(
-                                  script: """
-                                    aws ecr describe-images \
-                                      --repository-name npgw/portal \
-                                      --query 'imageDetails[].imagePushedAt' \
-                                      --output text
-                                  """,
-                                  returnStdout: true
-                                ).trim().split()
-
-                                echo "${allTags2}"
-
-                                def allTags3 = sh(
-                                  script: """
-                                    aws ecr describe-images \
-                                      --repository-name npgw/portal \
-                                      --query 'sort_by(imageDetails,&imagePushedAt)[*].[imageTags]' \
-                                      --output text
-                                  """,
-                                  returnStdout: true
-                                ).trim().split()
-
-                                echo "${allTags3}"
 
 
                                 // 3. Build a map tag -> numeric date‐string
