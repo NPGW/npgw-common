@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
 
-                    def keepCount = 8
+                    def keepCount = 7
 
                     def ReleaseTagsToDelete = []
                     def RcTagsToDelete      = []
