@@ -15,7 +15,7 @@ pipeline {
             stage('Test') {
                 steps {
                       script {
-                                def allTags = sh(
+                                def allTags2 = sh(
                                   script: """
                                     aws ecr describe-images \
                                       --repository-name npgw/portal \
@@ -25,9 +25,16 @@ pipeline {
                                   returnStdout: true
                                 ).trim().split().toList()
 
-                                echo "${allTags}"
+                                def allTags = sh(
+                                  script: """
+                                    aws ecr describe-images \
+                                      --repository-name npgw/portal \
+                                      --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[] | [? ends_with(@, `-rc`)]' \
+                                      --output text
+                                  """,
+                                  returnStdout: true
+                                ).trim().split().toList()
 
-                                def cutoff = allTags.size() - 5
                                 def tagsToDelete = allTags.take(allTags.size() - 5)
 
                                 echo "${tagsToDelete}"
