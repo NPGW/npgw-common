@@ -28,7 +28,8 @@ pipeline {
                     
                     echo "Starting ECR old images cleanup..."
                     def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
-                    
+                    def s3RepoList = ['npgw-common', 'npgw-portal', 'npgw-terraform']
+
                     imageList.each { image ->
                         def ReleaseTagsAll = sh(
                           script: """
@@ -63,48 +64,47 @@ pipeline {
                     }
 
                     echo "Starting S3 old build cleanup..."
-                    def allPrefixes = sh(
-                        script: """
-                            aws s3api list-objects-v2 \
-                                --bucket ${AWS_BUCKET_NAME} \
-                                --prefix npgw-common \
-                                --query "sort_by(Contents,&LastModified)[*].Key" \
-                                --output text
-                        """, returnStdout: true
-                    ).trim().split().toList()
+                    s3RepoList.each { s3Repo ->
+                        def allPrefixes = sh(
+                            script: """
+                                aws s3api list-objects-v2 \
+                                    --bucket ${AWS_BUCKET_NAME} \
+                                    --prefix ${s3Repo} \
+                                    --query "sort_by(Contents,&LastModified)[*].Key" \
+                                    --output text
+                            """, returnStdout: true
+                        ).trim().split().toList()
 
-                    echo "${allPrefixes}"
+                        echo "${allPrefixes}"
 
-                    def versionsPrefixes = allPrefixes.collect { key ->
-                        key.split('/')[1]
-                    }
+                        def versionsPrefixes = allPrefixes.collect { key ->
+                            key.split('/')[1]
+                        }
 
-                    def ReleasePrefixes      = versionsPrefixes.findAll { it.endsWith('-release') }
-                    def RcPrefixes           = versionsPrefixes.findAll { it.endsWith('-rc') }
-                    def OtherPrefixes        = versionsPrefixes.findAll { idx ->
-                                             !idx.endsWith('-rc') && !idx.endsWith('-release')
-                                             }
+                        def ReleasePrefixes      = versionsPrefixes.findAll { it.endsWith('-release') }
+                        def RcPrefixes           = versionsPrefixes.findAll { it.endsWith('-rc') }
+                        def OtherPrefixes        = versionsPrefixes.findAll { idx ->
+                                                 !idx.endsWith('-rc') && !idx.endsWith('-release')
+                                                 }
 
-                    if (ReleasePrefixes.size() > keepCount) {
-                         ReleasePrefixesToDelete = ReleasePrefixes.take(ReleasePrefixes.size() - keepCount)
-                    }
-                    
-                    if (RcPrefixes.size() > keepCount) {
-                         RcPrefixesToDelete = RcPrefixes.take(RcPrefixes.size() - keepCount)
-                    }
-                    
-                    if (OtherPrefixes.size() > keepCount) {
-                         OtherPrefixesToDelete = OtherPrefixes.take(OtherPrefixes.size() - keepCount)
-                    }
+                        if (ReleasePrefixes.size() > keepCount) {
+                             ReleasePrefixesToDelete = ReleasePrefixes.take(ReleasePrefixes.size() - keepCount)
+                        }
 
-                    for (tag in ReleasePrefixes + RcPrefixes + OtherPrefixes) {
-                        def folder = "npgw-common/${version}/"
-                        echo "Deleting s3://${AWS_BUCKET_NAME}/${folder}"
-                        sh """
-                            aws s3 rm s3://${AWS_BUCKET_NAME}/${folder} --recursive
-                        """
-                    }
+                        if (RcPrefixes.size() > keepCount) {
+                             RcPrefixesToDelete = RcPrefixes.take(RcPrefixes.size() - keepCount)
+                        }
 
+                        if (OtherPrefixes.size() > keepCount) {
+                             OtherPrefixesToDelete = OtherPrefixes.take(OtherPrefixes.size() - keepCount)
+                        }
+
+                        for (tag in ReleasePrefixes + RcPrefixes + OtherPrefixes) {
+                            def folder = "${s3Repo}/${version}/"
+                            echo "Deleting s3://${AWS_BUCKET_NAME}/${s3Repo}/${version}/"
+
+                        }
+                  }
                 }
             }
     }
