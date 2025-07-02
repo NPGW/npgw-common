@@ -110,7 +110,7 @@ pipeline {
                         echo "${RcPrefixesToDelete}"
                         echo "${OtherPrefixesToDelete}"
 
-                        for (tag in ReleasePrefixes + RcPrefixes + OtherPrefixes) {
+                        for (tag in ReleasePrefixesToDelete + RcPrefixesToDelete + OtherPrefixesToDelete) {
                             def folder = "${s3Repo}/${tag}/"
                             echo "Deleting s3://${AWS_BUCKET_NAME}/${s3Repo}/${tag}/"
                         }
