@@ -18,9 +18,9 @@ pipeline {
 
                     def keepCount = 7
 
-                    def releaseToDelete = []
-                    def rcToDelete      = []
-                    def otherToDelete   = []
+                    def ReleaseTagsToDelete = []
+                    def RcTagsToDelete      = []
+                    def OtherTagsToDelete   = []
 
 
                     echo "Starting ECR old images cleanup..."
