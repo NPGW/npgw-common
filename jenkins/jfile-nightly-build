@@ -68,12 +68,12 @@ pipeline {
                     s3RepoList.each { s3Repo ->
                         def allPrefixes = sh(
                             script: """
-                                aws s3api list-objects-v2 \
-                                  --bucket "${AWS_BUCKET_NAME}" \
-                                  --prefix "${s3Repo}/" \
-                                  --delimiter "/" \
-                                  --query "sort_by(Contents, &LastModified)[-1].Key" \
-                                  --output text
+                              aws s3api list-objects-v2 \
+                                --bucket "${AWS_BUCKET_NAME}" \
+                                --prefix "${s3Repo}/" \
+                                --delimiter "/" \
+                                --query "sort_by(CommonPrefixes, &Prefix)[*].Prefix" \
+                                --output text
                             """, returnStdout: true
                         ).trim().split().toList()
 
