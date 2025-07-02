@@ -12,20 +12,20 @@ pipeline {
     }
 
     stages {
-            stage('Test') {
-                steps {
+        stage('Test') {
+            steps {
                 script {
 
-                    def keepCount = 7
+                    def keepCount = 8
 
                     def ReleaseTagsToDelete = []
                     def RcTagsToDelete      = []
                     def OtherTagsToDelete   = []
-                    
+
                     def ReleasePrefixesToDelete = []
                     def RcPrefixesToDelete = []
                     def OtherPrefixesToDelete = []
-                    
+
                     echo "Starting ECR old images cleanup..."
                     def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
                     def s3RepoList = ['npgw-common', 'npgw-portal', 'npgw-terraform']
@@ -46,23 +46,28 @@ pipeline {
                         def OtherTags        = ReleaseTagsAll.findAll { idx ->
                                              !idx.endsWith('-rc') && !idx.endsWith('-release')
                                              }
-                    
+
                         if (ReleaseTags.size() > keepCount) {
                             ReleaseTagsToDelete = ReleaseTags.take(ReleaseTags.size() - keepCount)
                             echo "-release images for ${image.repoName} to be deleted: ${ReleaseTagsToDelete}"
                         }
-                        
+
                         if (RcTags.size() > keepCount) {
                             RcTagsToDelete = RcTags.take(RcTags.size() - keepCount)
                             echo "-rc images for ${image.repoName} to be deleted: ${RcTagsToDelete}"
                         }
-                        
+
                         if (OtherTags.size() > keepCount) {
                             OtherTagsToDelete = OtherTags.take(OtherTags.size() - keepCount)
                             echo "Other images for ${image.repoName} to be deleted: ${OtherTagsToDelete}"
                         }
-                        
+
                         for (tag in ReleaseTagsToDelete + RcTagsToDelete + OtherTagsToDelete) {
+                            sh """
+                                aws ecr batch-delete-image \
+                                  --repository-name npgw/${image.repoName} \
+                                  --image-ids imageTag=${tag}
+                            """
                         }
                     }
 
@@ -101,11 +106,13 @@ pipeline {
                         }
 
                         for (tag in ReleasePrefixesToDelete + RcPrefixesToDelete + OtherPrefixesToDelete) {
-                            def folder = "${s3Repo}/${tag}/"
+                            sh """
+                                aws s3 rm s3://${AWS_BUCKET_NAME}/${tag} --recursive
+                            """
                         }
-                  }
+                    }
                 }
             }
+        }
     }
-}
 }
