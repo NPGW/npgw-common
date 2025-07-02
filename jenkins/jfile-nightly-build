@@ -101,9 +101,8 @@ pipeline {
                         }
 
                         for (tag in ReleasePrefixes + RcPrefixes + OtherPrefixes) {
-                            def folder = "${s3Repo}/${version}/"
-                            echo "Deleting s3://${AWS_BUCKET_NAME}/${s3Repo}/${version}/"
-
+                            def folder = "${s3Repo}/${tag}/"
+                            echo "Deleting s3://${AWS_BUCKET_NAME}/${s3Repo}/${tag}/"
                         }
                   }
                 }
