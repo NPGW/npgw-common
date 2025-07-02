@@ -82,6 +82,8 @@ pipeline {
                             key.split('/')[1]
                         }
 
+                        echo "${versionsPrefixes}"
+
                         def ReleasePrefixes      = versionsPrefixes.findAll { it.endsWith('-release') }.toSet()
                         def RcPrefixes           = versionsPrefixes.findAll { it.endsWith('-rc') }.toSet()
                         def OtherPrefixes        = versionsPrefixes.findAll { idx ->
