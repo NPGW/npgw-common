@@ -37,6 +37,8 @@ pipeline {
                                   dateMap[tag] = m[0][1].toLong()   // e.g. "2506281212" -> 2506281212L
                                 }
 
+                                echo "${dateMap}"
+
                                 // 4. Sort by that numeric key, descending
                                 def sortedTags = dateMap.sort { a, b -> b.value <=> a.value }.keySet()
 
