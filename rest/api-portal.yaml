@@ -2198,8 +2198,6 @@ components:
 
     TransactionSummaryFilter:
       type: object
-      required:
-        - merchantId
       properties:
         merchantId:
           type: string
