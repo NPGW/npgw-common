@@ -204,13 +204,10 @@ pipeline {
                               --image-tag "${nightlyTag.replace('-nightly', '-rc')}" \
                               --image-manifest "\$IMAGE_MANIFEST" \
                               --image-digest "\$IMAGE_DIGEST"
-                        """
 
-                        //Delete old nightly tags from promoted images
-                        sh """
                             aws ecr batch-delete-image \
-                                --repository-name "npgw/${image.repoName}" \
-                                --image-ids imageTag=${nightlyTag}
+                               --repository-name "npgw/${image.repoName}" \
+                               --image-ids imageTag=${nightlyTag}
                         """
                     }
 
