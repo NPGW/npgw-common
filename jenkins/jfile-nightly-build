@@ -19,25 +19,27 @@ pipeline {
                     def maxToKeep = 7
                     def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
                     def s3RepoList = ['npgw-common', 'npgw-portal', 'npgw-terraform']
+                    def suffixList = ['-release', '-rc', '-staging']
 
                     echo "Starting ECR old images cleanup..."
                     imageList.each { image ->
                         def allTags = sh(
                             script: """
                                 aws ecr describe-images \
-                                --repository-name npgw/${image.repoName} \
-                                --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[]' \
-                                --output text
+                                    --repository-name npgw/${image.repoName} \
+                                    --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[]' \
+                                    --output text
                             """,
                             returnStdout: true
                         ).trim().split().toList()
 
-                        def tagCategories = [
-                            'release': allTags.findAll { it.endsWith('-release') },
-                            'rc'     : allTags.findAll { it.endsWith('-rc') },
-                            'other'  : allTags.findAll { tag ->
-                                !tag.endsWith('-rc') && !tag.endsWith('-release') }
-                        ]
+                        def tagCategories = [:]
+                        suffixList.each { suffix ->
+                            tagCategories[suffix] = allTags.findAll { it.endsWith(suffix) }
+                        }
+                        tagCategories['-other'] = allTags.findAll { tag ->
+                            !suffixList.any { suffix -> tag.endsWith(suffix) }
+                        }
 
                         tagCategories.each { category, tagList ->
                             if (tagList.size() > maxToKeep) {
@@ -47,8 +49,8 @@ pipeline {
                                 tagsToDelete.each { tag ->
                                     sh """
                                         aws ecr batch-delete-image \
-                                          --repository-name npgw/${image.repoName} \
-                                          --image-ids imageTag=${tag}
+                                            --repository-name npgw/${image.repoName} \
+                                            --image-ids imageTag=${tag}
                                     """
                                 }
                             }
@@ -60,21 +62,22 @@ pipeline {
                         def allPrefixes = sh(
                             script: """
                                 aws s3api list-objects-v2 \
-                                --bucket "${AWS_BUCKET_NAME}" \
-                                --prefix "${s3Repo}/" \
-                                --delimiter "/" \
-                                --query "sort_by(CommonPrefixes, &Prefix)[*].Prefix" \
-                                --output text
-                            """, returnStdout: true
+                                    --bucket "${AWS_BUCKET_NAME}" \
+                                    --prefix "${s3Repo}/" \
+                                    --delimiter "/" \
+                                    --query "sort_by(CommonPrefixes, &Prefix)[*].Prefix" \
+                                    --output text
+                            """,
+                            returnStdout: true
                         ).trim().split().toList()
 
-                        def prefixCategories = [
-                            'release': allPrefixes.findAll { it.endsWith('-release/') },
-                            'rc'     : allPrefixes.findAll { it.endsWith('-rc/') },
-                            'other'  : allPrefixes.findAll { prefix ->
-                                         !prefix.endsWith('-rc/') && !prefix.endsWith('-release/')
-                                         }
-                        ]
+                        def prefixCategories = [:]
+                        suffixList.each { suffix ->
+                           prefixCategories[suffix] = allPrefixes.findAll { it.endsWith("${suffix}/") }
+                        }
+                        prefixCategories['-other'] = allPrefixes.findAll { prefix ->
+                            !suffixList.any { suffix -> prefix.endsWith("${suffix}/") }
+                        }
 
                         prefixCategories.each { category, prefixList ->
                             if (prefixList.size() > maxToKeep) {
@@ -191,23 +194,23 @@ pipeline {
 
                         sh """
                             IMAGE_DATA=\$(aws ecr batch-get-image \
-                              --repository-name "npgw/${image.repoName}" \
-                              --image-ids imageTag=${nightlyTag} \
-                              --query 'images[0].{manifest: imageManifest, digest: imageId.imageDigest}' \
-                              --output json)
+                                --repository-name "npgw/${image.repoName}" \
+                                --image-ids imageTag=${nightlyTag} \
+                                --query 'images[0].{manifest: imageManifest, digest: imageId.imageDigest}' \
+                                --output json)
 
                             IMAGE_MANIFEST=\$(echo "\$IMAGE_DATA" | jq -r '.manifest')
                             IMAGE_DIGEST=\$(echo "\$IMAGE_DATA" | jq -r '.digest')
 
                             aws ecr put-image \
-                              --repository-name "npgw/${image.repoName}" \
-                              --image-tag "${nightlyTag.replace('-nightly', '-rc')}" \
-                              --image-manifest "\$IMAGE_MANIFEST" \
-                              --image-digest "\$IMAGE_DIGEST"
+                                --repository-name "npgw/${image.repoName}" \
+                                --image-tag "${nightlyTag.replace('-nightly', '-rc')}" \
+                                --image-manifest "\$IMAGE_MANIFEST" \
+                                --image-digest "\$IMAGE_DIGEST"
 
                             aws ecr batch-delete-image \
-                               --repository-name "npgw/${image.repoName}" \
-                               --image-ids imageTag=${nightlyTag}
+                                --repository-name "npgw/${image.repoName}" \
+                                --image-ids imageTag=${nightlyTag}
                         """
                     }
 
