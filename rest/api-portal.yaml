@@ -2154,6 +2154,8 @@ components:
           type: string
         transactionId:
           type: string
+        externalTransactionId:
+          type: string
         dateFrom:
           format: date-time
           type: string
