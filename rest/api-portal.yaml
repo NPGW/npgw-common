@@ -2149,12 +2149,12 @@ components:
 
     TransactionHistoryFilter:
       type: object
-      required:
-        - merchantId
       properties:
         merchantId:
           type: string
         transactionId:
+          type: string
+        externalTransactionId:
           type: string
         dateFrom:
           format: date-time
@@ -2200,8 +2200,6 @@ components:
 
     TransactionSummaryFilter:
       type: object
-      required:
-        - merchantId
       properties:
         merchantId:
           type: string
