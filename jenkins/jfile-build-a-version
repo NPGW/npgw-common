@@ -82,6 +82,7 @@ pipeline {
                 script {
                     env.RELEASE_VERSION_WITHOUT_TAG = env.MAJOR_VERSION + sh(script: "echo .\$(date -u +%y%m%d%H%M)", returnStdout: true).trim()
                     env.RELEASE_VERSION = "${env.RELEASE_VERSION_WITHOUT_TAG}-${params.TAG_VERSION}"
+                    echo "DEBUG - ${env.RELEASE_VERSION}"
                 }
             }
         }

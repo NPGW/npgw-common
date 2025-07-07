@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
 
-                    def maxToKeep = 5
+                    def maxToKeep = 7
                     def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
                     def s3RepoList = ['npgw-common', 'npgw-portal', 'npgw-terraform']
                     def suffixList = ['-release', '-rc', '-staging']
@@ -109,6 +109,7 @@ pipeline {
                     )
 
                     env.RELEASE_VERSION = downstream.buildVariables.RELEASE_VERSION
+                    echo "DEBUG relese_version is ${env.RELEASE_VERSION}"
                     if (!env.RELEASE_VERSION) {
                         error "RELEASE_VERSION not found for build-a-version"
                     }
@@ -191,6 +192,13 @@ pipeline {
                         currentBuild.description = 'FAILURE_NOTIFIED'
                         error("Test deploy failed")
                     }
+                    def downstreamDescP = downstreamTest.getDescription()
+                    def releaseVersionP = (downstreamDescP =~ /RELEASE_VERSION=([^,]+)/)[0][1]
+                    def envNameP = (downstreamDescP =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1]
+
+                    echo "Downstream release version: ${releaseVersionP}"
+                    echo "Downstream environment name: ${envNameP}"
+                    echo "Downstream name: ${downstreamTest.getProjectName()}"
                 }
             }
         }
