@@ -155,13 +155,13 @@ pipeline {
                         )
                         currentBuild.description = 'FAILURE_NOTIFIED'
                         error("DEV deploy failed")
-                    }
-                    def downstreamDesc = downstreamDev.getDescription()
-                    def releaseVersion = (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/) ? (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/)[0][1]
-                    def envName = (downstreamDesc =~ /ENV_NAME=([^\s,]+)/) ? (downstreamDesc =~ /ENV_NAME=([^\s,]+)/)[0][1]
+                        def downstreamDesc = downstreamDev.getDescription()
+                        def releaseVersion = (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/) ? (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/)[0][1]
+                        def envName = (downstreamDesc =~ /ENV_NAME=([^\s,]+)/) ? (downstreamDesc =~ /ENV_NAME=([^\s,]+)/)[0][1]
 
-                    echo "Downstream release version: ${releaseVersion}"
-                    echo "Downstream environment name: ${envName}"
+                        echo "Downstream release version: ${releaseVersion}"
+                        echo "Downstream environment name: ${envName}"
+                    }
                 }
             }
         }
@@ -275,7 +275,7 @@ pipeline {
         success {
             slackSend channel: '#npgw-notification-jenkins',
                       color: 'good',
-                      message: ":v: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
+                      message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
         }
         failure {
             script {
