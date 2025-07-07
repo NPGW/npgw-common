@@ -145,8 +145,8 @@ pipeline {
                         def downstreamBuildNumber = downstreamDev.getNumber()
                         //TODO move to a method
                         def downstreamDesc = downstreamDev.getDescription()
-                        def releaseVersion = (description =~ /RELEASE_VERSION=([^,]+)/)[0][1]
-                        def envName = (description =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1]
+                        def releaseVersion = (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/)[0][1]
+                        def envName = (downstreamDesc =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1]
                         def failedStage = "${downstreamDev.getProjectName()} [${releaseVersion}, ${envName}]"
                         slackSend(
                             channel: '#npgw-notification-jenkins',
@@ -155,13 +155,13 @@ pipeline {
                         )
                         currentBuild.description = 'FAILURE_NOTIFIED'
                         error("DEV deploy failed")
-                        def downstreamDesc = downstreamDev.getDescription()
-                        def releaseVersion = (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/) ? (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/)[0][1]
-                        def envName = (downstreamDesc =~ /ENV_NAME=([^\s,]+)/) ? (downstreamDesc =~ /ENV_NAME=([^\s,]+)/)[0][1]
-
-                        echo "Downstream release version: ${releaseVersion}"
-                        echo "Downstream environment name: ${envName}"
                     }
+                    def downstreamDescP = downstreamDev.getDescription()
+                    def releaseVersionP = (downstreamDescP =~ /RELEASE_VERSION=([^,]+)/)[0][1]
+                    def envNameP = (downstreamDescP =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1]
+
+                    echo "Downstream release version: ${releaseVersionP}"
+                    echo "Downstream environment name: ${envNameP}"
                 }
             }
         }
