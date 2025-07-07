@@ -163,6 +163,7 @@ pipeline {
 
                     echo "Downstream release version: ${releaseVersionP}"
                     echo "Downstream environment name: ${envNameP}"
+                    echo "Downstream name: ${downstreamDev.getProjectName()}"
                 }
             }
         }
