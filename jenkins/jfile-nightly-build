@@ -183,8 +183,8 @@ pipeline {
                         def downstreamBuildNumber = downstreamTest.getNumber()
                         //TODO replace with dinamic
                         def downstreamDesc = downstreamTest.getDescription()
-                        def releaseVersion = (description =~ /RELEASE_VERSION=([^,]+)/)[0][1]
-                        def envName = (description =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1]
+                        def releaseVersion = (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/)[0][1]
+                        def envName = (downstreamDesc =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1]
                         def failedStage = "${downstreamTest.getProjectName()} [${releaseVersion}, ${envName}]"
                         slackSend(
                             color: 'danger',
