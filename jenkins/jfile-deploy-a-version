@@ -180,6 +180,9 @@ pipeline {
 
     post {
         always {
+            script {
+                currentBuild.description = "RELEASE_VERSION=${env.RELEASE_VERSION}, ENVIRONMENT_NAME=${params.ENVIRONMENT_NAME}"
+            }
             cleanWs()
         }
     }
