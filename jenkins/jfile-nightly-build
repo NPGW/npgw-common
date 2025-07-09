@@ -1,3 +1,30 @@
+def triggerDownstreamJob(jobName, params) {
+    def downstreamTest = build job: jobName,
+        parameters: params,
+        wait: true,
+        propagate: false
+
+    if (downstream.result != 'SUCCESS') {
+        def downstreamDesc = downstream.getDescription() ?: ""
+        def downstreamBuildNumber = downstream.getNumber()
+        def upstreamBuildNumber = currentBuild.number
+
+        def releaseVersion = (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/)[0][1] ?: "unknown"
+        def envName = (downstreamDesc =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1] ?: ""
+
+        def failedStage = "${downstream.getProjectName()} [${releaseVersion}, ${envName}]"
+
+        slackSend(
+            channel: '#npgw-notification-jenkins',
+            color: '#danger',
+            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
+        )
+        currentBuild.description = 'FAILURE_NOTIFIED'
+        error("${jobName} failed")
+    }
+    return downstream
+}
+
 pipeline {
     agent { label 'build-node' }
 
@@ -99,107 +126,39 @@ pipeline {
         stage('Trigger build-a-version pipeline') {
             steps {
                 script {
-                    def downstream = build(
-                        job: 'build-a-version',
-                        parameters: [
-                            string(name: 'TAG_VERSION', value: 'nightly')
-                        ],
-                        wait: true,
-                        propagate: false
-                    )
+                    def downstream = triggerDownstreamJob('build-a-version', [
+                        string(name: 'TAG_VERSION', value: 'nightly')
+                    ])
 
-                    env.RELEASE_VERSION = downstream.buildVariables.RELEASE_VERSION
-                    echo "DEBUG relese_version is ${env.RELEASE_VERSION}"
+                    env.RELEASE_VERSION = downstream.buildVariables?.RELEASE_VERSION
                     if (!env.RELEASE_VERSION) {
                         error "RELEASE_VERSION not found for build-a-version"
                     }
-
-                    if (downstream.result != 'SUCCESS') {
-                        def upstreamBuildNumber = currentBuild.number
-                        def downstreamBuildNumber = downstream.getNumber()
-                        //TODO
-                        def failedStage = "build-a-version"
-                        slackSend(
-                            channel: '#npgw-notification-jenkins',
-                            color: 'danger',
-                            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} – see <${env.JENKINS_URL}/job/build-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
-                        )
-                        currentBuild.description = 'FAILURE_NOTIFIED'
-                        error("Downstream pipeline failed")
-                    }
                 }
             }
         }
 
-        stage('Trigger deploy-a-version pipeline: DEV environment') {
-            steps {
-                script {
-                    def downstreamDev = build job: 'deploy-a-version',
-                        parameters: [
-                            string(name: 'ENVIRONMENT_NAME', value: 'dev'),
-                            booleanParam(name: 'RUN_TESTS', value: true)
-                        ],
-                        wait: true,
-                        propagate: false
-                    if (downstreamDev.result != 'SUCCESS') {
-                        def upstreamBuildNumber = currentBuild.number
-                        def downstreamBuildNumber = downstreamDev.getNumber()
-                        //TODO move to a method
-                        def downstreamDesc = downstreamDev.getDescription()
-                        def releaseVersion = (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/)[0][1]
-                        def envName = (downstreamDesc =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1]
-                        def failedStage = "${downstreamDev.getProjectName()} [${releaseVersion}, ${envName}]"
-                        slackSend(
-                            channel: '#npgw-notification-jenkins',
-                            color: '#danger',
-                            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
-                        )
-                        currentBuild.description = 'FAILURE_NOTIFIED'
-                        error("DEV deploy failed")
+        stage('Trigger deploy-a-version pipeline: DEV & TEST environments') {
+            parallel {
+                stage('DEV') {
+                    steps {
+                        script {
+                            triggerDownstreamJob('deploy-a-version', [
+                                string(name: 'ENVIRONMENT_NAME', value: 'dev'),
+                                booleanParam(name: 'RUN_TESTS', value: true)
+                            ])
+                        }
                     }
-                    def downstreamDescP = downstreamDev.getDescription()
-                    def releaseVersionP = (downstreamDescP =~ /RELEASE_VERSION=([^,]+)/)[0][1]
-                    def envNameP = (downstreamDescP =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1]
-
-                    echo "Downstream release version: ${releaseVersionP}"
-                    echo "Downstream environment name: ${envNameP}"
-                    echo "Downstream name: ${downstreamDev.getProjectName()}"
                 }
-            }
-        }
-
-        stage('Trigger deploy-a-version pipeline: TEST environment') {
-            steps {
-                script {
-                    def downstreamTest = build job: 'deploy-a-version',
-                        parameters: [
-                            string(name: 'ENVIRONMENT_NAME', value: 'test'),
-                            booleanParam(name: 'RUN_TESTS', value: true)
-                        ],
-                        wait: true,
-                        propagate: false
-                    if (downstreamTest.result != 'SUCCESS') {
-                        def upstreamBuildNumber = currentBuild.number
-                        def downstreamBuildNumber = downstreamTest.getNumber()
-                        //TODO replace with dinamic
-                        def downstreamDesc = downstreamTest.getDescription()
-                        def releaseVersion = (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/)[0][1]
-                        def envName = (downstreamDesc =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1]
-                        def failedStage = "${downstreamTest.getProjectName()} [${releaseVersion}, ${envName}]"
-                        slackSend(
-                            color: 'danger',
-                            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
-                        )
-                        currentBuild.description = 'FAILURE_NOTIFIED'
-                        error("Test deploy failed")
+                stage('TEST') {
+                    steps {
+                        script {
+                            triggerDownstreamJob('deploy-a-version', [
+                                string(name: 'ENVIRONMENT_NAME', value: 'test'),
+                                booleanParam(name: 'RUN_TESTS', value: true)
+                            ])
+                        }
                     }
-                    def downstreamDescP = downstreamTest.getDescription()
-                    def releaseVersionP = (downstreamDescP =~ /RELEASE_VERSION=([^,]+)/)[0][1]
-                    def envNameP = (downstreamDescP =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1]
-
-                    echo "Downstream release version: ${releaseVersionP}"
-                    echo "Downstream environment name: ${envNameP}"
-                    echo "Downstream name: ${downstreamTest.getProjectName()}"
                 }
             }
         }
