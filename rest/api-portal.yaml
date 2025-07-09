@@ -1693,7 +1693,7 @@ paths:
 
   /transaction/log:
     post:
-      operationId: getTransactionLogList
+      operationId: getTransactionLogPage
       security:
         - apiKeyAuth: []
       parameters:
@@ -1747,7 +1747,7 @@ paths:
 
   /transaction/status:
     post:
-      operationId: getTransactionStatusList
+      operationId: getTransactionStatusPage
       security:
         - apiKeyAuth: []
       parameters:
@@ -1804,6 +1804,12 @@ paths:
       operationId: getTransactionSummaryList
       security:
         - apiKeyAuth: []
+      parameters:
+        - description: If the parameter is not in the request, then the grouping will be for the entire period. If the parameter is in the request, then the grouping will be by days.
+          in: query
+          name: ungrouped
+          schema:
+            type: string
       requestBody:
         content:
           application/json:

@@ -670,6 +670,10 @@ components:
         INITIATED - submitted to NPGW.
         PENDING - submitted to an acquirer.
         SUCCESS - confirmed success/captured at acquirer, customer has paid.
+        AUTHORISED - 
+        PARTIAL_CAPTURE - 
+        PARTIAL_REFUND - 
+        REFUND - 
         FAILED - confirmed failed at acquirer; the customer has not paid and must try again via a new transaction.
         CANCELLED - cancelled by customer (generally a UI cancel button), must try again via a new transaction.
         EXPIRED - unsuccessful transaction after the time specified in the "expires At" field, must try again via a new transaction.
@@ -677,6 +681,10 @@ components:
         - INITIATED
         - PENDING
         - SUCCESS
+        - AUTHORISED
+        - PARTIAL_CAPTURE
+        - PARTIAL_REFUND
+        - REFUND
         - FAILED
         - CANCELLED
         - EXPIRED

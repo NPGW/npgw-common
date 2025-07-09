@@ -605,7 +605,17 @@ x-amazon-apigateway-gateway-responses:
       application/json: |
         {
           "message": "$context.error.message",
-          "timestamp": "$context.requestTimeEpoch",
+          "timestamp": $context.requestTimeEpoch,
           "path": "$context.path",
-          "status": "$context.responseOverride.status"
+          "status": $context.responseOverride.status
+        }
+
+  MISSING_AUTHENTICATION_TOKEN:
+    responseTemplates:
+      application/json: |
+        {
+          "message": "Invalid authorization header",
+          "timestamp": $context.requestTimeEpoch,
+          "path": "$context.path",
+          "status": 403
         }
