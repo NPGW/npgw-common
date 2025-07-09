@@ -364,7 +364,9 @@ pipeline {
 
     post {
         always {
-            currentBuild.description = "RELEASE_VERSION=${env.RELEASE_VERSION}}"
+            script {
+                currentBuild.description = "RELEASE_VERSION=${env.RELEASE_VERSION}"
+            }
             cleanWs()
         }
     }
