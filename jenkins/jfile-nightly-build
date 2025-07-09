@@ -1,5 +1,5 @@
 def triggerDownstreamJob(jobName, params) {
-    def downstreamTest = build job: jobName,
+    def downstream = build job: jobName,
         parameters: params,
         wait: true,
         propagate: false
