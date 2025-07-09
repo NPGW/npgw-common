@@ -670,6 +670,10 @@ components:
         INITIATED - submitted to NPGW.
         PENDING - submitted to an acquirer.
         SUCCESS - confirmed success/captured at acquirer, customer has paid.
+        AUTHORISED - 
+        PARTIAL_CAPTURE - 
+        PARTIAL_REFUND - 
+        REFUND - 
         FAILED - confirmed failed at acquirer; the customer has not paid and must try again via a new transaction.
         CANCELLED - cancelled by customer (generally a UI cancel button), must try again via a new transaction.
         EXPIRED - unsuccessful transaction after the time specified in the "expires At" field, must try again via a new transaction.
@@ -677,6 +681,10 @@ components:
         - INITIATED
         - PENDING
         - SUCCESS
+        - AUTHORISED
+        - PARTIAL_CAPTURE
+        - PARTIAL_REFUND
+        - REFUND
         - FAILED
         - CANCELLED
         - EXPIRED
@@ -718,16 +726,6 @@ components:
               example: https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
             threeDSecureDetails:
               $ref: '#/components/schemas/ThreeDSecureDetails'
-
-    TransactionInfo:
-      allOf:
-        - $ref: '#/components/schemas/TransactionResponse'
-        - type: object
-          required:
-            - customerDetails
-          properties:
-            customerDetails:
-              $ref: '#/components/schemas/CustomerDetails'
 
     Transaction:
       allOf:

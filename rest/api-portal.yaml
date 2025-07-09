@@ -1691,9 +1691,9 @@ paths:
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
-  /transaction/history:
+  /transaction/log:
     post:
-      operationId: getTransactionHistoryList
+      operationId: getTransactionLogPage
       security:
         - apiKeyAuth: []
       parameters:
@@ -1726,7 +1726,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '../api-merchant.yaml#/components/schemas/TransactionInfo'
+                  $ref: '#/components/schemas/TransactionHistory'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -1747,7 +1747,7 @@ paths:
 
   /transaction/status:
     post:
-      operationId: getTransactionStatusList
+      operationId: getTransactionStatusPage
       security:
         - apiKeyAuth: []
       parameters:
@@ -1780,7 +1780,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '../api-merchant.yaml#/components/schemas/TransactionInfo'
+                  $ref: '#/components/schemas/TransactionHistory'
           description: Ok
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -1804,6 +1804,12 @@ paths:
       operationId: getTransactionSummaryList
       security:
         - apiKeyAuth: []
+      parameters:
+        - description: If the parameter is not in the request, then the grouping will be for the entire period. If the parameter is in the request, then the grouping will be by days.
+          in: query
+          name: ungrouped
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -2146,6 +2152,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MerchantControlItem'
+
+    TransactionHistory:
+      allOf:
+        - $ref: '../api-merchant.yaml#/components/schemas/TransactionResponse'
+        - type: object
+          required:
+            - customerDetails
+          properties:
+            customerDetails:
+              $ref: '../api-merchant.yaml#/components/schemas/CustomerDetails'
 
     TransactionHistoryFilter:
       type: object

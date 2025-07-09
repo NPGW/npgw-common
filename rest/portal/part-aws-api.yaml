@@ -544,14 +544,14 @@ paths:
           integration.request.path.merchantId: method.request.path.merchantId
           integration.request.path.priority: method.request.path.priority
 
-  /transaction/history:
+  /transaction/log:
     post:
       x-amazon-apigateway-integration:
         connectionType: ${connectionType}
         connectionId: ${connectionId}
         type: ${type}
         httpMethod: POST
-        uri: '${uri}/transaction/history'
+        uri: '${uri}/transaction/log'
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
@@ -605,7 +605,17 @@ x-amazon-apigateway-gateway-responses:
       application/json: |
         {
           "message": "$context.error.message",
-          "timestamp": "$context.requestTimeEpoch",
+          "timestamp": $context.requestTimeEpoch,
           "path": "$context.path",
-          "status": "$context.responseOverride.status"
+          "status": $context.responseOverride.status
+        }
+
+  MISSING_AUTHENTICATION_TOKEN:
+    responseTemplates:
+      application/json: |
+        {
+          "message": "Invalid authorization header",
+          "timestamp": $context.requestTimeEpoch,
+          "path": "$context.path",
+          "status": 403
         }
