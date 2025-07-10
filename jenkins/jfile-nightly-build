@@ -138,24 +138,27 @@ pipeline {
             }
         }
 
-        stage('Trigger deploy-a-version pipeline: DEV environment') {
-            steps {
-                script {
-                    triggerDownstreamJob('deploy-a-version', [
-                        string(name: 'ENVIRONMENT_NAME', value: 'dev'),
-                        booleanParam(name: 'RUN_TESTS', value: true)
-                    ])
+        stage('Trigger deploy-a-version pipeline') {
+            parallel {
+                stage('DEV') {
+                    steps {
+                        script {
+                            triggerDownstreamJob('deploy-a-version', [
+                                string(name: 'ENVIRONMENT_NAME', value: 'dev'),
+                                booleanParam(name: 'RUN_TESTS', value: true)
+                            ])
+                        }
+                    }
                 }
-            }
-        }
-
-        stage('Trigger deploy-a-version pipeline: TEST environment') {
-            steps {
-                script {
-                    triggerDownstreamJob('deploy-a-version', [
-                        string(name: 'ENVIRONMENT_NAME', value: 'test'),
-                        booleanParam(name: 'RUN_TESTS', value: true)
-                    ])
+                stage('TEST') {
+                    steps {
+                        script {
+                            triggerDownstreamJob('deploy-a-version', [
+                                string(name: 'ENVIRONMENT_NAME', value: 'test'),
+                                booleanParam(name: 'RUN_TESTS', value: true)
+                            ])
+                        }
+                    }
                 }
             }
         }
