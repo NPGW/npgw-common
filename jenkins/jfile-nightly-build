@@ -12,12 +12,12 @@ def triggerDownstreamJob(jobName, params) {
         def releaseVersion = (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/)[0][1] ?: "unknown"
         def envName = (downstreamDesc =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1] ?: ""
 
-        def failedStage = "${downstream.getProjectName()} [${releaseVersion}, ${envName}]"
+        def failedStage = "${downstream.getProjectName()}"
 
         slackSend(
             channel: '#npgw-notification-jenkins',
             color: '#danger',
-            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
+            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage *${failedStage}* [${releaseVersion}, ${envName}] failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
         )
         currentBuild.description = 'FAILURE_NOTIFIED'
         error("${jobName} failed")
