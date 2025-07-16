@@ -216,7 +216,6 @@ pipeline {
         }
         failure {
             script {
-                def startedBy = initiator.getInitiator(currentBuild)
                 slackSend channel: '#npgw-notification-jenkins',
                    color: 'danger',
                    message: ":x: *FAILURE*: (started by ${startedBy}): `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
