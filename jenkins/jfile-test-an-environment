@@ -34,8 +34,6 @@ pipeline {
         stage('Prepare Environment and Determine Release Version') {
             steps {
                 script {
-                    def initiatorUtil = load 'initiator.groovy'
-                    startedBy = initiatorUtil.getInitiator(currentBuild)
                     echo "Determining url to run tests"
                     def urls = [
                         'test'   : 'https://test.npgw.xyz',
@@ -64,6 +62,15 @@ pipeline {
             steps {
                 dir('npgw-services') {
                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
+                }
+            }
+        }
+
+        stage('Init util function') {
+            steps {
+                script {
+                    def initiatorUtil = load 'initiator.groovy'
+                    startedBy = initiatorUtil.getInitiator(currentBuild)
                 }
             }
         }
