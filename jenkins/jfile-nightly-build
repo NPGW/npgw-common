@@ -1,3 +1,30 @@
+def triggerDownstreamJob(jobName, params) {
+    def downstream = build job: jobName,
+        parameters: params,
+        wait: true,
+        propagate: false
+
+    if (downstream.result != 'SUCCESS') {
+        def downstreamDesc = downstream.getDescription() ?: ""
+        def downstreamBuildNumber = downstream.getNumber()
+        def upstreamBuildNumber = currentBuild.number
+
+        def releaseVersion = (downstreamDesc =~ /RELEASE_VERSION=([^,]+)/)[0][1] ?: "unknown"
+        def envName = (downstreamDesc =~ /ENVIRONMENT_NAME=([^\s,]+)/)[0][1] ?: ""
+
+        def failedStage = "${downstream.getProjectName()}"
+
+        slackSend(
+            channel: '#npgw-notification-jenkins',
+            color: '#danger',
+            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage *${failedStage}* [${releaseVersion}, ${envName}] failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
+        )
+        currentBuild.description = 'FAILURE_NOTIFIED'
+        error("${jobName} failed")
+    }
+    return downstream
+}
+
 pipeline {
     agent { label 'build-node' }
 
@@ -8,90 +35,129 @@ pipeline {
         AWS_ROLE = 'arn:aws:iam::214404897309:role/npgw-jenkins-build-a-version-role'
 
         IMAGE_FILE = '.github/IMAGE_LIST.json'
+        REPO_FILE = 'pipeline/REPO_LIST.json'
     }
 
     stages {
+        stage('Cleanup old ECR & S3 builds') {
+            steps {
+                script {
+
+                    def maxToKeep = 7
+                    def imageList = readJSON text: sh(script: "cat ${WORKSPACE}/${IMAGE_FILE}", returnStdout: true).trim()
+                    def s3RepoList = ['npgw-common', 'npgw-portal', 'npgw-terraform']
+                    def suffixList = ['-release', '-rc', '-staging']
+
+                    echo "Starting ECR old images cleanup..."
+                    imageList.each { image ->
+                        def allTags = sh(
+                            script: """
+                                aws ecr describe-images \
+                                    --repository-name npgw/${image.repoName} \
+                                    --query 'sort_by(imageDetails,&imagePushedAt)[*].imageTags[]' \
+                                    --output text
+                            """,
+                            returnStdout: true
+                        ).trim().split().toList()
+
+                        def tagCategories = [:]
+                        suffixList.each { suffix ->
+                            tagCategories[suffix] = allTags.findAll { it.endsWith(suffix) }
+                        }
+                        tagCategories['-other'] = allTags.findAll { tag ->
+                            !suffixList.any { suffix -> tag.endsWith(suffix) }
+                        }
+
+                        tagCategories.each { category, tagList ->
+                            if (tagList.size() > maxToKeep) {
+                                def tagsToDelete = tagList.take(tagList.size()  - maxToKeep)
+                                echo "${category} images for ${image.repoName} to be deleted: ${tagsToDelete}"
+
+                                tagsToDelete.each { tag ->
+                                    sh """
+                                        aws ecr batch-delete-image \
+                                            --repository-name npgw/${image.repoName} \
+                                            --image-ids imageTag=${tag}
+                                    """
+                                }
+                            }
+                        }
+                    }
+
+                    echo "Starting S3 old build cleanup..."
+                    s3RepoList.each { s3Repo ->
+                        def allPrefixes = sh(
+                            script: """
+                                aws s3api list-objects-v2 \
+                                    --bucket "${AWS_BUCKET_NAME}" \
+                                    --prefix "${s3Repo}/" \
+                                    --delimiter "/" \
+                                    --query "sort_by(CommonPrefixes, &Prefix)[*].Prefix" \
+                                    --output text
+                            """,
+                            returnStdout: true
+                        ).trim().split().toList()
+
+                        def prefixCategories = [:]
+                        suffixList.each { suffix ->
+                           prefixCategories[suffix] = allPrefixes.findAll { it.endsWith("${suffix}/") }
+                        }
+                        prefixCategories['-other'] = allPrefixes.findAll { prefix ->
+                            !suffixList.any { suffix -> prefix.endsWith("${suffix}/") }
+                        }
+
+                        prefixCategories.each { category, prefixList ->
+                            if (prefixList.size() > maxToKeep) {
+                                def prefixesToDelete =  prefixList.take(prefixList.size() - maxToKeep)
+                                echo "${category} folders to be deleted: ${prefixesToDelete}"
+
+                                prefixesToDelete.each { prefix ->
+                                    sh """
+                                        aws s3 rm s3://${AWS_BUCKET_NAME}/${prefix} --recursive
+                                    """
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Trigger build-a-version pipeline') {
             steps {
                 script {
-                    def downstream = build(
-                        job: 'build-a-version',
-                        parameters: [
-                            string(name: 'MAJOR_VERSION', value: '0.1'),
-                            booleanParam(name: 'RUN_TESTS', value: true),
-                            string(name: 'TAG_VERSION', value: 'nightly')
-                        ],
-                        wait: true,
-                        propagate: false
-                    )
+                    def downstream = triggerDownstreamJob('build-a-version', [
+                        string(name: 'TAG_VERSION', value: 'nightly')
+                    ])
 
-                    env.RELEASE_VERSION = downstream.buildVariables.RELEASE_VERSION
+                    env.RELEASE_VERSION = downstream.buildVariables?.RELEASE_VERSION
                     if (!env.RELEASE_VERSION) {
                         error "RELEASE_VERSION not found for build-a-version"
                     }
-
-                    if (downstream.result != 'SUCCESS') {
-                        def upstreamBuildNumber = currentBuild.number
-                        def downstreamBuildNumber = downstreamDev.getNumber()
-                        def failedStage = "build-a-version"
-                        slackSend(
-                            channel: '#npgw-notification-jenkins',
-                            color: 'danger',
-                            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} – see <${env.JENKINS_URL}/job/build-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
-                        )
-                        currentBuild.description = 'FAILURE_NOTIFIED'
-                        error("Downstream pipeline failed")
-                    }
                 }
             }
         }
 
-        stage('Trigger deploy-a-version pipeline: DEV environment') {
-            steps {
-                script {
-                    def downstreamDev = build job: 'deploy-a-version',
-                        parameters: [
-                            string(name: 'ENVIRONMENT_NAME', value: 'dev'),
-                            booleanParam(name: 'RUN_TESTS', value: true)
-                        ],
-                        wait: true,
-                        propagate: false
-                    if (downstreamDev.result != 'SUCCESS') {
-                        def upstreamBuildNumber = currentBuild.number
-                        def downstreamBuildNumber = downstreamDev.getNumber()
-                        def failedStage = "deploy-a-version [dev]"
-                        slackSend(
-                            channel: '#npgw-notification-jenkins',
-                            color: '#danger',
-                            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
-                        )
-                        currentBuild.description = 'FAILURE_NOTIFIED'
-                        error("DEV deploy failed")
+        stage('Trigger deploy-a-version pipeline') {
+            parallel {
+                stage('DEV') {
+                    steps {
+                        script {
+                            triggerDownstreamJob('deploy-a-version', [
+                                string(name: 'ENVIRONMENT_NAME', value: 'dev'),
+                                booleanParam(name: 'RUN_TESTS', value: true)
+                            ])
+                        }
                     }
                 }
-            }
-        }
-
-        stage('Trigger deploy-a-version pipeline: TEST environment') {
-            steps {
-                script {
-                    def downstreamTest = build job: 'deploy-a-version',
-                        parameters: [
-                            string(name: 'ENVIRONMENT_NAME', value: 'test'),
-                            booleanParam(name: 'RUN_TESTS', value: true)
-                        ],
-                        wait: true,
-                        propagate: false
-                    if (downstreamTest.result != 'SUCCESS') {
-                        def upstreamBuildNumber = currentBuild.number
-                        def downstreamBuildNumber = downstreamTest.getNumber()
-                        def failedStage = "deploy-a-version [test]"
-                        slackSend(
-                            color: 'danger',
-                            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage ${failedStage} failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
-                        )
-                        currentBuild.description = 'FAILURE_NOTIFIED'
-                        error("Test deploy failed")
+                stage('TEST') {
+                    steps {
+                        script {
+                            triggerDownstreamJob('deploy-a-version', [
+                                string(name: 'ENVIRONMENT_NAME', value: 'test'),
+                                booleanParam(name: 'RUN_TESTS', value: true)
+                            ])
+                        }
                     }
                 }
             }
@@ -111,19 +177,23 @@ pipeline {
 
                         sh """
                             IMAGE_DATA=\$(aws ecr batch-get-image \
-                              --repository-name "npgw/${image.repoName}" \
-                              --image-ids imageTag=${nightlyTag} \
-                              --query 'images[0].{manifest: imageManifest, digest: imageId.imageDigest}' \
-                              --output json)
+                                --repository-name "npgw/${image.repoName}" \
+                                --image-ids imageTag=${nightlyTag} \
+                                --query 'images[0].{manifest: imageManifest, digest: imageId.imageDigest}' \
+                                --output json)
 
                             IMAGE_MANIFEST=\$(echo "\$IMAGE_DATA" | jq -r '.manifest')
                             IMAGE_DIGEST=\$(echo "\$IMAGE_DATA" | jq -r '.digest')
 
                             aws ecr put-image \
-                              --repository-name "npgw/${image.repoName}" \
-                              --image-tag "${nightlyTag.replace('-nightly', '-rc')}" \
-                              --image-manifest "\$IMAGE_MANIFEST" \
-                              --image-digest "\$IMAGE_DIGEST"
+                                --repository-name "npgw/${image.repoName}" \
+                                --image-tag "${nightlyTag.replace('-nightly', '-rc')}" \
+                                --image-manifest "\$IMAGE_MANIFEST" \
+                                --image-digest "\$IMAGE_DIGEST"
+
+                            aws ecr batch-delete-image \
+                                --repository-name "npgw/${image.repoName}" \
+                                --image-ids imageTag=${nightlyTag}
                         """
                     }
 
@@ -144,31 +214,23 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
-                        def repos = ['npgw-portal', 'npgw-services', 'npgw-terraform', 'npgw-common', 'npgw-ui-test']
+                        def repos = readJSON text: sh(script: "cat ${WORKSPACE}/${REPO_FILE}", returnStdout: true).trim()
+
+                        def version
+                        try {
+                            version = (env.RELEASE_VERSION =~ /^(\d+\.\d+)\./)[0][1]
+                        } catch (Exception e) {
+                            error "Could not extract Major Version from ${env.RELEASE_VERSION}"
+                        }
+                        def rcBranchName = "release/v${version}-rc"
 
                         repos.each { repo ->
-                            def rawBranches = sh(
-                                script: "gh api /repos/NPGW/${repo}/branches?per_page=100",
-                                returnStdout: true
-                            ).trim()
-                            def branches = readJSON(text: rawBranches)
-                            def rcBranches = branches.findAll { it.name ==~ /^release\/.*-rc.*/ }
-
-                            if (rcBranches.size() == 0) {
-                                error "No release/***-rc branch found in NPGW/${repo}"
-                            } else if (rcBranches.size() > 1) {
-                                def names = rcBranches*.name.join(', ')
-                                error "Multiple release/***-rc branches found in NPGW/${repo}: ${names}"
-                            }
-
-                            def rcBranch = rcBranches[0].name
-
                             sh """
-                                gh api -X POST /repos/NPGW/${repo}/merges \\
+                                gh api -X POST /repos/NPGW/${repo.repoName}/merges \\
                                     -H "Accept: application/vnd.github+json" \\
-                                    -f base=${rcBranch} \\
+                                    -f base=${rcBranchName} \\
                                     -f head=main \\
-                                    -f commit_message="Merge main into ${rcBranch}"
+                                    -f commit_message="Merge main into ${rcBranchName}"
                             """
                         }
                     }
@@ -181,7 +243,7 @@ pipeline {
         success {
             slackSend channel: '#npgw-notification-jenkins',
                       color: 'good',
-                      message: ":v: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
+                      message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
         }
         failure {
             script {
