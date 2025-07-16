@@ -65,7 +65,7 @@ pipeline {
     }
 
     stage('Patch provider.tf') {
-      when { expression { params.ACTION != 'custom' || params.CUSTOM_ACTION != 'destroy' } }
+      when { expression { params.ACTION == 'apply' || params.ACTION == 'plan' || (params.ACTION == 'custom' && params.CUSTOM_ACTION.trim().toLowerCase() == 'destroy') } }
       steps {
         dir('load-tests') {
           sh "sed -i 's/npgw-terraform-state-/npgw-terraform-state-${params.ENVIRONMENT}/' provider.tf"
@@ -74,7 +74,7 @@ pipeline {
     }
 
     stage('Generate var.tfvars') {
-      when { expression { params.ACTION != 'custom' || params.CUSTOM_ACTION != 'destroy' } }
+      when { expression { params.ACTION == 'apply' || params.ACTION == 'plan' || (params.ACTION == 'custom' && params.CUSTOM_ACTION.trim().toLowerCase() == 'destroy') } }
       steps {
         dir('load-tests') {
           script {
@@ -102,7 +102,7 @@ cognito_user_pool_user_password = "${COGNITO_USER_POOL_USER_PASSWORD}"
     }
 
     stage('Resolve “latest” Tag') {
-      when { expression { params.ACTION != 'custom' || params.CUSTOM_ACTION != 'destroy' } }
+      when { expression { params.ACTION == 'apply' || params.ACTION == 'plan' || (params.ACTION == 'custom' && params.CUSTOM_ACTION.trim().toLowerCase() == 'destroy') } }
       steps {
         dir('load-tests') {
           script {
