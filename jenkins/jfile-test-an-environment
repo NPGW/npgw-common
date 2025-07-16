@@ -9,6 +9,7 @@ def withAWSCreds(body) {
     }
 }
 def testsFailed = false
+def initiator = load 'initiator.groovy'
 
 pipeline {
     agent { label 'build-node' }
@@ -205,16 +206,18 @@ pipeline {
     post {
         success {
             script {
+                def startedBy = initiator.getInitiator(currentBuild)
                 slackSend channel: '#npgw-notification-jenkins',
                    color: 'good',
-                   message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
+                   message: ":white_check_mark: *SUCCESS*: (started by ${startedBy}): `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
             }
         }
         failure {
             script {
+                def startedBy = initiator.getInitiator(currentBuild)
                 slackSend channel: '#npgw-notification-jenkins',
                    color: 'danger',
-                   message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
+                   message: ":x: *FAILURE*: (started by ${startedBy}): `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
             }
         }
         always {
