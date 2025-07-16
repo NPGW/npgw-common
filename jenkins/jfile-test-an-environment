@@ -9,7 +9,7 @@ def withAWSCreds(body) {
     }
 }
 def testsFailed = false
-def initiator = load 'initiator.groovy'
+def startedBy = null
 
 pipeline {
     agent { label 'build-node' }
@@ -34,6 +34,8 @@ pipeline {
         stage('Prepare Environment and Determine Release Version') {
             steps {
                 script {
+                    def initiatorUtil = load 'initiator.groovy'
+                    startedBy = initiatorUtil.getInitiator(currentBuild)
                     echo "Determining url to run tests"
                     def urls = [
                         'test'   : 'https://test.npgw.xyz',
