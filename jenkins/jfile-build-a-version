@@ -302,8 +302,21 @@ pipeline {
                     script {
                         sh """
                             echo LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN} > npgw-services/.env
+
+
+                            # Start profiling
+                            ${WORKSPACE}/monitoring.sh &
+                            MONITOR_PID=\$!
+
+                            # Run tests
                             cd ./npgw-services/tests/docker/docker-compose
                             ./run-docker-compose-test.sh
+
+                            # Stop profiling and collect results
+                            kill \$MONITOR_PID
+
+                            # Archive profiling results
+                            tar -czf profiling_results.tar.gz ./profiling_logs/
                         """
                     }
                 }
