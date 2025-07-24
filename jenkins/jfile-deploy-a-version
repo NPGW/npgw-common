@@ -137,22 +137,32 @@ pipeline {
             }
         }
 
+
         stage('Invalidate CloudFront Caches') {
             steps {
                 script {
-                    def distributionIds = sh(script: """
-                        aws cloudfront list-distributions \
-                            --region us-east-1 \
-                            --query "DistributionList.Items[].Id" \
-                            --output text
-                    """, returnStdout: true).trim().split()
+                    withEnv([
+                        'AWS_ACCESS_KEY_ID=',
+                        'AWS_SECRET_ACCESS_KEY=',
+                        'AWS_SESSION_TOKEN='
+                    ]) {
+                        def distributionIds = sh(
+                          script: """
+                            aws cloudfront list-distributions \
+                              --region us-east-1 \
+                              --query "DistributionList.Items[].Id" \
+                              --output text
+                          """,
+                          returnStdout: true
+                        ).trim().split()
 
-                    if (!distributionIds) {
-                        error("Error: No CloudFront Distribution IDs found for environment ${params.ENVIRONMENT_NAME}")
-                    }
+                        if (!distributionIds) {
+                            error("Error: No CloudFront Distribution IDs found in root account")
+                        }
 
-                    distributionIds.each { distId ->
-                        sh "aws cloudfront create-invalidation --distribution-id ${distId} --paths '/*'"
+                        distributionIds.each { distId ->
+                            sh "aws cloudfront create-invalidation --distribution-id ${distId} --paths '/*'"
+                        }
                     }
                 }
             }
