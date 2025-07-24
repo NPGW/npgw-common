@@ -131,7 +131,7 @@ pipeline {
 
                     sh """
                         aws s3 sync s3://${env.AWS_BUCKET_NAME}/npgw-portal/${env.RELEASE_VERSION}/ s3://${targetBucketName} --delete
-                        aws s3 sync s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}/docs s3://${targetDocsBucketName} --delete
+                        aws s3 sync s3://${env.AWS_BUCKET_NAME}/npgw-common/${env.RELEASE_VERSION}/docs s3://${targetDocsBucketName}/docs --delete
                     """
                 }
             }
