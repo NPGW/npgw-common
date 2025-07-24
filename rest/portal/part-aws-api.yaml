@@ -342,6 +342,19 @@ paths:
         requestParameters:
           integration.request.header.Accept: "' '"
 
+  /merchant-acquirer/activation/{acquirerName}:
+    patch:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: PATCH
+        uri: '${uri}/merchant-acquirer/activation/{acquirerName}'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.acquirerName: method.request.path.acquirerName
+
   /merchant-acquirer/{merchantId}:
     get:
       x-amazon-apigateway-integration:
