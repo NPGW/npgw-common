@@ -97,27 +97,27 @@ pipeline {
             }
         }
 
-        stage('Deploy Services') {
-            steps {
-                script {
-                    def services = readJSON text: env.SERVICE_LIST
-                    for (service in services) {
-                        def taskDefinition = service.serviceName
-                        def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/${service.repoName}:${env.RELEASE_VERSION}"
-                        def clusterName = service.clusterName
+        // stage('Deploy Services') {
+        //     steps {
+        //         script {
+        //             def services = readJSON text: env.SERVICE_LIST
+        //             for (service in services) {
+        //                 def taskDefinition = service.serviceName
+        //                 def imageUrl = "${env.AWS_REPOSITORY_URL}/npgw/${service.repoName}:${env.RELEASE_VERSION}"
+        //                 def clusterName = service.clusterName
 
-                        sh """
-                        aws ecs describe-task-definition --task-definition ${taskDefinition} > task.json
-                        jq --arg IMAGE "${imageUrl}" '.taskDefinition | .containerDefinitions[0].image = \$IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' task.json > new-task.json
-                        aws ecs register-task-definition --family ${taskDefinition} --cli-input-json file://new-task.json
-                        TASK_REVISION=\$(aws ecs describe-task-definition --task-definition ${taskDefinition} --query 'taskDefinition.revision' --output text)
-                        aws ecs update-service --cluster ${clusterName} --service ${taskDefinition} --task-definition ${taskDefinition}:\$TASK_REVISION --force-new-deployment
-                        until aws ecs describe-services --cluster ${clusterName} --services ${taskDefinition} --query "services[0].deployments[?status=='PRIMARY'].rolloutState" --output text | grep -q "COMPLETED"; do echo "Waiting... rolloutState=\$rolloutState" sleep 10; done
-                        """
-                    }
-                }
-            }
-        }
+        //                 sh """
+        //                 aws ecs describe-task-definition --task-definition ${taskDefinition} > task.json
+        //                 jq --arg IMAGE "${imageUrl}" '.taskDefinition | .containerDefinitions[0].image = \$IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' task.json > new-task.json
+        //                 aws ecs register-task-definition --family ${taskDefinition} --cli-input-json file://new-task.json
+        //                 TASK_REVISION=\$(aws ecs describe-task-definition --task-definition ${taskDefinition} --query 'taskDefinition.revision' --output text)
+        //                 aws ecs update-service --cluster ${clusterName} --service ${taskDefinition} --task-definition ${taskDefinition}:\$TASK_REVISION --force-new-deployment
+        //                 until aws ecs describe-services --cluster ${clusterName} --services ${taskDefinition} --query "services[0].deployments[?status=='PRIMARY'].rolloutState" --output text | grep -q "COMPLETED"; do echo "Waiting... rolloutState=\$rolloutState" sleep 10; done
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Fetch portal and docs builds') {
             steps {
@@ -137,22 +137,32 @@ pipeline {
             }
         }
 
+
         stage('Invalidate CloudFront Caches') {
             steps {
                 script {
-                    def distributionIds = sh(script: """
-                        aws cloudfront list-distributions \
-                            --region us-east-1 \
-                            --query "DistributionList.Items[].Id" \
-                            --output text
-                    """, returnStdout: true).trim().split()
+                    withEnv([
+                        'AWS_ACCESS_KEY_ID=',
+                        'AWS_SECRET_ACCESS_KEY=',
+                        'AWS_SESSION_TOKEN='
+                    ]) {
+                        def distributionIds = sh(
+                          script: """
+                            aws cloudfront list-distributions \
+                              --region us-east-1 \
+                              --query "DistributionList.Items[].Id" \
+                              --output text
+                          """,
+                          returnStdout: true
+                        ).trim().split()
 
-                    if (!distributionIds) {
-                        error("Error: No CloudFront Distribution IDs found for environment ${params.ENVIRONMENT_NAME}")
-                    }
+                        if (!distributionIds) {
+                            error("Error: No CloudFront Distribution IDs found in root account")
+                        }
 
-                    distributionIds.each { distId ->
-                        sh "aws cloudfront create-invalidation --distribution-id ${distId} --paths '/*'"
+                        distributionIds.each { distId ->
+                            sh "aws cloudfront create-invalidation --distribution-id ${distId} --paths '/*'"
+                        }
                     }
                 }
             }
