@@ -218,7 +218,7 @@ paths:
             type: string
       requestBody:
         content:
-          '*/*':
+          text/plain:
             schema:
               type: string
       responses:
