@@ -1054,6 +1054,44 @@ paths:
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
+  /merchant-acquirer/activation/{acquirerName}:
+    patch:
+      operationId: activateMerchantAcquirerItem
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: path
+          name: acquirerName
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: active
+          schema:
+            type: boolean
+          required: true
+      responses:
+        '204':
+          description: Ok
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
   /merchant-acquirer/{merchantId}:
     get:
       operationId: getOneMerchantAcquirer
@@ -2025,10 +2063,13 @@ components:
     BaseAcquirer:
       type: object
       required:
+        - acquirerName
         - acquirerCode
         - currencyList
         - systemConfig
       properties:
+        acquirerName:
+          type: string
         acquirerDisplayName:
           type: string
         acquirerMid:
@@ -2051,11 +2092,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/BaseAcquirer'
         - type: object
-          required:
-            - acquirerName
           properties:
-            acquirerName:
-              type: string
             acquirerMidMcc:
               type: string
 

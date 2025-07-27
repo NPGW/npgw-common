@@ -8,7 +8,7 @@ info:
 
     The endpoints provided include operations for generating authentication tokens, creating new transactions and retrieving transaction details for CreditCard payments.
 
-    [API YAML definition](/api.yaml)
+    [API YAML definition](/docs/api.yaml)
   x-meta:
     Title: API and SDK Documentation
     Author: NPGW

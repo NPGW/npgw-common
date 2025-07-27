@@ -131,6 +131,35 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
+  /transaction/{transactionId}/cancel:
+    post:
+      operationId: cancelTransaction
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/TransactionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/Error'
+
   /transaction/{transactionId}/capture:
     post:
       operationId: captureTransaction
@@ -184,42 +213,7 @@ paths:
               $ref: '#/components/schemas/Transaction'
         required: true
       responses:
-        '201':
-          $ref: '#/components/responses/TransactionResponse'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '405':
-          $ref: '#/components/responses/NotAllowed'
-        '422':
-          $ref: '#/components/responses/Validation'
-        '406':
-          $ref: '#/components/responses/NotAcceptable'
-        '429':
-          $ref: '#/components/responses/TooManyRequests'
-        '500':
-          $ref: '#/components/responses/Error'
-
-  /transaction/{transactionId}/cancel:
-    post:
-      operationId: cancelTransaction
-      security:
-        - apiKeyAuth: []
-      parameters:
-        - in: path
-          name: transactionId
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Transaction'
-        required: true
-      responses:
-        '201':
+        '200':
           $ref: '#/components/responses/TransactionResponse'
         '400':
           $ref: '#/components/responses/BadRequest'

@@ -207,6 +207,40 @@ paths:
         '500':
           $ref: '#/components/responses/Page'
 
+  /page/post/{pageName}:
+    post:
+      operationId: postPage
+      parameters:
+        - in: path
+          name: pageName
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/Page'
+        '400':
+          $ref: '#/components/responses/Page'
+        '401':
+          $ref: '#/components/responses/Page'
+        '404':
+          $ref: '#/components/responses/Page'
+        '405':
+          $ref: '#/components/responses/Page'
+        '406':
+          $ref: '#/components/responses/Page'
+        '422':
+          $ref: '#/components/responses/Page'
+        '429':
+          $ref: '#/components/responses/Page'
+        '500':
+          $ref: '#/components/responses/Page'
+
 components:
   responses:
     Page:

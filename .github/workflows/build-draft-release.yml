@@ -62,7 +62,6 @@ jobs:
 
       - name: Create Merchant Docs
         run: |
-          rm -rf docs
           java -jar openapi-generator-cli.jar generate -i api-merchant-doc.yaml -g html2 -o docs
 
       - name: Add api-merchant.yaml to docs/ folder
