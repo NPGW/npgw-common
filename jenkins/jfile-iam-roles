@@ -20,9 +20,6 @@ pipeline {
         }
 
         stage('Checkout GIT') {
-            when {
-                expression { true }
-            }
             steps {
                 git branch: "${params.GIT_BRANCH}", credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git'
             }
@@ -50,29 +47,27 @@ pipeline {
         }
 
         stage('Assume Role') {
-        steps {
-            script {
-            def creds = sh(script: """
-                aws sts assume-role \
-                --role-arn ${env.ROLE_TO_ASSUME} \
-                --role-session-name jenkins-${params.ENVIRONMENT_NAME} \
-                --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
-                --output text
-            """, returnStdout: true).trim().split()
+            steps {
+                script {
+                    def creds = sh(script: """
+                        aws sts assume-role \
+                        --role-arn ${env.ROLE_TO_ASSUME} \
+                        --role-session-name jenkins-${params.ENVIRONMENT_NAME} \
+                        --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
+                        --output text
+                    """, returnStdout: true).trim().split()
 
-            env.AWS_ACCESS_KEY_ID     = creds[0]
-            env.AWS_SECRET_ACCESS_KEY = creds[1]
-            env.AWS_SESSION_TOKEN     = creds[2]
+                    env.AWS_ACCESS_KEY_ID     = creds[0]
+                    env.AWS_SECRET_ACCESS_KEY = creds[1]
+                    env.AWS_SESSION_TOKEN     = creds[2]
+                }
             }
-        }
         }
 
         stage('Prepare Working Directory') {
             steps {
                 dir("${env.WORKING_DIR}") {
-                    sh '''
-                    sed -i "s/npgw-terraform-state-/npgw-terraform-state-${ENVIRONMENT}/" provider.tf
-                    '''
+                    sh "sed -i 's/npgw-terraform-state-/npgw-terraform-state-${params.ENVIRONMENT_NAME}/' provider.tf"
                 }
             }
         }
@@ -91,7 +86,7 @@ pipeline {
             }
             steps {
                 dir("${env.WORKING_DIR}") {
-                    sh 'terraform plan -var-file="var-files/${ENVIRONMENT}.tfvars"'
+                    sh "terraform plan -var-file='var-files/${params.ENVIRONMENT_NAME}.tfvars'"
                 }
             }
         }
@@ -102,7 +97,7 @@ pipeline {
             }
             steps {
                 dir("${env.WORKING_DIR}") {
-                    sh 'terraform apply -auto-approve -var-file="var-files/${ENVIRONMENT}.tfvars"'
+                    sh "terraform apply -auto-approve -var-file='var-files/${params.ENVIRONMENT_NAME}.tfvars'"
                 }
             }
         }

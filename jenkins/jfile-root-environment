@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        AWS_REGION = 'eu-central-1'
+        AWS_REGION  = 'eu-central-1'
         WORKING_DIR = 'identity-center'
     }
 
@@ -19,9 +19,6 @@ pipeline {
         }
 
         stage('Checkout GIT') {
-            when {
-                expression { true }
-            }
             steps {
                 git branch: "${params.GIT_BRANCH}", credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git'
             }
@@ -37,29 +34,19 @@ pipeline {
         }
 
         stage('Assume Role') {
-        steps {
-            script {
-            def creds = sh(script: """
-                aws sts assume-role \
-                --role-arn ${env.ROLE_TO_ASSUME} \
-                --role-session-name jenkins-${params.ENVIRONMENT_NAME} \
-                --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
-                --output text
-            """, returnStdout: true).trim().split()
-
-            env.AWS_ACCESS_KEY_ID     = creds[0]
-            env.AWS_SECRET_ACCESS_KEY = creds[1]
-            env.AWS_SESSION_TOKEN     = creds[2]
-            }
-        }
-        }
-
-        stage('Prepare Working Directory') {
             steps {
-                dir("${env.WORKING_DIR}") {
-                    sh '''
-                    sed -i "s/npgw-terraform-state-/npgw-terraform-state-root/" provider.tf
-                    '''
+                script {
+                    def creds = sh(script: """
+                        aws sts assume-role \
+                        --role-arn ${env.ROLE_TO_ASSUME} \
+                        --role-session-name jenkins-root \
+                        --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
+                        --output text
+                    """, returnStdout: true).trim().split()
+
+                    env.AWS_ACCESS_KEY_ID     = creds[0]
+                    env.AWS_SECRET_ACCESS_KEY = creds[1]
+                    env.AWS_SESSION_TOKEN     = creds[2]
                 }
             }
         }
