@@ -1,0 +1,110 @@
+pipeline {
+    agent { label 'build-node' }
+
+    parameters {
+        string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to deploy from')
+        choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'sandbox', 'prod'], description: 'Target environment')
+        choice(name: 'TERRAFORM_ACTION', choices: ['plan', 'apply'], description: 'Terraform action')
+    }
+
+    environment {
+        AWS_REGION = 'eu-central-1'
+        WORKING_DIR = 'github-oidc-provider'
+    }
+
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
+        stage('Checkout GIT') {
+            when {
+                expression { true }
+            }
+            steps {
+                git branch: "${params.GIT_BRANCH}", credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git'
+            }
+        }
+
+        stage('Determine AWS Role') {
+            steps {
+                script {
+                    def roles = [
+                        'test'   : 'arn:aws:iam::820242903147:role/npgw-jenkins-terraform-env-role',
+                        'dev'    : 'arn:aws:iam::872515291967:role/npgw-jenkins-terraform-env-role',
+                        'prod'   : 'arn:aws:iam::721719382766:role/npgw-jenkins-terraform-env-role',
+                        'sandbox': 'arn:aws:iam::225989351233:role/npgw-jenkins-terraform-env-role'
+                    ]
+
+                    def selectedRole = roles[params.ENVIRONMENT_NAME]
+                    if (!selectedRole) {
+                        error("Invalid environment: ${params.ENVIRONMENT_NAME}")
+                    }
+
+                    env.ROLE_TO_ASSUME = selectedRole
+                    echo "Assuming role: ${env.ROLE_TO_ASSUME}"
+                }
+            }
+        }
+
+        stage('Assume Role') {
+        steps {
+            script {
+            def creds = sh(script: """
+                aws sts assume-role \
+                --role-arn ${env.ROLE_TO_ASSUME} \
+                --role-session-name jenkins-${params.ENVIRONMENT_NAME} \
+                --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
+                --output text
+            """, returnStdout: true).trim().split()
+
+            env.AWS_ACCESS_KEY_ID     = creds[0]
+            env.AWS_SECRET_ACCESS_KEY = creds[1]
+            env.AWS_SESSION_TOKEN     = creds[2]
+            }
+        }
+        }
+
+        stage('Prepare Working Directory') {
+            steps {
+                dir("${env.WORKING_DIR}") {
+                    sh '''
+                    sed -i "s/npgw-terraform-state-/npgw-terraform-state-${ENVIRONMENT}/" provider.tf
+                    '''
+                }
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                dir("${env.WORKING_DIR}") {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            when {
+                expression { params.TERRAFORM_ACTION == 'plan' || params.TERRAFORM_ACTION == 'apply' }
+            }
+            steps {
+                dir("${env.WORKING_DIR}") {
+                    sh 'terraform plan -var-file="var-files/${ENVIRONMENT}.tfvars"'
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            when {
+                expression { params.TERRAFORM_ACTION == 'apply' }
+            }
+            steps {
+                dir("${env.WORKING_DIR}") {
+                    sh 'terraform apply -auto-approve -var-file="var-files/${ENVIRONMENT}.tfvars"'
+                }
+            }
+        }
+    }
+}
