@@ -9,7 +9,7 @@ def withAWSCreds(body) {
     }
 }
 def testsFailed = false
-def startedBy = null
+def startedBy = "Unknown"
 
 pipeline {
     agent { label 'build-node' }

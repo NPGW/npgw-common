@@ -24,6 +24,7 @@ def triggerDownstreamJob(jobName, params) {
     }
     return downstream
 }
+def startedBy = "Unknown"
 
 pipeline {
     agent { label 'build-node' }
