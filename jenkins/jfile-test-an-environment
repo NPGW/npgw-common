@@ -69,7 +69,7 @@ pipeline {
         stage('Init util function') {
             steps {
                 script {
-                    def initiatorUtil = load 'initiator.groovy'
+                    def initiatorUtil = load 'npgw-services/initiator.groovy'
                     startedBy = initiatorUtil.getInitiator(currentBuild)
                 }
             }
