@@ -13,3 +13,5 @@ static def getInitiator(currentBuild) {
     }
     return 'Automated Trigger'
 }
+
+return [ getInitiator: this.&getInitiator ]
