@@ -9,6 +9,7 @@ def withAWSCreds(body) {
     }
 }
 def testsFailed = false
+def startedBy = "Unknown"
 
 pipeline {
     agent { label 'build-node' }
@@ -61,6 +62,15 @@ pipeline {
             steps {
                 dir('npgw-services') {
                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
+                }
+            }
+        }
+
+        stage('Init util function') {
+            steps {
+                script {
+                    def initiatorUtil = load 'jenkins/initiator.groovy'
+                    startedBy = initiatorUtil.getInitiator(currentBuild)
                 }
             }
         }
@@ -207,14 +217,14 @@ pipeline {
             script {
                 slackSend channel: '#npgw-notification-jenkins',
                    color: 'good',
-                   message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
+                   message: ":white_check_mark: *SUCCESS*: (started by ${startedBy}): `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
             }
         }
         failure {
             script {
                 slackSend channel: '#npgw-notification-jenkins',
                    color: 'danger',
-                   message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
+                   message: ":x: *FAILURE*: (started by ${startedBy}): `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}> [${env.RELEASE_VERSION}, ${env.ENVIRONMENT_NAME}] – see <${env.ALLURE_REPORT_URL}|Allure Report>"
             }
         }
         always {

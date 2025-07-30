@@ -17,13 +17,14 @@ def triggerDownstreamJob(jobName, params) {
         slackSend(
             channel: '#npgw-notification-jenkins',
             color: '#danger',
-            message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage *${failedStage}* [${releaseVersion}, ${envName}] failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
+            message: ":x: *FAILURE*: (started by ${startedBy}): `${env.JOB_NAME}` <${env.BUILD_URL}|#${upstreamBuildNumber}> at stage *${failedStage}* [${releaseVersion}, ${envName}] failed – see <${env.JENKINS_URL}/job/deploy-a-version/${downstreamBuildNumber}/|#${downstreamBuildNumber}>"
         )
         currentBuild.description = 'FAILURE_NOTIFIED'
         error("${jobName} failed")
     }
     return downstream
 }
+def startedBy = "Unknown"
 
 pipeline {
     agent { label 'build-node' }
@@ -123,6 +124,15 @@ pipeline {
             }
         }
 
+        stage('Init util function') {
+            steps {
+                script {
+                    def initiatorUtil = load 'jenkins/initiator.groovy'
+                    startedBy = initiatorUtil.getInitiator(currentBuild)
+                }
+            }
+        }
+
         stage('Trigger build-a-version pipeline') {
             steps {
                 script {
@@ -138,27 +148,24 @@ pipeline {
             }
         }
 
-        stage('Trigger deploy-a-version pipeline') {
-            parallel {
-                stage('DEV') {
-                    steps {
-                        script {
-                            triggerDownstreamJob('deploy-a-version', [
-                                string(name: 'ENVIRONMENT_NAME', value: 'dev'),
-                                booleanParam(name: 'RUN_TESTS', value: true)
-                            ])
-                        }
-                    }
+        stage('Trigger deploy-a-version pipeline for DEV') {
+            steps {
+                script {
+                    triggerDownstreamJob('deploy-a-version', [
+                        string(name: 'ENVIRONMENT_NAME', value: 'dev'),
+                        booleanParam(name: 'RUN_TESTS', value: true)
+                    ])
                 }
-                stage('TEST') {
-                    steps {
-                        script {
-                            triggerDownstreamJob('deploy-a-version', [
-                                string(name: 'ENVIRONMENT_NAME', value: 'test'),
-                                booleanParam(name: 'RUN_TESTS', value: true)
-                            ])
-                        }
-                    }
+            }
+        }
+
+        stage('Trigger deploy-a-version pipeline for TEST') {
+            steps {
+                script {
+                    triggerDownstreamJob('deploy-a-version', [
+                        string(name: 'ENVIRONMENT_NAME', value: 'test'),
+                        booleanParam(name: 'RUN_TESTS', value: true)
+                    ])
                 }
             }
         }
@@ -243,14 +250,14 @@ pipeline {
         success {
             slackSend channel: '#npgw-notification-jenkins',
                       color: 'good',
-                      message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
+                      message: ":white_check_mark: *SUCCESS*: (started by ${startedBy}): `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
         }
         failure {
             script {
                 if (currentBuild.description != 'FAILURE_NOTIFIED') {
                     slackSend channel: '#npgw-notification-jenkins',
                               color: 'danger',
-                              message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
+                              message: ":x: *FAILURE*: (started by ${startedBy}): `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>"
                 }
             }
         }
