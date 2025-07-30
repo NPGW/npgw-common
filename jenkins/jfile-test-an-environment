@@ -69,6 +69,7 @@ pipeline {
         stage('Init util function') {
             steps {
                 script {
+                    sh 'pwd'
                     sh 'ls -l'
                     sh 'ls -l jenkins'
                     def initiatorUtil = load 'jenkins/initiator.groovy'
