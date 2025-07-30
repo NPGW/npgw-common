@@ -71,7 +71,7 @@ pipeline {
                 script {
                     sh 'ls -l'
                     sh 'ls -l jenkins'
-                    def initiatorUtil = load 'initiator.groovy'
+                    def initiatorUtil = load 'jenkins/initiator.groovy'
                     startedBy = initiatorUtil.getInitiator(currentBuild)
                 }
             }
