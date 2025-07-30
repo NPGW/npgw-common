@@ -69,7 +69,9 @@ pipeline {
         stage('Init util function') {
             steps {
                 script {
-                    def initiatorUtil = load 'npgw-services/initiator.groovy'
+                    sh 'ls -l'
+                    sh 'ls -l jenkins'
+                    def initiatorUtil = load 'initiator.groovy'
                     startedBy = initiatorUtil.getInitiator(currentBuild)
                 }
             }
