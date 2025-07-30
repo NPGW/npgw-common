@@ -1,0 +1,84 @@
+pipeline {
+    agent { label 'build-node' }
+
+    parameters {
+        string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to deploy from')
+        choice(name: 'TERRAFORM_ACTION', choices: ['plan', 'apply'], description: 'Choose Terraform action')
+    }
+
+    environment {
+        AWS_REGION  = 'eu-central-1'
+        WORKING_DIR = 'identity-center'
+    }
+
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                deleteDir()
+            }
+        }
+
+        stage('Checkout GIT') {
+            steps {
+                git branch: "${params.GIT_BRANCH}", credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git'
+            }
+        }
+
+        stage('Determine AWS Role') {
+            steps {
+                script {
+                    env.ROLE_TO_ASSUME = 'arn:aws:iam::214404897309:role/npgw-jenkins-terraform-root-role'
+                    echo "Using hardcoded role: ${env.ROLE_TO_ASSUME}"
+                }
+            }
+        }
+
+        stage('Assume Role') {
+            steps {
+                script {
+                    def creds = sh(script: """
+                        aws sts assume-role \
+                        --role-arn ${env.ROLE_TO_ASSUME} \
+                        --role-session-name jenkins-root \
+                        --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
+                        --output text
+                    """, returnStdout: true).trim().split()
+
+                    env.AWS_ACCESS_KEY_ID     = creds[0]
+                    env.AWS_SECRET_ACCESS_KEY = creds[1]
+                    env.AWS_SESSION_TOKEN     = creds[2]
+                }
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                dir("${env.WORKING_DIR}") {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            when {
+                expression { params.TERRAFORM_ACTION == 'plan' || params.TERRAFORM_ACTION == 'apply' }
+            }
+            steps {
+                dir("${env.WORKING_DIR}") {
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            when {
+                expression { params.TERRAFORM_ACTION == 'apply' }
+            }
+            steps {
+                dir("${env.WORKING_DIR}") {
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+    }
+}

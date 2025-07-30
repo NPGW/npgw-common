@@ -1,0 +1,168 @@
+pipeline {
+  agent { label 'build-node' }
+
+  parameters {
+    string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to deploy from')  
+    choice(name: 'ENVIRONMENT', choices: ['test','dev','sandbox','prod'], description: 'Choose environment')
+    choice(name: 'ACTION', choices: ['plan','apply','custom'], description: 'Terraform action (destroy must be typed manually)')
+    string(name: 'CUSTOM_ACTION', defaultValue: '', description: 'If ACTION=="custom", enter "destroy"')
+    string(name: 'SERVICE_URL', defaultValue: 'from_env', description: 'Merchant API Gateway URL')
+    string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Image tag to test')
+    string(name: 'COGNITO_USER_POOL_USER_NAME', defaultValue: '', description: 'Cognito user name')
+    password(name: 'COGNITO_USER_POOL_USER_PASSWORD', defaultValue: '', description: 'Cognito user password')
+    string(name: 'TASK_COUNT', defaultValue: '10', description: 'Number of test tasks')
+    string(name: 'TEST_ITERATIONS', defaultValue: '3', description: 'Number of test runs')
+  }
+
+  environment {
+    AWS_REGION             = 'eu-central-1'
+    API_GATEWAY_NAME       = 'merchant-api'
+    RESOURCES_NAME_PREFIX  = 'npgw-terraform-loadtest'
+    IMAGE_SOURCE_LOAD_TEST = '214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/load-test'
+    IMAGE_SOURCE_MOCK      = '214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/mock-acquirer-ngenius'
+    MERCHANT_ID            = 'merchant-load-tests'
+  }
+
+  stages {
+    stage('Clean Workspace') {
+      steps { deleteDir() }
+    }
+
+    stage('Checkout GIT') {
+      steps {
+        git(
+          branch:      "${params.GIT_BRANCH}",
+          url:         'https://github.com/NPGW/npgw-terraform.git',
+          credentialsId: 'github-pat'
+        )
+      }
+    }
+
+    stage('Determine AWS Role') {
+      steps {
+        script {
+          def roles = [
+            test:    'arn:aws:iam::820242903147:role/npgw-jenkins-terraform-env-role',
+            dev:     'arn:aws:iam::872515291967:role/npgw-jenkins-terraform-env-role',
+            sandbox: 'arn:aws:iam::225989351233:role/npgw-jenkins-terraform-env-role',
+            prod:    'arn:aws:iam::721719382766:role/npgw-jenkins-terraform-env-role'
+          ]
+          env.ROLE_TO_ASSUME = roles[params.ENVIRONMENT] ?: error("Unknown env ${params.ENVIRONMENT}")
+          echo "Assuming ${env.ROLE_TO_ASSUME}"
+          def creds = sh(
+            script: """
+              aws sts assume-role \
+                --role-arn ${env.ROLE_TO_ASSUME} \
+                --role-session-name jenkins-${params.ENVIRONMENT} \
+                --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
+                --output text
+            """, returnStdout: true).trim().split()
+          env.AWS_ACCESS_KEY_ID     = creds[0]
+          env.AWS_SECRET_ACCESS_KEY = creds[1]
+          env.AWS_SESSION_TOKEN     = creds[2]
+        }
+      }
+    }
+
+    stage('Patch provider.tf') {
+      when { expression { params.ACTION == 'apply' || params.ACTION == 'plan' || (params.ACTION == 'custom' && params.CUSTOM_ACTION.trim().toLowerCase() == 'destroy') } }
+      steps {
+        dir('load-tests') {
+          sh "sed -i 's/npgw-terraform-state-/npgw-terraform-state-${params.ENVIRONMENT}/' provider.tf"
+        }
+      }
+    }
+
+    stage('Generate var.tfvars') {
+      when { expression { params.ACTION == 'apply' || params.ACTION == 'plan' || (params.ACTION == 'custom' && params.CUSTOM_ACTION.trim().toLowerCase() == 'destroy') } }
+      steps {
+        dir('load-tests') {
+          script {
+            writeFile file: 'var.tfvars', text: """\
+region                 = "${AWS_REGION}"
+name                   = "${RESOURCES_NAME_PREFIX}"
+task_count             = "${TASK_COUNT}"
+test_iterations        = "${TEST_ITERATIONS}"
+merchant_id            = "${MERCHANT_ID}"
+image_source_load_test = "${IMAGE_SOURCE_LOAD_TEST}:${IMAGE_TAG}"
+image_source_mock      = "${IMAGE_SOURCE_MOCK}:${IMAGE_TAG}"
+cognito_user_pool_user_name     = "${COGNITO_USER_POOL_USER_NAME}"
+cognito_user_pool_user_password = "${COGNITO_USER_POOL_USER_PASSWORD}"
+"""
+            if (params.SERVICE_URL == 'from_env') {
+              def apiId = sh(script: "aws apigateway get-rest-apis --query \"items[?name=='${API_GATEWAY_NAME}'].id\" --output text", returnStdout: true).trim()
+              def stageName = sh(script: "aws apigateway get-stages --rest-api-id ${apiId} --query \"item[0].stageName\" --output text", returnStdout: true).trim()
+              writeFile file: 'var.tfvars', text: "\nservice_url = \"https://${apiId}.execute-api.${AWS_REGION}.amazonaws.com/${stageName}\"", append: true
+            } else {
+              writeFile file: 'var.tfvars', text: "\nservice_url = \"${params.SERVICE_URL}\"", append: true
+            }
+          }
+        }
+      }
+    }
+
+    stage('Resolve “latest” Tag') {
+      when { expression { params.ACTION == 'apply' || params.ACTION == 'plan' || (params.ACTION == 'custom' && params.CUSTOM_ACTION.trim().toLowerCase() == 'destroy') } }
+      steps {
+        dir('load-tests') {
+          script {
+            def tags = sh(script: """
+              aws ecr list-images \
+                --repository-name "npgw/load-test" \
+                --region ${AWS_REGION} \
+                --registry-id "214404897309" \
+                --query 'imageIds[*].imageTag' \
+                --output text
+            """, returnStdout: true).trim().tokenize()
+            if (!tags) error "No image tags found"
+            def resolved = (params.IMAGE_TAG == 'latest') ? tags.sort().reverse().first() : params.IMAGE_TAG
+            sh "sed -i 's/${params.IMAGE_TAG}/${resolved}/g' var.tfvars"
+            echo "✔️ Using image tag: ${resolved}"
+          }
+        }
+      }
+    }
+
+    stage('Terraform Init') {
+      // ✅ Always run, including for destroy
+      steps {
+        dir('load-tests') {
+          sh 'terraform init -upgrade'
+        }
+      }
+    }
+
+    stage('Terraform Plan') {
+      when { expression { params.ACTION == 'plan' } }
+      steps {
+        dir('load-tests') {
+          sh 'terraform plan -var-file=var.tfvars'
+        }
+      }
+    }
+
+    stage('Terraform Apply') {
+      when { expression { params.ACTION == 'apply' } }
+      steps {
+        dir('load-tests') {
+          sh 'terraform apply -auto-approve -var-file=var.tfvars'
+        }
+      }
+    }
+
+    stage('Terraform Destroy') {
+      when { expression { params.ACTION == 'custom' && params.CUSTOM_ACTION.trim().toLowerCase() == 'destroy' } }
+      steps {
+        dir('load-tests') {
+          echo "⚠️ Destroying environment ${params.ENVIRONMENT}"
+          sh "terraform destroy -auto-approve -var-file=var.tfvars"
+        }
+      }
+    }
+  }
+
+  post {
+    success { echo "✅ Pipeline finished (${params.ACTION}) on ${params.ENVIRONMENT}" }
+    failure { echo "❌ Pipeline failed" }
+  }
+}
