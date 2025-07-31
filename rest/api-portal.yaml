@@ -2136,8 +2136,11 @@ components:
     BaseControl:
       type: object
       required:
+        - controlName
         - controlCode
       properties:
+        controlName:
+          type: string
         controlDisplayName:
           type: string
         controlCode:
@@ -2152,11 +2155,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/BaseControl'
         - type: object
-          required:
-            - controlName
-          properties:
-            controlName:
-              type: string
 
     MerchantControlItem:
       allOf:
