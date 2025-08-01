@@ -1,4 +1,4 @@
-@Library('npgw-lib@refactor-build-a-version') _
+@Library('npgw-lib') _
 
 def withAWSCreds(body) {
     withEnv([
