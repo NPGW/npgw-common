@@ -61,6 +61,7 @@ pipeline {
                                 error("Branch name must include /v<major-version>.<minor-version>, got: ${params.BRANCH_NAME}")
                             }
                             env.MAJOR_VERSION = branchVersionMatch[0][1]
+                        }
                     }
                 }
             }
