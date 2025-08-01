@@ -1,8 +1,10 @@
+@Library('npgw-lib') _
+
 pipeline {
     agent { label 'build-node' }
 
     parameters {
-        string(name: 'MAJOR_VERSION', defaultValue: 'latest', description: 'Major version')
+        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch name for all repos')
         booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'If unchecked, API tests will be skipped')
         string(name: 'TAG_VERSION', defaultValue: 'draft', description: 'Tag version, ex. nightly, rc')
     }
@@ -30,7 +32,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
-                        if (params.MAJOR_VERSION == 'latest') {
+                        if (params.BRANCH_NAME == 'main') {
                             def repos = readJSON text: sh(script: "cat ${WORKSPACE}/${REPO_FILE}", returnStdout: true).trim()
                             def branchesNames = []
 
@@ -40,11 +42,11 @@ pipeline {
                                     returnStdout: true
                                 ).trim()
                                 def branches = readJSON(text: rawBranches)
-                                def rcBranches = branches.findAll { it.name ==~ /^release\/.*-rc.*/ }
+                                def rcBranches = branches.findAll { it.name ==~ /^release\/v.*-rc$/ }
 
                                 if (rcBranches.size() != 1) {
                                     def rcNames = rcBranches.collect { it.name }
-                                    error "Expected one release candidate candidate matching release/v<MAJOR_VERSION>-rc in NPGW/${repo.repoName}, but found ${rcNames.join(', ') ?: 'none'}"
+                                    error "Expected one release candidate candidate in NPGW/${repo.repoName}, but found ${rcNames.join(', ') ?: 'none'}"
                                 }
                                 branchesNames << rcBranches[0].name
                             }
@@ -54,7 +56,11 @@ pipeline {
                             def versionMatch = branchesNames[0] =~ /^release\/v(.+)-rc$/
                             env.MAJOR_VERSION = versionMatch[0][1]
                         } else {
-                            env.MAJOR_VERSION = params.MAJOR_VERSION
+                            def branchVersionMatch = params.BRANCH_NAME =~ /\/v([0-9.]+)-(.+)$/
+                            if (!branchVersionMatch) {
+                                error("Branch name must include /v<major-version>.<minor-version>, got: ${params.BRANCH_NAME}")
+                            }
+                            env.MAJOR_VERSION = branchVersionMatch[0][1]
                         }
                     }
                 }
@@ -63,16 +69,12 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                dir('npgw-services') {
-                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-services.git', branch: 'main'
-                }
-
-                dir('npgw-portal') {
-                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-portal.git', branch: 'main'
-                }
-
-                dir('npgw-terraform') {
-                    git credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git', branch: 'main'
+                script {
+                    checkoutRepos([
+                        'npgw-services': 'main',
+                        'npgw-portal': 'main',
+                        'npgw-terraform': 'main',
+                    ])
                 }
             }
         }
