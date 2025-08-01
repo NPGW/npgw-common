@@ -58,7 +58,7 @@ pipeline {
                         } else {
                             def branchVersionMatch = params.BRANCH_NAME =~ /\/v([0-9.]+)-(.+)$/
                             if (!branchVersionMatch) {
-                                error(Branch name must include /v<major-version>.<minor-version>, got: ${params.BRANCH_NAME}""
+                                error("Branch name must include /v<major-version>.<minor-version>, got: ${params.BRANCH_NAME}")
                             }
                             env.MAJOR_VERSION = branchVersionMatch[0][1]
                     }
