@@ -40,8 +40,7 @@
     "dockerFile": "docker/image-load-test/Dockerfile",
     "files": [
       "tests/merchant-api-test/target/merchant-api-test-${RELEASE_VERSION}-test-jar-with-dependencies.jar",
-      "tests/docker/image-load-test/Dockerfile",
-      "tests/docker/image-load-test/run-test.sh"
+      "tests/docker/image-load-test/Dockerfile"
     ],
     "repoName": "load-test"
   },
