@@ -2094,7 +2094,7 @@ components:
         - type: object
           properties:
             acquirerMidMcc:
-              type: string
+              type: integer
 
     MerchantAcquirerItem:
       allOf:
