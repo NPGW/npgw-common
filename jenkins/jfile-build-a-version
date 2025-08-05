@@ -79,8 +79,8 @@ pipeline {
                 script {
                     checkoutRepos([
                         'npgw-services': params.BRANCH_NAME,
-                        'npgw-portal': main,
-                        'npgw-terraform': main,
+                        'npgw-portal': 'main',
+                        'npgw-terraform': 'main',
                     ])
                 }
             }
