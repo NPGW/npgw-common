@@ -67,7 +67,7 @@ pipeline {
                         if (params.TAG_VERSION == "default") {
                            env.TAG_VERSION = env.TAG_DEFAULT;
                         } else {
-                           env.TAG_VERSION = param.TAG_VERSION;
+                           env.TAG_VERSION = params.TAG_VERSION;
                         }
                     }
                 }
