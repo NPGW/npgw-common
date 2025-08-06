@@ -1,4 +1,4 @@
-@Library('npgw-lib@deploy-based-on-tag') _
+@Library('npgw-lib') _
 
 pipeline {
     agent { label 'build-node' }
