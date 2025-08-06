@@ -8,7 +8,8 @@ info:
 
     The endpoints provided include operations for generating authentication tokens, creating new transactions and retrieving transaction details for CreditCard payments.
 
-    [API YAML definition](/docs/api.yaml)
+    [API YAML definition](/docs/api/api.yaml)
+    [Swagger Editor](https://editor.swagger.io/?url=/docs/api/api.yaml)
   x-meta:
     Title: API and SDK Documentation
     Author: NPGW
