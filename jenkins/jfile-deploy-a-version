@@ -93,14 +93,14 @@ pipeline {
             when {
                 expression {
                     if (params.ENVIRONMENT_NAME == 'sandbox') {
-                        if (!releaseVersion.endsWith('-rc')) {
-                            error("Release Version tag must be -rc, but got ${releaseVersion}")
+                        if (!env.RELEASE_VERSION.endsWith('-rc')) {
+                            error("Release Version tag must be -rc, but got ${env.RELEASE_VERSION}")
                         }
                         return true
                     }
                     if (params.ENVIRONMENT_NAME == 'prod') {
-                        if (!releaseVersion.endsWith('-release')) {
-                            error("Release Version tag must be -release, but got ${releaseVersion}")
+                        if (!env.RELEASE_VERSION.endsWith('-release')) {
+                            error("Release Version tag must be -release, but got ${env.RELEASE_VERSION}")
                         }
                         return true
                     }
