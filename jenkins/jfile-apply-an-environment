@@ -1,3 +1,5 @@
+@Library('npgw-lib@deploy-based-on-tag') _
+
 pipeline {
   agent { label 'build-node' }
 
@@ -70,19 +72,7 @@ pipeline {
 
     stage('Assume Role') {
       steps {
-        script {
-          def creds = sh(script: """
-            aws sts assume-role \
-              --role-arn ${env.ROLE_TO_ASSUME} \
-              --role-session-name jenkins-${params.ENVIRONMENT_NAME} \
-              --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
-              --output text
-          """, returnStdout: true).trim().split()
-
-          env.AWS_ACCESS_KEY_ID     = creds[0]
-          env.AWS_SECRET_ACCESS_KEY = creds[1]
-          env.AWS_SESSION_TOKEN     = creds[2]
-        }
+        assumeCorrectAwsRole(env.ROLE_TO_ASSUME)
       }
     }
 
