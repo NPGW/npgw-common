@@ -1,4 +1,4 @@
-@Library('npgw-lib') _
+@Library('npgw-lib@deploy-based-on-tag') _
 
 pipeline {
     agent { label 'build-node' }
@@ -17,6 +17,22 @@ pipeline {
     }
 
     stages {
+        stage(Validate Release Tag for Deploy Env) {
+            when {
+                expression {
+                    return params.ENVIRONMENT_NAME in ['sandbox', 'prod']
+                }
+            }
+            steps {
+                script {
+                    def requiredTag = ['sandbox': '-rc', 'prod': '-release'][params.ENVIRONMENT_NAME]
+                    if (!env.RELEASE_VERSION.endsWith(requiredTag)) {
+                        error("Release Version tag must be ${requiredTag} for ${params.ENVIRONMENT_NAME}, but got ${env.RELEASE_VERSION}")
+                    }
+                }
+            }
+        }
+
         stage('Determine AWS Role') {
             steps {
                 script {
@@ -90,23 +106,6 @@ pipeline {
         }
 
         stage('Deploy Services') {
-            when {
-                expression {
-                    if (params.ENVIRONMENT_NAME == 'sandbox') {
-                        if (!env.RELEASE_VERSION.endsWith('-rc')) {
-                            error("Release Version tag must be -rc, but got ${env.RELEASE_VERSION}")
-                        }
-                        return true
-                    }
-                    if (params.ENVIRONMENT_NAME == 'prod') {
-                        if (!env.RELEASE_VERSION.endsWith('-release')) {
-                            error("Release Version tag must be -release, but got ${env.RELEASE_VERSION}")
-                        }
-                        return true
-                    }
-                    return true
-                }
-            }
             steps {
                 script {
                     def services = readJSON text: env.SERVICE_LIST
