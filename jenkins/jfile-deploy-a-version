@@ -17,7 +17,7 @@ pipeline {
     }
 
     stages {
-        stage(Validate Release Tag for Deploy Env) {
+        stage('Validate Release Tag for Deploy Env') {
             when {
                 expression {
                     return params.ENVIRONMENT_NAME in ['sandbox', 'prod']
