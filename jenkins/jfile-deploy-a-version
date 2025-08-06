@@ -85,7 +85,7 @@ pipeline {
 
         stage('Assume Correct AWS Role') {
             steps {
-                assumeCorrectAWSRole(env.ROLE_TO_ASSUME)
+                assumeCorrectAwsRole(env.ROLE_TO_ASSUME)
             }
         }
 
