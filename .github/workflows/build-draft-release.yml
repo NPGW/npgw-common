@@ -57,22 +57,26 @@ jobs:
       - run: curl https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/7.7.0/openapi-generator-cli-7.7.0.jar -o openapi-generator-cli.jar
 
 # Create doc
+      - name: Create ./docs/api dir
+        run: |
+          mkdir ./docs/api
+
       - name: Create Merchant Spec (Docs)
         run: python3 ./rest/script/yaml-merge.py ./rest/processing/part-doc-api.yaml ./api-merchant.yaml /info > ./api-merchant-doc.yaml
 
       - name: Create Merchant Docs
         run: |
-          java -jar openapi-generator-cli.jar generate -i api-merchant-doc.yaml -g html2 -o docs
+          java -jar openapi-generator-cli.jar generate -i api-merchant-doc.yaml -g html2 -o docs/api
 
       - name: Add api-merchant.yaml to docs/ folder
-        run: cp api-merchant.yaml ./docs/api.yaml
+        run: cp api-merchant.yaml ./docs/api/api.yaml
 
       - name: Archive Merchant Docs
         run: |
           tar cvf docs.tar ./docs/*
 
 # Create merchant API
-      - name: Create api dir
+      - name: Create ./api dir
         run: |
           mkdir ./api
 
