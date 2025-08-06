@@ -604,6 +604,29 @@ components:
         currency:
           $ref: '#/components/schemas/CurrencyCode'
 
+    AmountItemStatus:
+      type: string
+      description: |
+        PENDING - submitted to an acquirer.
+        CAPTURE - 
+        REFUND - 
+        FAILED - confirmed failed at acquirer; the customer has not paid and must try again via a new transaction.
+      enum:
+        - PENDING
+        - CAPTURE
+        - REFUND
+        - FAILED
+
+    AmountItem:
+      allOf:
+        - $ref: '#/components/schemas/Amount'
+        - type: object
+          required:
+            - amountItemStatus
+          properties:
+            amountItemStatus:
+              $ref: '#/components/schemas/AmountItemStatus'
+
     BaseTransaction:
       allOf:
         - $ref: '#/components/schemas/Amount'
@@ -720,6 +743,10 @@ components:
               example: https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
             threeDSecureDetails:
               $ref: '#/components/schemas/ThreeDSecureDetails'
+            amountItems:
+              type: array
+              items:
+                $ref: '#/components/schemas/AmountItem'
 
     Transaction:
       allOf:
