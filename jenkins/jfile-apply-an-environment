@@ -25,7 +25,7 @@ pipeline {
       }
     }
 
-    stage('Checkout GIT') {
+    stage('Checkout') {
       steps {
         script {
           def useGit = (params.ACTION in ['plan', 'apply']) && params.CUSTOM_ACTION?.trim()
