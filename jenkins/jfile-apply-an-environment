@@ -1,10 +1,9 @@
-@Library('npgw-lib') _
+@Library('npgw-lib@'refactor-apply-env) _
 
 pipeline {
   agent { label 'build-node' }
 
   parameters {
-    string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to deploy from')
     string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Release version')
     choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'sandbox', 'prod'], description: 'Target environment')
     choice(name: 'ACTION', choices: ['plan', 'apply', 'custom'], description: 'Terraform action (destroy must be typed manually)')
@@ -27,24 +26,18 @@ pipeline {
     }
 
     stage('Checkout GIT') {
-      when {
-        expression { true }
-      }
-      steps {
-        git branch: "${params.GIT_BRANCH}", credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git'
-      }
-    }
-
-    stage('Checkout S3') {
-      when {
-        expression { false }
-      }
       steps {
         script {
-          sh """
+          def useGit = (params.ACTION in ['plan', 'apply']) && params.CUSTOM_ACTION?.trim()
+          if (useGit) {
+            echo "Checking out from Git branch: ${params.CUSTOM_ACTION}"
+            checkoutRepos(['npgw-terraform': params.CUSTOM_ACTION?.trim()])
+          } else {
+            echo "Syncing from S3 for RELEASE_VERSION: ${params.RELEASE_VERSION}"
+            sh """
             mkdir -p ${WORKSPACE}/npgw-terraform
-            aws s3 sync ${WORKSPACE}/npgw-terraform s3://${env.AWS_BUCKET_NAME}/npgw-terraform/${env.RELEASE_VERSION}
-          """
+            aws s3 sync s3://${env.AWS_BUCKET_NAME}/npgw-terraform/${params.RELEASE_VERSION}/ ${WORKSPACE}/npgw-terraform/
+            """
         }
       }
     }
@@ -52,20 +45,8 @@ pipeline {
     stage('Determine AWS Role') {
       steps {
         script {
-          def roles = [
-            'test'   : 'arn:aws:iam::820242903147:role/npgw-jenkins-terraform-env-role',
-            'dev'    : 'arn:aws:iam::872515291967:role/npgw-jenkins-terraform-env-role',
-            'prod'   : 'arn:aws:iam::721719382766:role/npgw-jenkins-terraform-env-role',
-            'sandbox': 'arn:aws:iam::225989351233:role/npgw-jenkins-terraform-env-role'
-          ]
-
-          def selectedRole = roles[params.ENVIRONMENT_NAME]
-          if (!selectedRole) {
-            error("Invalid environment: ${params.ENVIRONMENT_NAME}")
-          }
-
-          env.ROLE_TO_ASSUME = selectedRole
-          echo "Assuming role: ${env.ROLE_TO_ASSUME}"
+            env.ROLE_TO_ASSUME = determineAwsRole(params.ENVIRONMENT_NAME, 'terraform')
+            echo "Assuming role: ${env.ROLE_TO_ASSUME}"
         }
       }
     }

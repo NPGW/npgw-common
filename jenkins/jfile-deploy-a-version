@@ -1,4 +1,4 @@
-@Library('npgw-lib') _
+@Library('npgw-lib@refactor-apply-env') _
 
 pipeline {
     agent { label 'build-node' }
@@ -36,13 +36,8 @@ pipeline {
         stage('Determine AWS Role') {
             steps {
                 script {
-                    def roles = [
-                        'test'   : 'arn:aws:iam::820242903147:role/npgw-jenkins-deploy-a-version-role',
-                        'dev'    : 'arn:aws:iam::872515291967:role/npgw-jenkins-deploy-a-version-role',
-                        'prod'   : 'arn:aws:iam::721719382766:role/npgw-jenkins-deploy-a-version-role',
-                        'sandbox': 'arn:aws:iam::225989351233:role/npgw-jenkins-deploy-a-version-role'
-                    ]
-                    env.ROLE_TO_ASSUME = roles[params.ENVIRONMENT_NAME] ?: error("Invalid environment: ${params.ENVIRONMENT_NAME}")
+                    env.ROLE_TO_ASSUME = determineAwsRole(params.ENVIRONMENT_NAME, 'deploy')
+                    echo "Assuming role: ${env.ROLE_TO_ASSUME}"
                 }
             }
         }
