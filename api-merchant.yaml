@@ -743,7 +743,7 @@ components:
               example: https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
             threeDSecureDetails:
               $ref: '#/components/schemas/ThreeDSecureDetails'
-            amountItems:
+            amountList:
               type: array
               items:
                 $ref: '#/components/schemas/AmountItem'
