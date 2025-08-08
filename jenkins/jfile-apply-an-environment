@@ -25,23 +25,6 @@ pipeline {
       }
     }
 
-    stage('Checkout') {
-      steps {
-        script {
-          def useGit = (params.ACTION in ['plan', 'apply']) && params.CUSTOM_ACTION?.trim()
-          if (useGit) {
-            echo "Checking out from Git branch: ${params.CUSTOM_ACTION}"
-            checkoutRepos(['npgw-terraform': params.CUSTOM_ACTION?.trim()])
-          } else {
-            echo "Syncing from S3 for RELEASE_VERSION: ${params.RELEASE_VERSION}"
-            sh """
-            mkdir -p ${WORKSPACE}/npgw-terraform
-            aws s3 sync s3://${env.AWS_BUCKET_NAME}/npgw-terraform/${params.RELEASE_VERSION}/ ${WORKSPACE}/npgw-terraform/
-            """
-        }
-      }
-    }
-
     stage('Determine AWS Role') {
       steps {
         script {
@@ -54,6 +37,38 @@ pipeline {
     stage('Assume Role') {
       steps {
         assumeCorrectAwsRole(env.ROLE_TO_ASSUME)
+      }
+    }
+
+    stage('Resolve latest ECR tag if RELEASE_VERSION == latest') {
+      steps {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
+          script {
+            if (params.RELEASE_VERSION == 'latest') {
+              env.RELEASE_VERSION = getLatestEcrTag("npgw/merchant", env.AWS_REGION)
+              sh "echo 'image_tag = \"${env.RELEASE_VERSION}\"' >> var.tfvars"
+            } else {
+              env.RELEASE_VERSION = params.RELEASE_VERSION
+            }
+          }
+        }
+      }
+    }
+
+    stage('Checkout') {
+      steps {
+        script {
+          def useGit = (params.ACTION in ['plan', 'apply']) && params.CUSTOM_ACTION?.trim()
+          if (useGit) {
+            echo "Checking out from Git branch: ${params.CUSTOM_ACTION}"
+            checkoutRepos(['npgw-terraform': params.CUSTOM_ACTION?.trim()])
+          } else {
+            echo "Syncing from S3 for RELEASE_VERSION: ${env.RELEASE_VERSION}"
+            sh """
+            mkdir -p ${WORKSPACE}/npgw-terraform
+            aws s3 sync s3://${env.AWS_BUCKET_NAME}/npgw-terraform/${env.RELEASE_VERSION}/ ${WORKSPACE}/npgw-terraform/
+            """
+        }
       }
     }
 
@@ -70,33 +85,6 @@ pipeline {
       steps {
         dir("infra-${params.ENVIRONMENT_NAME}") {
           sh "echo 'image_source_tag = \"${IMAGE_REPO}:${params.RELEASE_VERSION}\"' > var.tfvars"
-        }
-      }
-    }
-
-    stage('Resolve latest ECR tag if RELEASE_VERSION == latest') {
-      steps {
-        dir("infra-${params.ENVIRONMENT_NAME}") {
-          script {
-            if (params.RELEASE_VERSION == 'latest') {
-              def latestTag = sh(
-                script: """
-                  aws ecr list-images \
-                    --repository-name "npgw/merchant" \
-                    --region ${env.AWS_REGION} \
-                    --registry-id "214404897309" \
-                    --query 'imageIds[*].imageTag' \
-                    --output text | tr '\t' '\n' | sort -r | head -n 1
-                """,
-                returnStdout: true
-              ).trim()
-              echo "Resolved latest tag: ${latestTag}"
-              env.RELEASE_VERSION = latestTag
-              sh "echo 'image_tag = \"${latestTag}\"' >> var.tfvars"
-            } else {
-              env.RELEASE_VERSION = params.RELEASE_VERSION
-            }
-          }
         }
       }
     }
