@@ -68,6 +68,7 @@ pipeline {
             mkdir -p ${WORKSPACE}/npgw-terraform
             aws s3 sync s3://${env.AWS_BUCKET_NAME}/npgw-terraform/${env.RELEASE_VERSION}/ ${WORKSPACE}/npgw-terraform/
             """
+          }
         }
       }
     }
