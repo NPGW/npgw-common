@@ -92,7 +92,7 @@ pipeline {
     stage('Prepare Working Directory') {
       steps {
         sh """
-          cp -R infra infra-${params.ENVIRONMENT_NAME}
+          cp -R infra/. infra-${params.ENVIRONMENT_NAME}
           sed -i 's|npgw-terraform-state-|npgw-terraform-state-${params.ENVIRONMENT_NAME}|' infra-${params.ENVIRONMENT_NAME}/provider.tf
         """
       }
