@@ -72,23 +72,6 @@ pipeline {
       }
     }
 
-    stage('DEBUG') {
-      steps {
-        sh '''
-          echo "PWD: $PWD"
-          echo "WORKSPACE: ${WORKSPACE}"
-          echo "Top-level:"
-          ls -la
-          echo "infra tree (2 levels):"
-          find infra -maxdepth 2 -print || true
-          echo "Existing infra-* dirs:"
-          ls -d infra-* 2>/dev/null || true
-          echo "provider.tf candidates:"
-          find . -name provider.tf -maxdepth 3 -print || true
-        '''
-      }
-    }
-
     stage('Prepare Working Directory') {
       steps {
         sh """
