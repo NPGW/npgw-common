@@ -241,6 +241,41 @@ paths:
         '500':
           $ref: '#/components/responses/Page'
 
+  /webhook:
+    post:
+      operationId: postWebhook
+      summary: Receive order notification webhooks
+      parameters:
+        - in: header
+          name: X-Request-ID
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Header to validate that the request is coming from acquirer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NGeniusWebHook'
+      responses:
+        '200':
+          $ref: '#/components/responses/Page'
+        '400':
+          $ref: '#/components/responses/Page'
+        '401':
+          $ref: '#/components/responses/Page'
+        '404':
+          $ref: '#/components/responses/Page'
+        '422':
+          $ref: '#/components/responses/Page'
+        '429':
+          $ref: '#/components/responses/Page'
+        '500':
+          $ref: '#/components/responses/Page'
+
+
 components:
   responses:
     Page:
@@ -321,3 +356,61 @@ components:
         cres:
           type: string
           description: This is a Base64-encoded form of multiple additional parameters represented in JSON format.
+
+    NGeniusWebHook:
+      type: object
+      required:
+        - event
+        - order
+        - transaction
+        - timestamp
+      properties:
+        event:
+          type: string
+          example: "CAPTURED"
+        order:
+          type: object
+          required:
+            - reference
+            - id
+            - amount
+          properties:
+            reference:
+              type: string
+              example: "ORD-123456"
+            id:
+              type: string
+              example: "abc123xyz"
+            amount:
+              type: object
+              required:
+                - currencyCode
+                - value
+              properties:
+                currencyCode:
+                  type: string
+                  example: "EUR"
+                value:
+                  type: integer
+                  example: 10000
+        transaction:
+          type: object
+          required:
+            - id
+            - state
+            - date
+          properties:
+            id:
+              type: string
+              example: "txn789"
+            state:
+              type: string
+              example: "CAPTURED"
+            date:
+              type: string
+              format: date-time
+              example: "2024-12-01T13:22:45Z"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-12-01T13:22:45Z"
