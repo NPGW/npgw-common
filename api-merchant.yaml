@@ -210,8 +210,42 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Transaction'
+              $ref: '#/components/schemas/Amount'
         required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/TransactionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /transactions/{transactionId}/refund/capture/{amountItemId}:
+    post:
+      operationId: refundCaptureTransaction
+      security:
+        - apiKeyAuth: []
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: amountItemId
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           $ref: '#/components/responses/TransactionResponse'
@@ -622,9 +656,12 @@ components:
         - $ref: '#/components/schemas/Amount'
         - type: object
           required:
-            - amountItemStatus
+            - amountItemId
+            - status
           properties:
-            amountItemStatus:
+            amountItemId:
+              type: string
+            status:
               $ref: '#/components/schemas/AmountItemStatus'
 
     BaseTransaction:
