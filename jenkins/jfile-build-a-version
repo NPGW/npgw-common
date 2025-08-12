@@ -111,6 +111,8 @@ pipeline {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
                         sh """
+                            set -euo pipefail
+
                             gh workflow run build-draft-release.yml \\
                                 --repo NPGW/npgw-portal \\
                                 --ref main \\
@@ -121,10 +123,22 @@ pipeline {
                                 --ref main \\
                                 -f version=${env.RELEASE_VERSION_WITHOUT_TAG}
 
-                            gh workflow run build-draft-release.yml \\
-                                --repo NPGW/npgw-common \\
-                                --ref main \\
-                                -f version=${env.RELEASE_VERSION_WITHOUT_TAG}
+                              echo "[INFO] Triggering workflow for npgw-common..."
+                              OUT=\$(gh workflow run build-draft-release.yml \
+                                  --repo NPGW/npgw-common \
+                                  --ref main \
+                                  -f version=${env.RELEASE_VERSION_WITHOUT_TAG} 2>&1) || true
+
+                              echo "[DEBUG] gh workflow run output:"
+                              echo "\$OUT"
+
+                              echo "[INFO] Checking if a run was actually created..."
+                              gh run list \
+                                  --repo NPGW/npgw-common \
+                                  --workflow build-draft-release.yml \
+                                  --limit 3 \
+                                  --json databaseId,headBranch,status,conclusion,createdAt \
+                                  --jq '.'
                         """
                     }
                 }
