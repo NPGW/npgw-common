@@ -127,6 +127,7 @@ pipeline {
                             gh workflow view build-draft-release.yml \
                                 --repo NPGW/npgw-common \
                                 --ref main >/dev/null
+                                --yaml >/dev/null
 
                             echo "[INFO] Triggering workflow for npgw-common..."
                             OUT=\$(gh workflow run build-draft-release.yml \
