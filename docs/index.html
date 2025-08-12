@@ -462,8 +462,8 @@
                 font-style: normal;
             }
             .c10 {
-                padding-top: 12pt;
-                padding-bottom: 12pt;
+                padding-top: 3pt;
+                padding-bottom: 3pt;
                 line-height: 1.15;
                 orphans: 2;
                 widows: 2;
@@ -478,8 +478,8 @@
                 font-style: italic;
             }
             .c5 {
-                padding-top: 0pt;
-                padding-bottom: 0pt;
+                padding-top: 3pt;
+                padding-bottom: 3pt;
                 line-height: 1.15;
                 orphans: 2;
                 widows: 2;
@@ -542,6 +542,7 @@
                 border-spacing: 0;
                 border-collapse: collapse;
                 margin-right: auto;
+                margin-bottom: 10px;
             }
             .c33 {
                 color: #000000;
@@ -667,7 +668,8 @@
                 font-family: "Calibri";
             }
             p {
-                margin: 0;
+                margin-top: 0.4rem;
+                margin-bottom: 0.4rem;
                 color: #000000;
                 font-size: 11pt;
                 font-family: "Calibri";
@@ -687,11 +689,11 @@
                 text-align: left;
             }
             h2 {
-                padding-top: 12pt;
+                /* padding-top: 3pt; */
                 color: #000000;
                 font-weight: 700;
                 font-size: 15pt;
-                padding-bottom: 12pt;
+                /* padding-bottom: 0pt; */
                 font-family: "Calibri";
                 line-height: 1.15;
                 page-break-after: avoid;
@@ -701,11 +703,11 @@
                 text-align: left;
             }
             h3 {
-                padding-top: 12pt;
+                /* padding-top: 6pt; */
                 color: #000000;
                 font-weight: 700;
                 font-size: 13pt;
-                padding-bottom: 12pt;
+                /* padding-bottom: 6pt; */
                 font-family: "Calibri";
                 line-height: 1.15;
                 page-break-after: avoid;
@@ -804,17 +806,20 @@
                 min-width: 90%;
                 max-width: 90%;
                 display: block;
-            }
-            a {
+
                 text-decoration: none;
                 color: inherit;
             }
+      
             .sub_menu_list {
                 padding-left: 20px;
                 list-style-type: none;
             }
             .sub_menu_item {
                 font-size: 1rem;
+            }
+            .underline {
+                text-decoration: underline;
             }
         </style>
     </head>
@@ -872,7 +877,7 @@
                             </ul>
                         </li>
                         <li class="sub_menu_item">
-                            <a class="menu_item_txt" href="#Management" >Management</a>
+                            <a class="menu_item_txt" href="#Payment_Operations" >Payment Operations</a>
                             <ul class="sub_menu_list">
                                 <li class="sub_menu_item">
                                     <a class="menu_item_txt" href="#Capture" >Capture</a>
@@ -886,7 +891,7 @@
                             </ul>
                         </li>
                         <li class="sub_menu_item">
-                            <a class="menu_item_txt" href="#Status" >Status</a>
+                            <a class="menu_item_txt" href="#Payment_Status" >Payment Status</a>
                         </li>
                         <li class="sub_menu_item">
                             <a class="menu_item_txt" href="#Webhooks" >Webhooks</a>
@@ -914,27 +919,30 @@
                     The NPGW API is organized around the principles of REST. It has predictable resource-oriented URLs, accepts and returns JSON-encoded bodies and responses, all while using standard HTTP response codes &amp; authentication.
                 </span>
             </p>
-            <p class="c5 c12"><span class="c1"></span></p>
+           
             <p class="c5">
                 <span class="c4">
                     You can use the NPGW API via our Sandbox while completing your integration, which won&rsquo;t affect your live data or interact with the Acquiring networks. The domain and credentials you use to authenticate and
                 </span>
                 <span>submit yours </span><span class="c4">request determines whether </span><span>a payment </span><span class="c1">is processed via Production or Sandbox.</span>
             </p>
-            <p class="c5 c12"><span class="c1"></span></p>
+           
             <p class="c5"><span class="c1">The NPGW API doesn&rsquo;t currently support bulk updates. You can work on only one object per request.</span></p>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <h2 class="c6" id="Technical_Documentation"><span>Technical Documentation</span></h2>
             <p class="c5"><span class="c1">Further detailed documentation for developers is available via the following links.</span></p>
-            <p class="c5 c12"><span class="c1"></span></p>
-            <ul class="c41 lst-kix_ksvcksyqiwbz-0 start">
-                <li class="c5 c13 li-bullet-0"><span class="c4">OpenApi specification </span><span class="c4 c23">{Link}</span></li>
-                <li class="c5 c13 li-bullet-0"><span class="c4">Technical Documentation </span><span class="c23">{Link}</span></li>
-                <li class="c5 c13 li-bullet-0"><span class="c4">GitHub Repo</span><span class="c4">&nbsp;</span><span class="c23">{Link}</span></li>
+        
+            <ul class="c41 lst-kix_ksvcksyqiwbz-0 start">                
+                <li class="c5 c13 li-bullet-0">
+                    <a class="c4 underline" href="https://npgw.xyz/docs/" target="_blank">Technical Documentation </a>
+                </li>
+                <li class="c5 c13 li-bullet-0">
+                    <a class="c4 underline" href="https://github.com/NPGW/npgw-common" target="_blank">GitHub Repo</a>
+                </li>
             </ul>
-            <p class="c5 c12"><span class="c1"></span></p>
+           
             <h2 class="c6" id="Usage"><span>Usage</span></h2>
-            <p class="c29"><span class="c1">There are multiple ways you can explore the Merchant API:</span></p>
+            <p ><span class="c1">There are multiple ways you can explore the Merchant API:</span></p>
             <ul class="c41 lst-kix_azv0bdsdg6gt-0 start">
                 <li class="c10 c13 li-bullet-0">
                     <span class="c4">By using the classic Swagger toolset, upload the definition to the</span>
@@ -953,9 +961,9 @@
                 </li>
             </ul>
             <hr style="page-break-before: always; display: none;" />
-            <p class="c10 c12"><span class="c1"></span></p>
+            
             <h1 class="c6" id="Authentication"><span class="c38 c0 c24">Authentication</span></h1>
-            <p class="c29">
+            <p class="c10">
                 <span class="c4">The NPGW API uses a </span><span class="c0 c24">Secret Token</span>
                 <span class="c4"><a class="c37" href="https://www.google.com/url?q=https://docs.stripe.com/keys&amp;sa=D&amp;source=editors&amp;ust=1754465723884571&amp;usg=AOvVaw2MVCI9ZEr2RERTSRZuxnoX">&nbsp;</a></span>
                 <span class="c1">to authenticate requests. You can view and manage your tokens within your account.</span>
@@ -971,7 +979,7 @@
                 <span class="c1">. Calls made over plain HTTP will fail. API requests without authentication will also fail.</span>
             </p>
             <hr style="page-break-before: always; display: none;" />
-            <p class="c10 c12"><span class="c1"></span></p>
+            
             <h1 class="c6" id="Environments"><span class="c38 c0 c24">Environments</span></h1>
             <p class="c10">
                 <span class="c4">The NPGW provides two separate domains for our API: one for </span><span class="c0 c24">Sandbox</span><span class="c4">&nbsp;and one for </span><span class="c0 c24">Production</span>
@@ -984,31 +992,31 @@
             <table class="c18">
                 <tr class="c17">
                     <td class="c8" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">Sandbox</span></p>
+                        <p class="c2"><span class="c16 c0">SANDBOX BASE DOMAIN</span></p>
                     </td>
                 </tr>
                 <tr class="c17">
                     <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2"><span>Sandbox api domain</span><span class="c1">?????</span></p>
+                        <p class="c2">https://sandbox.npgw.xyz</p>
                     </td>
                 </tr>
             </table>
-            <p class="c10 c12"><span class="c1"></span></p>
+            
             <table class="c18">
                 <tr class="c17">
                     <td class="c8" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">Production</span></p>
+                        <p class="c2"><span class="c16 c0">PRODUCTION BASE DOMAIN</span></p>
                     </td>
                 </tr>
                 <tr class="c17">
                     <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2"><span>Prod api domain</span><span class="c1">?????</span></p>
+                        <p class="c2">https://npgw.xyz</p>
                     </td>
                 </tr>
             </table>
-            <p class="c10 c12"><span class="c1"></span></p>
+            
             <hr style="page-break-before: always; display: none;" />
-            <p class="c10 c12"><span class="c1"></span></p>
+            
             <h1 class="c6" id="Company_Registration"><span class="c38 c0 c24">Company Registration</span></h1>
             <p class="c10">
                 <span class="c4">Once you have been successfully set up as a Company within the NPGW, our team will configure </span><span class="c0 c24">Business Units</span>
@@ -1018,9 +1026,9 @@
                 <span class="c4">Each </span><span class="c4 c22">Business Unit</span><span class="c4">&nbsp;is assigned a unique </span><span class="c0 c24">merchantId</span><span class="c4">&nbsp;and requires its own </span>
                 <span class="c4 c22">Secret Token</span><span class="c4">&nbsp;to interface with the Merchant API.</span>
             </p>
-            <p class="c10 c12"><span class="c1"></span></p>
+            
             <hr style="page-break-before: always; display: none;" />
-            <p class="c10 c12"><span class="c1"></span></p>
+            
             <h1 class="c6" id="Errors"><span class="c38 c0 c24">Errors</span></h1>
             <p class="c29">
                 <span class="c4">The NPGW uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the </span><span class="c14 c0 c24">2xx</span>
@@ -1163,9 +1171,9 @@
                 </tr>
             </table>
             <p class="c29 c12"><span class="c1 c23"></span></p>
-            <p class="c10 c12"><span class="c1"></span></p>
+            
             <hr style="page-break-before: always; display: none;" />
-            <p class="c10 c12"><span class="c1"></span></p>
+            
             <h1 class="c6" id="One_time_payments"><span class="c38 c0 c24">One-time payments</span></h1>
             <ol class="c41 lst-kix_us75fhk8r05x-0 start" start="1">
                 <li class="c5 c13 li-bullet-0"><span class="c1">When a customer is ready to complete a purchase, your application will submit a Transaction to the NPGW API.</span></li>
@@ -1173,7 +1181,7 @@
                 <li class="c5 c13 li-bullet-0"><span class="c1">Customers authenticate with their bank when required to complete the transaction.</span></li>
                 <li class="c5 c13 li-bullet-0"><span class="c1">Asynchronously, the NPGW API delivers webhooks related to the Transaction and your application can further poll status.</span></li>
             </ol>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <p class="c42">
                 <span style="overflow: hidden; display: inline-block; margin: 0px 0px; border: 0px solid #000000; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px); width: 714.7px; height: 656.75px;">
                     <img alt="" src="images/image2.png" style="width: 714.7px; height: 656.75px; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
@@ -1182,7 +1190,7 @@
             <p class="c42 c12"><span class="c1"></span></p>
             <h2 class="c6" id="Supported_currencies"><span class="c19 c0">Supported currencies</span></h2>
             <p class="c5"><span>The list of available currencies depends on your account configuration. Please check with the Support Team.</span></p>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <table class="c18">
                 <tr class="c17">
                     <td class="c20 c25" colspan="1" rowspan="1">
@@ -1217,18 +1225,18 @@
                     </td>
                 </tr>
             </table>
-            <p class="c5 c12"><span class="c1"></span></p>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
+            
             <h2 class="c6" id="Transaction_statuses"><span class="c19 c0">Transaction statuses</span></h2>
             <p class="c42">
                 <span style="overflow: hidden; display: inline-block; margin: 0px 0px; border: 0px solid #000000; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px); width: 559.2px; height: 366.37px;">
                     <img alt="" src="images/image1.png" style="width: 559.2px; height: 366.37px; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
                 </span>
             </p>
-            <p class="c5 c12"><span class="c1"></span></p>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
+            
             <hr style="page-break-before: always; display: none;" />
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <h1 class="c6" id="Core_Resources"><span>Core Resources</span></h1>
             <h2 class="c6" id="Token"><span>Token</span></h2>
             <p class="c10">
@@ -1237,7 +1245,7 @@
             </p>
             <p class="c10">
                 <span class="c4">The request requires a plain text </span><span class="c4 c22">Secret Token</span><span class="c4">&nbsp;within the body. A successful response returns a JSON object containing the </span>
-                <span class="c0 c24">Access Token</span><span class="c1">&nbsp;which can be used for further operation of the NPGW API.</span>
+                <span class="c0 c24">ID Token</span><span class="c1">&nbsp;which can be used for further operation of the NPGW API.</span>
             </p>
             <table class="c18">
                 <tr class="c17">
@@ -1247,11 +1255,11 @@
                 </tr>
                 <tr class="c17">
                     <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1">/merchant-v1/token</span></p>
+                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /token</span></p>
                     </td>
                 </tr>
             </table>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <h2 class="c6" id="Payment"><span>Payment</span></h2>
             <p class="c10"><span class="c1">Posting to the Transaction endpoint enables a new credit/debit card payment to be submitted for processing.</span></p>
             <p class="c10">
@@ -1267,11 +1275,11 @@
                 </tr>
                 <tr class="c17">
                     <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1">/merchant-v1/transaction</span></p>
+                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction</span></p>
                     </td>
                 </tr>
             </table>
-            <p class="c10 c12"><span class="c1"></span></p>
+            
             <table class="c18">
                 <tr class="c17">
                     <td class="c8" colspan="1" rowspan="1">
@@ -1287,7 +1295,7 @@
                     </td>
                 </tr>
             </table>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <h3 class="c6" id="The_Transaction_request_object"><span class="c0 c15">The Transaction request object</span></h3>
             <p class="c5">
                 <span class="c0 c24 c40">Attributes</span>
@@ -1543,10 +1551,10 @@
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Customer&#39;s IP address - IPv4 or IPv6
                 </span>
             </p>
-            <p class="c10 c12"><span class="c1 c23"></span></p>
+            
             <h3 class="c6" id="The_Transaction_response_object"><span class="c0 c22 c24 c32">The Transaction response object</span></h3>
             <p class="c5"><span class="c1">In addition to those details submitted with a Transaction for processing the NPGW API will also return the following.</span></p>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <p class="c5"><span class="c0 c40">Attributes</span></p>
             <p class="c10">
                 <span class="c0">transactionId</span>
@@ -1613,8 +1621,8 @@
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3D Secure status of the Transaction.
                 </span>
             </p>
-            <p class="c10 c12"><span class="c1 c23"></span></p>
-            <h2 class="c6" id="Management"><span class="c19 c0">Management</span></h2>
+            
+            <h2 class="c6" id="Payment_Operations"><span class="c19 c0">Payment Operations</span></h2>
             <p class="c10">
                 <span>The NPGW API provides further </span><span class="c0">Management</span>
                 <span class="c1">
@@ -1628,7 +1636,7 @@
             </p>
             <p class="c10"><span class="c1">The NPGW supports both full and partial captures.</span></p>
             <p class="c5"><span class="c35 c0 c24">Attributes</span></p>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <p class="c5">
                 <span class="c0">Amount</span>
                 <span class="c1">
@@ -1659,11 +1667,11 @@
                 </tr>
                 <tr class="c17">
                     <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1">/merchant-v1/transaction/{transactionId}/capture</span></p>
+                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction/{transactionId}/capture</span></p>
                     </td>
                 </tr>
             </table>
-            <p class="c10 c12"><span class="c1"></span></p>
+            
             <h3 class="c6" id="Cancel"><span class="c32 c0 c22 c24">Cancel</span></h3>
             <p class="c10">
                 <span class="c4">This endpoint enables </span><span class="c0 c24">Cancellation </span><span class="c4">(or Void),</span><span class="c4">&nbsp;in full, of </span><span>an </span><span class="c22">AUTH</span>
@@ -1682,13 +1690,13 @@
                 </tr>
                 <tr class="c17">
                     <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1">/merchant-v1/transaction/{transactionId}/cancel</span></p>
+                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction/{transactionId}/cancel</span></p>
                     </td>
                 </tr>
             </table>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <h3 class="c6" id="Refund"><span class="c32 c0 c22 c24">Refund</span></h3>
-            <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span><span class="c1">&nbsp;of a successful or partially captured Transaction by referencing its transactionId. </span></p>
+            <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span><span class="c1">&nbsp;of a successful Transaction by referencing its transactionId. </span></p>
             <p class="c10"><span class="c1">The NPGW supports both full and partial refunds.</span></p>
             <p class="c10"><span class="c0 c24 c35">Attributes</span></p>
             <p class="c5">
@@ -1721,12 +1729,51 @@
                 </tr>
                 <tr class="c17">
                     <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1">/merchant-v1/transaction/{transactionId}/refund</span></p>
+                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction/{transactionId}/refund</span></p>
                     </td>
                 </tr>
             </table>
-            <p class="c5 c12"><span class="c1"></span></p>
-            <h2 class="c6" id="Status"><span class="c19 c0">Status</span></h2>
+
+            <h3 class="c6" id="Refund"><span class="c32 c0 c22 c24">Refund a part capture</span></h3>
+            <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span><span class="c1">&nbsp;of a partially captured Transaction by referencing its transactionId. </span></p>
+            <p class="c10"><span class="c1">The NPGW supports both full and partial refunds via this operation.</span></p>
+            <p class="c10"><span class="c0 c24 c35">Attributes</span></p>
+            <p class="c5">
+                <span class="c0">Amount</span>
+                <span class="c1">
+                    &nbsp; object<br />
+                    The full or part amount and currency of the original Transaction to refund.
+                </span>
+            </p>
+            <p class="c10"><span class="c33 c4 c22">+Show child attributes</span></p>
+            <p class="c10">
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c0">Amount.amount </span>
+                <span class="c1">
+                    &nbsp;integer<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Amount to refund (in cents)
+                </span>
+            </p>
+            <p class="c10">
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c0">Amount.currency </span>
+                <span class="c1">
+                    &nbsp;enum<br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Currency of refund
+                </span>
+            </p>
+            <table class="c18">
+                <tr class="c17">
+                    <td class="c8" colspan="1" rowspan="1">
+                        <p class="c2"><span class="c16 c0">ENDPOINTS</span></p>
+                    </td>
+                </tr>
+                <tr class="c17">
+                    <td class="c11" colspan="1" rowspan="1">
+                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction/{transactionId}/refund/capture/{TBD}</span></p>
+                    </td>
+                </tr>
+            </table>
+            
+            <h2 class="c6" id="Payment_Status"><span class="c19 c0">Payment Status</span></h2>
             <p class="c10">
                 <span class="c4">Querying the </span><span class="c0 c24">Transaction </span><span class="c4">endpoint allows you to retrieve the full detail and current status of a Transaction using either the NPGW </span>
                 <span class="c4 c22">transactionId</span><span class="c4">&nbsp;or your own submitted </span><span class="c4 c22">externalTransactionId</span><span class="c4">.</span>
@@ -1741,13 +1788,13 @@
                 <tr class="c17">
                     <td class="c11" colspan="1" rowspan="1">
                         <p class="c2">
-                            <span class="c9 c0">GET</span><span class="c9 c48">&nbsp;</span><span class="c4">/merchant-v1/transaction</span><span class="c4 c39 c47">?merchantId={merchantId}&amp;externalTransactionId=</span>
-                            <span class="c4 c39">{externalTransactionId}</span><span class="c4"><br /></span><span class="c0 c9">GET</span><span class="c9 c48">&nbsp;</span><span class="c1">/merchant-v1/transaction/{transactionId}</span>
+                            <span class="c9 c0">GET</span><span class="c9 c48">&nbsp;</span><span class="c4"> /transaction</span><span class="c4 c39 c47">?merchantId={merchantId}&amp;externalTransactionId=</span>
+                            <span class="c4 c39">{externalTransactionId}</span><span class="c4"><br /></span><span class="c0 c9">GET</span><span class="c9 c48">&nbsp;</span><span class="c1"> /transaction/{transactionId}</span>
                         </p>
                     </td>
                 </tr>
             </table>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <h2 class="c6" id="Webhooks">
                 <span>Webhooks</span>
             </h2>
@@ -1765,7 +1812,7 @@
                 <span class="c1">They are also sent asynchronously and so may arrive out of order.</span>
             </p>
             <p class="c10"><span class="c1 c23">Still in progress&hellip;</span></p>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <hr style="page-break-before: always; display: none;" />
             <h1 class="c6 c27" id="h.zevk44ifkf9y"><span class="c38 c0 c24"></span></h1>
             <h1 class="c6" id="Testing"><span class="c38 c0 c24">Testing</span></h1>
@@ -1775,7 +1822,7 @@
                 <span>Test Cards</span>
             </h2>
             <p class="c5"><span class="c1">To simulate payments and QA your integration, use test cards from the following list for each scenario you wish to fulfill.</span></p>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <p class="c5">
                 <span class="c0 c40">Heads up!</span>
                 <span>
@@ -1785,7 +1832,7 @@
                 <span><a class="c37" href="https://www.google.com/url?q=https://stripe.com/legal/ssa%231-your-stripe-account&amp;sa=D&amp;source=editors&amp;ust=1754465723914666&amp;usg=AOvVaw0WMjkOFUrtcPRLW0kY9CG7">&nbsp;</a></span>
                 <span class="c1">NPGW prohibits testing with live card data on Sandbox.</span>
             </p>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <table class="c18">
                 <tr class="c17">
                     <td class="c3 c25" colspan="1" rowspan="1">
@@ -1830,7 +1877,7 @@
                     </td>
                 </tr>
             </table>
-            <p class="c5 c12"><span class="c1"></span></p>
+            
             <h2 class="c6" id="Fraud_controls"><span class="c19 c0">Fraud controls</span></h2>
             <p class="c10">
                 <span class="c4">The NPGW&rsquo;s Fraud Controls can block payments when they have a high risk level or fail verification checks. This automated fraud prevention </span><span>process </span>
