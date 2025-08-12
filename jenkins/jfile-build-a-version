@@ -110,66 +110,64 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
-                        sh '''
+                        sh """
                             set -euo pipefail
-                            VERSION="${env.RELEASE_VERSION_WITHOUT_TAG}"
 
-                            gh workflow run build-draft-release.yml \\
-                                --repo NPGW/npgw-portal \\
-                                --ref main \\
+                            gh workflow run build-draft-release.yml \
+                                --repo NPGW/npgw-portal \
+                                --ref main \
                                 -f version=${env.RELEASE_VERSION_WITHOUT_TAG}
 
-                            gh workflow run build-draft-release.yml \\
-                                --repo NPGW/npgw-services \\
-                                --ref main \\
+                            gh workflow run build-draft-release.yml \
+                                --repo NPGW/npgw-services \
+                                --ref main \
                                 -f version=${env.RELEASE_VERSION_WITHOUT_TAG}
 
-                            echo "[INFO] VERSION=\$VERSION"
-                            gh workflow view build-draft-release.yml \\
-                                --repo NPGW/npgw-common \\
+                            echo "${env.RELEASE_VERSION_WITHOUT_TAG}"
+                            gh workflow view build-draft-release.yml \
+                                --repo NPGW/npgw-common \
                                 --ref main >/dev/null
 
                             echo "[INFO] Triggering workflow for npgw-common..."
-                            OUT=\$(gh workflow run build-draft-release.yml \\
-                              --repo NPGW/npgw-common \\
-                              --ref main \\
-                              -f version="$VERSION" 2>&1) || true
+                            OUT=\$(gh workflow run build-draft-release.yml \
+                                --repo NPGW/npgw-common \
+                                --ref main \
+                                -f version=${env.RELEASE_VERSION_WITHOUT_TAG} 2>&1) || true
 
                             echo "[DEBUG] gh workflow run output (common):"
                             echo "\$OUT"
 
                             echo "[INFO] Waiting for a new/updated run to appear (common)..."
-                            # Poll up to ~60s for the latest run record to show up
                             for i in \$(seq 1 12); do
-                              COUNT=\$(gh run list -R NPGW/npgw-common \\
-                                --workflow build-draft-release.yml --limit 1 \\
-                                --json databaseId --jq 'length' 2>/dev/null || echo 0)
-                              if [ "\$COUNT" -gt 0 ]; then break; fi
-                              sleep 5
+                                COUNT=\$(gh run list -R NPGW/npgw-common \
+                                    --workflow build-draft-release.yml --limit 1 \
+                                    --json databaseId --jq 'length' 2>/dev/null || echo 0)
+                                if [ "\$COUNT" -gt 0 ]; then break; fi
+                                sleep 5
                             done
 
-                            RUN_ID=\$(gh run list -R NPGW/npgw-common \\
-                              --workflow build-draft-release.yml --limit 1 \\
-                              --json databaseId --jq '.[0].databaseId' 2>/dev/null || echo "")
+                            RUN_ID=\$(gh run list -R NPGW/npgw-common \
+                                --workflow build-draft-release.yml --limit 1 \
+                                --json databaseId --jq '.[0].databaseId' 2>/dev/null || echo "")
 
                             if [ -z "\$RUN_ID" ]; then
-                              echo "[ERROR] No workflow run found for npgw-common after dispatch"
-                              exit 1
+                                echo "[ERROR] No workflow run found for npgw-common after dispatch"
+                                exit 1
                             fi
 
                             echo "[INFO] Latest run metadata for common (RUN_ID=\$RUN_ID):"
-                            gh run view "\$RUN_ID" -R NPGW/npgw-common \\
-                              --json name,event,headBranch,status,conclusion,createdAt,updatedAt --jq '.'
+                            gh run view "\$RUN_ID" -R NPGW/npgw-common \
+                                --json name,event,headBranch,status,conclusion,createdAt,updatedAt --jq '.'
 
                             echo "[INFO] Streaming logs for common run (this shows the failing step):"
                             gh run view "\$RUN_ID" -R NPGW/npgw-common --log || true
 
                             CONC=\$(gh run view "\$RUN_ID" -R NPGW/npgw-common --json conclusion --jq .conclusion 2>/dev/null || echo "")
                             if [ "\$CONC" = "failure" ]; then
-                              echo "[ERROR] Common workflow failed before creating the release (see logs above)"
-                              exit 1
+                                echo "[ERROR] Common workflow failed before creating the release (see logs above)"
+                                exit 1
                             fi
-                        '''
+                        """
                     }
                 }
             }
