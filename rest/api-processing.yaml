@@ -259,6 +259,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/NGeniusWebHook'
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/EncryptedWebhookPayload'
       responses:
         '200':
           $ref: '#/components/responses/Page'
