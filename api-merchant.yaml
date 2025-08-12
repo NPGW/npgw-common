@@ -246,7 +246,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /transaction/{transactionId}/refund/capture/{amountItemId}:
+  /transaction/{transactionId}/refund/capture/{operationItemId}:
     post:
       tags:
         - payment operations
@@ -262,7 +262,7 @@ paths:
           schema:
             type: string
         - in: path
-          name: amountItemId
+          name: operationItemId
           required: true
           schema:
             type: string
@@ -657,7 +657,7 @@ components:
         currency:
           $ref: '#/components/schemas/CurrencyCode'
 
-    AmountItemStatus:
+    OperationItemStatus:
       type: string
       description: |
         PENDING - submitted for processing.
@@ -670,18 +670,18 @@ components:
         - REFUND
         - FAILED
 
-    AmountItem:
+    OperationItem:
       allOf:
         - $ref: '#/components/schemas/Amount'
         - type: object
           required:
-            - amountItemId
+            - operationItemId
             - status
           properties:
-            amountItemId:
+            operationItemId:
               type: string
             status:
-              $ref: '#/components/schemas/AmountItemStatus'
+              $ref: '#/components/schemas/OperationItemStatus'
 
     BaseTransaction:
       allOf:
@@ -798,10 +798,10 @@ components:
               example: https://sandbox.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
             threeDSecureDetails:
               $ref: '#/components/schemas/ThreeDSecureDetails'
-            amountList:
+            operationList:
               type: array
               items:
-                $ref: '#/components/schemas/AmountItem'
+                $ref: '#/components/schemas/OperationItem'
 
     Transaction:
       allOf:
