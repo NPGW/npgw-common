@@ -9,6 +9,8 @@ externalDocs:
     description: View our full Technical Documentation here
 
 servers:
+  - url: https://sandbox.npgw.xyz/merchant-v1
+    description: Sandbox server
   - url: https://npgw.xyz/merchant-v1
     description: Production server
 
@@ -730,7 +732,7 @@ components:
                 If the transaction is not completed within this time, we will reject any attempt to complete it. 
                 The expiration is extended each time a user (re-)submits a payment, so provided expiration date will be updated in most cases. 
                 Max value is _(now)+3h_
-              example: 2021-12-22T05:17:56.323Z
+              example: 2025-08-12T05:17:56.323Z
             paymentDetails:
               oneOf:
                 - $ref: '#/components/schemas/CreditCardDetails'
@@ -785,16 +787,16 @@ components:
               format: date-time
               type: string
               description: Created time (ISO 8601).
-              example: 2022-04-08T11:11:59.711Z
+              example: 2025-08-12T11:11:59.711Z
             updatedOn:
               format: date-time
               type: string
               description: Updated time (ISO 8601).
-              example: 2022-04-08T11:11:59.711Z
+              example: 2025-08-12T11:11:59.711Z
             paymentUrl:
               type: string
               description: Payment link to which the customer should be redirected to complete 3DSecure and subsequent processing.
-              example: https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
+              example: https://sandbox.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
             threeDSecureDetails:
               $ref: '#/components/schemas/ThreeDSecureDetails'
             amountList:
