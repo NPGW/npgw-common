@@ -112,6 +112,7 @@ pipeline {
                     script {
                         sh """
                             set -euo pipefail
+                            VERSION="${env.RELEASE_VERSION_WITHOUT_TAG}"
 
                             gh workflow run build-draft-release.yml \\
                                 --repo NPGW/npgw-portal \\
@@ -123,7 +124,7 @@ pipeline {
                                 --ref main \\
                                 -f version=${env.RELEASE_VERSION_WITHOUT_TAG}
 
-                            echo "${env.RELEASE_VERSION_WITHOUT_TAG}"
+                            echo "[INFO] VERSION=\$VERSION"
                             gh workflow view build-draft-release.yml \\
                                 --repo NPGW/npgw-common \\
                                 --ref main >/dev/null
