@@ -230,7 +230,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /transactions/{transactionId}/refund/capture/{amountItemId}:
+  /transaction/{transactionId}/refund/capture/{amountItemId}:
     post:
       operationId: refundCaptureTransaction
       security:
@@ -688,7 +688,6 @@ components:
               pattern: '^[a-zA-Z0-9]*$'
             type:
               $ref: '#/components/schemas/TransactionType'
-              default: SALE
             notificationUrl:
               type: string
               description: The merchant HTTPS Endpoint to be used for server-to-server webhooks. Please note that the Gateway doesn’t guarantee the delivery of notifications in the order that they’re generated, and as such ensure your event destination isn't dependent on receiving events in a specific order.
