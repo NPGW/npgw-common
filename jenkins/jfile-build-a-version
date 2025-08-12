@@ -126,7 +126,7 @@ pipeline {
                             echo "${env.RELEASE_VERSION_WITHOUT_TAG}"
                             gh workflow view build-draft-release.yml \
                                 --repo NPGW/npgw-common \
-                                --ref main >/dev/null
+                                --ref main \
                                 --yaml >/dev/null
 
                             echo "[INFO] Triggering workflow for npgw-common..."
