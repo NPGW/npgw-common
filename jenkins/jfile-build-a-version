@@ -110,7 +110,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
                     script {
-                        sh """
+                        sh '''
                             set -euo pipefail
                             VERSION="${env.RELEASE_VERSION_WITHOUT_TAG}"
 
@@ -169,7 +169,7 @@ pipeline {
                               echo "[ERROR] Common workflow failed before creating the release (see logs above)"
                               exit 1
                             fi
-                        """
+                        '''
                     }
                 }
             }
