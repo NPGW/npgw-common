@@ -2094,7 +2094,7 @@ components:
         - type: object
           properties:
             acquirerMidMcc:
-              type: string
+              type: integer
 
     MerchantAcquirerItem:
       allOf:
@@ -2143,6 +2143,8 @@ components:
           type: string
         controlDisplayName:
           type: string
+        controlType:
+          type: string
         controlCode:
           type: string
         controlConfig:
@@ -2173,6 +2175,8 @@ components:
         merchantId:
           type: string
         controlName:
+          type: string
+        controlType:
           type: string
         isActive:
           type: boolean

@@ -1,3 +1,5 @@
+@Library('npgw-lib') _
+
 pipeline {
     agent { label 'build-node' }
 
@@ -15,6 +17,22 @@ pipeline {
     }
 
     stages {
+        stage('Validate Release Tag for Deploy Env') {
+            when {
+                expression {
+                    return params.ENVIRONMENT_NAME in ['sandbox', 'prod']
+                }
+            }
+            steps {
+                script {
+                    def requiredTag = ['sandbox': '-rc', 'prod': '-release'][params.ENVIRONMENT_NAME]
+                    if (!env.RELEASE_VERSION.endsWith(requiredTag)) {
+                        error("Release Version tag must be ${requiredTag} for ${params.ENVIRONMENT_NAME}, but got ${env.RELEASE_VERSION}")
+                    }
+                }
+            }
+        }
+
         stage('Determine AWS Role') {
             steps {
                 script {
@@ -83,17 +101,7 @@ pipeline {
 
         stage('Assume Correct AWS Role') {
             steps {
-                script {
-                    def credentialsJson = sh(script: """
-                        aws sts assume-role \
-                            --role-arn ${env.ROLE_TO_ASSUME} \
-                            --role-session-name JenkinsDeploySession
-                        """, returnStdout: true).trim()
-
-                    env.AWS_ACCESS_KEY_ID = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.AccessKeyId'", returnStdout: true).trim()
-                    env.AWS_SECRET_ACCESS_KEY = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SecretAccessKey'", returnStdout: true).trim()
-                    env.AWS_SESSION_TOKEN = sh(script: "echo '${credentialsJson}' | jq -r '.Credentials.SessionToken'", returnStdout: true).trim()
-                }
+                assumeCorrectAwsRole(env.ROLE_TO_ASSUME)
             }
         }
 
