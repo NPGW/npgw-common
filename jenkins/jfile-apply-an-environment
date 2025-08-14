@@ -85,7 +85,7 @@ pipeline {
     stage('Create var.tfvars') {
       steps {
         dir("infra-${params.ENVIRONMENT_NAME}") {
-          sh "echo 'image_source_tag = \"${IMAGE_REPO}:${params.RELEASE_VERSION}\"' > var.tfvars"
+          sh "echo 'image_source_tag = \"${IMAGE_REPO}:${env.RELEASE_VERSION}\"' > var.tfvars"
         }
       }
     }
