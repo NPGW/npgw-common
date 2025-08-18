@@ -64,10 +64,24 @@ pipeline {
             checkoutRepos(['npgw-terraform': params.CUSTOM_ACTION?.trim()])
           } else {
             echo "Syncing from S3 for RELEASE_VERSION: ${env.RELEASE_VERSION}"
-            sh """
-            mkdir -p "${WORKSPACE}/npgw-terraform"
-            aws s3 sync s3://${env.AWS_BUCKET_NAME}/npgw-terraform/${env.RELEASE_VERSION}/ ${WORKSPACE}/npgw-terraform/
-            """
+            def prefix = "npgw-terraform/${env.RELEASE_VERSION}/"
+            def isPrefixExists = sh("""
+              aws s3api list-objects-v2 \
+                --bucket ${env.AWS_BUCKET_NAME} \
+                --prefix '${prefix}' \
+                --max-items 1 \
+                --query 'Contents[0].Key' \
+                --output text || true
+              """, returnStdout: true).trim()
+
+            if (isPrefixExists && isPrefixExists != "None") {
+              echo "Found S3 prefix: ${prefix}"
+              sh """
+                mkdir -p "${WORKSPACE}/npgw-terraform"
+                aws s3 sync s3://${env.AWS_BUCKET_NAME}/${prefix}/ ${WORKSPACE}/npgw-terraform/
+              """
+          } else {
+            error("S3 prefix '${prefix}' does not exist.")
           }
         }
       }
