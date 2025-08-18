@@ -1,4 +1,4 @@
-@Library('npgw-lib@refactor-apply-env') _
+@Library('npgw-lib') _
 
 pipeline {
     agent { label 'build-node' }
