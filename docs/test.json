@@ -1,0 +1,39 @@
+{"amount": "1999 -> 19.99",
+            "currency": "EUR",
+            "merchantId": "company786",
+            "externalTransactionId": "REF00L00000",
+            "type": "SALE",
+            "notificationUrl": "https://example.com/notification_endpoint",
+            "redirectUrlSuccess": "https://example.com/success",
+            "redirectUrlCancel": "https://example.com/cancel",
+            "redirectUrlFail": "https://example.com/fail",
+            "expiresAt": "2025-08-12T05:17:56.323Z",
+            "paymentDetails": {
+                "paymentMethod": "CreditCard",
+                "pan": "************0275",
+                "expMonth": "6",
+                "expYear": "2029",
+                "cvv": "***",
+                "cardHolderName": "Hal Jordan",
+                "cardType": "MASTERCARD"
+            },
+            "transactionId": "id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g",
+            "status": "INITIATED",
+            "error": {
+                "message": "string"
+            },
+            "createdOn": "2025-08-12T11:11:59.711Z",
+            "updatedOn": "2025-08-12T11:11:59.711Z",
+            "paymentUrl": "https://sandbox.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq",
+            "threeDSecureDetails": {
+                "status": "PENDING"
+            },
+            "operationList": [
+                {
+                    "amount": "1999 -> 19.99",
+                    "currency": "EUR",
+                    "operationItemId": "string",
+                    "status": "PENDING"
+                }
+            ]
+        }
