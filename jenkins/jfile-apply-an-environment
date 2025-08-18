@@ -65,7 +65,7 @@ pipeline {
           } else {
             echo "Syncing from S3 for RELEASE_VERSION: ${env.RELEASE_VERSION}"
             def prefix = "npgw-terraform/${env.RELEASE_VERSION}/"
-            def isPrefixExists = sh("""
+            def isPrefixExists = sh(script: """
               aws s3api list-objects-v2 \
                 --bucket ${env.AWS_BUCKET_NAME} \
                 --prefix '${prefix}' \
