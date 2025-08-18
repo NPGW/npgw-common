@@ -80,8 +80,9 @@ pipeline {
                 mkdir -p "${WORKSPACE}/npgw-terraform"
                 aws s3 sync s3://${env.AWS_BUCKET_NAME}/${prefix}/ ${WORKSPACE}/npgw-terraform/
               """
-          } else {
-            error("S3 prefix '${prefix}' does not exist.")
+            } else {
+              error("S3 prefix '${prefix}' does not exist.")
+            }
           }
         }
       }
