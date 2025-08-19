@@ -4,7 +4,6 @@ pipeline {
   agent { label 'build-node' }
 
   parameters {
-    string(name: 'GIT_BRANCH', defaultValue: 'main', description: 'Git branch to deploy from')
     string(name: 'RELEASE_VERSION', defaultValue: 'latest', description: 'Release version')
     choice(name: 'ENVIRONMENT_NAME', choices: ['test', 'dev', 'sandbox', 'prod'], description: 'Target environment')
     choice(name: 'ACTION', choices: ['plan', 'apply', 'custom'], description: 'Terraform action (destroy must be typed manually)')
@@ -26,46 +25,11 @@ pipeline {
       }
     }
 
-    stage('Checkout GIT') {
-      when {
-        expression { true }
-      }
-      steps {
-        git branch: "${params.GIT_BRANCH}", credentialsId: 'github-pat', url: 'https://github.com/NPGW/npgw-terraform.git'
-      }
-    }
-
-    stage('Checkout S3') {
-      when {
-        expression { false }
-      }
-      steps {
-        script {
-          sh """
-            mkdir -p ${WORKSPACE}/npgw-terraform
-            aws s3 sync ${WORKSPACE}/npgw-terraform s3://${env.AWS_BUCKET_NAME}/npgw-terraform/${env.RELEASE_VERSION}
-          """
-        }
-      }
-    }
-
     stage('Determine AWS Role') {
       steps {
         script {
-          def roles = [
-            'test'   : 'arn:aws:iam::820242903147:role/npgw-jenkins-terraform-env-role',
-            'dev'    : 'arn:aws:iam::872515291967:role/npgw-jenkins-terraform-env-role',
-            'prod'   : 'arn:aws:iam::721719382766:role/npgw-jenkins-terraform-env-role',
-            'sandbox': 'arn:aws:iam::225989351233:role/npgw-jenkins-terraform-env-role'
-          ]
-
-          def selectedRole = roles[params.ENVIRONMENT_NAME]
-          if (!selectedRole) {
-            error("Invalid environment: ${params.ENVIRONMENT_NAME}")
-          }
-
-          env.ROLE_TO_ASSUME = selectedRole
-          echo "Assuming role: ${env.ROLE_TO_ASSUME}"
+            env.ROLE_TO_ASSUME = determineAwsRole(params.ENVIRONMENT_NAME, 'terraform')
+            echo "Assuming role: ${env.ROLE_TO_ASSUME}"
         }
       }
     }
@@ -76,10 +40,58 @@ pipeline {
       }
     }
 
+    stage('Resolve latest ECR tag if RELEASE_VERSION == latest') {
+      steps {
+        dir("infra-${params.ENVIRONMENT_NAME}") {
+          script {
+            if (params.RELEASE_VERSION == 'latest') {
+              env.RELEASE_VERSION = getLatestEcrTag("npgw/merchant", env.AWS_REGION)
+              sh "echo 'image_tag = \"${env.RELEASE_VERSION}\"' >> var.tfvars"
+            } else {
+              env.RELEASE_VERSION = params.RELEASE_VERSION
+            }
+          }
+        }
+      }
+    }
+
+    stage('Checkout') {
+      steps {
+        script {
+          def useGit = (params.ACTION in ['plan', 'apply']) && params.CUSTOM_ACTION?.trim()
+          if (useGit) {
+            echo "Checking out from Git branch: ${params.CUSTOM_ACTION}"
+            checkoutRepos(['npgw-terraform': params.CUSTOM_ACTION?.trim()])
+          } else {
+            echo "Syncing from S3 for RELEASE_VERSION: ${env.RELEASE_VERSION}"
+            def prefix = "npgw-terraform/${env.RELEASE_VERSION}/"
+            def isPrefixExists = sh(script: """
+              aws s3api list-objects-v2 \
+                --bucket ${env.AWS_BUCKET_NAME} \
+                --prefix '${prefix}' \
+                --max-items 1 \
+                --query 'Contents[0].Key' \
+                --output text || true
+              """, returnStdout: true).trim()
+
+            if (isPrefixExists && isPrefixExists != "None") {
+              echo "Found S3 prefix: ${prefix}"
+              sh """
+                mkdir -p "${WORKSPACE}/npgw-terraform"
+                aws s3 sync s3://${env.AWS_BUCKET_NAME}/${prefix} ${WORKSPACE}/npgw-terraform/
+              """
+            } else {
+              error("S3 prefix '${prefix}' does not exist.")
+            }
+          }
+        }
+      }
+    }
+
     stage('Prepare Working Directory') {
       steps {
         sh """
-          cp -R infra infra-${params.ENVIRONMENT_NAME}
+          cp -R npgw-terraform/infra/. infra-${params.ENVIRONMENT_NAME}
           sed -i 's|npgw-terraform-state-|npgw-terraform-state-${params.ENVIRONMENT_NAME}|' infra-${params.ENVIRONMENT_NAME}/provider.tf
         """
       }
@@ -88,34 +100,7 @@ pipeline {
     stage('Create var.tfvars') {
       steps {
         dir("infra-${params.ENVIRONMENT_NAME}") {
-          sh "echo 'image_source_tag = \"${IMAGE_REPO}:${params.RELEASE_VERSION}\"' > var.tfvars"
-        }
-      }
-    }
-
-    stage('Resolve latest ECR tag if RELEASE_VERSION == latest') {
-      steps {
-        dir("infra-${params.ENVIRONMENT_NAME}") {
-          script {
-            if (params.RELEASE_VERSION == 'latest') {
-              def latestTag = sh(
-                script: """
-                  aws ecr list-images \
-                    --repository-name "npgw/merchant" \
-                    --region ${env.AWS_REGION} \
-                    --registry-id "214404897309" \
-                    --query 'imageIds[*].imageTag' \
-                    --output text | tr '\t' '\n' | sort -r | head -n 1
-                """,
-                returnStdout: true
-              ).trim()
-              echo "Resolved latest tag: ${latestTag}"
-              env.RELEASE_VERSION = latestTag
-              sh "echo 'image_tag = \"${latestTag}\"' >> var.tfvars"
-            } else {
-              env.RELEASE_VERSION = params.RELEASE_VERSION
-            }
-          }
+          sh "echo 'image_source_tag = \"${IMAGE_REPO}:${env.RELEASE_VERSION}\"' > var.tfvars"
         }
       }
     }
