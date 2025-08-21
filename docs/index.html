@@ -900,11 +900,27 @@
                 background-color: #3387CC;
                 color: #ffffff;
             }
+            .text_block {
+                width: 50%;
+                /* padding: 10px 50px 10px 50px; */
+            }
+            .table_block {
+                width: 50%;
+                padding: 10px 50px 10px 50px;
+            }
+            .flex {
+                display: flex;
+            }
+            .flex-row {
+                flex-direction: row;
+            }
+            .table_block table {
+                width: 100%;
+            }
         </style>
     </head>
     <body class="c39 c46 doc-content">
         <div class="menu_block">
-            <h1 class="c6">Documentation menu</h1>
             <ul class="menu_list">
                 <li class="menu_item">
                     <a class="menu_item_txt" href="#API_Reference" >API Reference</a>
@@ -948,11 +964,14 @@
                             <a class="sub_menu_item_txt" href="#Payment" >Payment</a>
                             <ul class="sub_menu_list">
                                 <li class="sub_menu_item">
+                                    <a class="sub_menu_item_txt" href="#The_Transaction_object" >The Transaction object</a>
+                                </li>
+<!--                                 <li class="sub_menu_item">
                                     <a class="sub_menu_item_txt" href="#The_Transaction_request_object" >The Transaction request object</a>
                                 </li>
                                 <li class="sub_menu_item">
                                     <a class="sub_menu_item_txt" href="#The_Transaction_response_object" >The Transaction response object</a>
-                                </li>
+                                </li> -->
                             </ul>
                         </li>
                         <li class="sub_menu_item">
@@ -1016,7 +1035,7 @@
                     <a class="c4 underline" href="/docs/api/">Technical Documentation </a>
                 </li>
                 <li class="c5 c13 li-bullet-0">
-                    <a class="c4 underline" href="/docs/api/api.yaml">API Specification</a>
+                    <a class="c4 underline" type="text/yaml" href="/docs/api/api.yaml">API Specification</a>
                 </li>
             </ul>
            
@@ -1056,39 +1075,49 @@
             <hr style="page-break-before: always; display: none;" />
             
             <h1 class="c6" id="Environments"><span class="c38 c0 c24">Environments</span></h1>
-            <p class="c10">
-                <span class="c4">The NPGW provides two separate domains for our API: one for </span><span class="c0 c24">Sandbox</span><span class="c4">&nbsp;and one for </span><span class="c0 c24">Production</span>
-                <span class="c1">
-                    . The sandbox environment is intended for testing and development, while the production environment is used for live transaction processing. All API endpoints are consistent across both environments, meaning the request
-                    structure, parameters, and responses are the same&mdash;only the base domain changes depending on the environment.
-                </span>
-            </p>
-            <p class="c10"><span class="c1">Successful acceptance testing is required in order to move your integration from Sandbox to Production.</span></p>
-            <table class="c18">
-                <tr class="c17">
-                    <td class="c8" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">SANDBOX BASE DOMAIN</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2">https://sandbox.npgw.xyz</p>
-                    </td>
-                </tr>
-            </table>
-            
-            <table class="c18">
-                <tr class="c17">
-                    <td class="c8" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">PRODUCTION BASE DOMAIN</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2">https://npgw.xyz</p>
-                    </td>
-                </tr>
-            </table>
+
+            <div class="flex flex-row">
+                <div class="text_block">
+                    <p class="c10">
+                        <span class="c4">The NPGW provides two separate domains for our API: one for </span><span class="c0 c24">Sandbox</span><span class="c4">&nbsp;and one for </span><span class="c0 c24">Production</span>
+                        <span class="c1">
+                            . The sandbox environment is intended for testing and development, while the production environment is used for live transaction processing. All API endpoints are consistent across both environments, meaning the request
+                            structure, parameters, and responses are the same&mdash;only the base domain changes depending on the environment.
+                        </span>
+                    </p>
+                    <p class="c10"><span class="c1">Successful acceptance testing is required in order to move your integration from Sandbox to Production.</span></p>
+                </div>
+
+                <div class="table_block">
+                    <table class="c18">
+                        <tr class="c17">
+                            <td class="c8" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">SANDBOX BASE DOMAIN</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c11" colspan="1" rowspan="1">
+                                <p class="c2">https://sandbox.npgw.xyz</p>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <table class="c18">
+                        <tr class="c17">
+                            <td class="c8" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">PRODUCTION BASE DOMAIN</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c11" colspan="1" rowspan="1">
+                                <p class="c2">https://npgw.xyz</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+
             
             <hr style="page-break-before: always; display: none;" />
             
@@ -1105,204 +1134,242 @@
             <hr style="page-break-before: always; display: none;" />
             
             <h1 class="c6" id="Errors"><span class="c38 c0 c24">Errors</span></h1>
-            <p class="c29">
-                <span class="c4">The NPGW uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the </span><span class="c14 c0 c24">2xx</span>
-                <span class="c4">&nbsp;range indicate success. Codes in the </span><span class="c14 c0 c24">4xx</span>
-                <span class="c4">&nbsp;range indicate an error that failed given the information provided (e.g. a required parameter was omitted etc). Codes in the </span><span class="c14 c0 c24">5xx</span>
-                <span class="c1">&nbsp;range indicate an error with our servers (these are rare).</span>
-            </p>
-            <p class="c29"><span class="c35 c0 c24">Attributes</span></p>
-            <p class="c29">
-                <span class="c0">error</span>
-                <span class="c1">
-                    &nbsp; object<br />
-                    Provides granular detail of the error returned by the NPGW API.
-                </span>
-            </p>
-            <p class="c10"><span class="c33 c4 c22">+Show child attributes</span></p>
-            <p class="c10">
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c0">error.message</span>
-                <span class="c1">
-                    &nbsp; string<br />
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plain text message with detail of the API, Issuer decline or Blocked payment error.
-                </span>
-            </p>
-            <p class="c29 c12"><span class="c1 c23"></span></p>
-            <table class="c18">
-                <tr class="c36">
-                    <td class="c25 c45" colspan="3" rowspan="1">
-                        <p class="c2"><span class="c16 c0">HTTP STATUS CODE SUMMARY</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c28" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">200</span></p>
-                    </td>
-                    <td class="c21" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">OK</span></p>
-                    </td>
-                    <td class="c31" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Everything worked as expected.</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c28" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">400</span></p>
-                    </td>
-                    <td class="c21" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Bad Request</span></p>
-                    </td>
-                    <td class="c31" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">The request was unacceptable, often due to missing a required parameter.</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c28" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">401</span></p>
-                    </td>
-                    <td class="c21" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Unauthorized</span></p>
-                    </td>
-                    <td class="c31" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">No valid Secret Token provided.</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c28" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">403</span></p>
-                    </td>
-                    <td class="c21" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Forbidden</span></p>
-                    </td>
-                    <td class="c31" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">The Secret Token doesn&rsquo;t have permissions to perform the request.</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c28" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">404</span></p>
-                    </td>
-                    <td class="c21" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Not Found</span></p>
-                    </td>
-                    <td class="c31" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">The requested resource doesn&#39;t exist.</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c28" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c0 c16">405</span></p>
-                    </td>
-                    <td class="c21" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Not Allowed</span></p>
-                    </td>
-                    <td class="c31" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">The request method is not supported for the requested resource.</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c28" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">406</span></p>
-                    </td>
-                    <td class="c21" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Not Acceptable</span></p>
-                    </td>
-                    <td class="c31" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">The requested resource could not be processed due to a conflict with this or related resources.</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c28" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">422</span></p>
-                    </td>
-                    <td class="c21" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Failed Validation</span></p>
-                    </td>
-                    <td class="c31" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">The request payload could not pass the validation (probably incorrect).</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c28" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">429</span></p>
-                    </td>
-                    <td class="c21" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Too Many Requests</span></p>
-                    </td>
-                    <td class="c31" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c28" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">500</span></p>
-                    </td>
-                    <td class="c21" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Server Errors</span></p>
-                    </td>
-                    <td class="c31" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Something went wrong on NPGW&rsquo;s end. (These are rare.)</span></p>
-                    </td>
-                </tr>
-            </table>
+
+            <div class="flex flex-row">
+                <div class="text_block">
+                    <p class="c29">
+                        <span class="c4">The NPGW uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the </span><span class="c14 c0 c24">2xx</span>
+                        <span class="c4">&nbsp;range indicate success. Codes in the </span><span class="c14 c0 c24">4xx</span>
+                        <span class="c4">&nbsp;range indicate an error that failed given the information provided (e.g. a required parameter was omitted etc). Codes in the </span><span class="c14 c0 c24">5xx</span>
+                        <span class="c1">&nbsp;range indicate an error with our servers (these are rare).</span>
+                    </p>
+                    <p class="c29"><span class="c35 c0 c24">Attributes</span></p>
+                    <p class="c29">
+                        <span class="c0">error</span>
+                        <span class="c1">
+                            &nbsp; object<br />
+                            Provides granular detail of the error returned by the NPGW API.
+                        </span>
+                    </p>
+                    <p class="c10"><span class="c33 c4 c22">+Show child attributes</span></p>
+                    <p class="c10">
+                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c0">error.message</span>
+                        <span class="c1">
+                            &nbsp; string<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plain text message with detail of the API, Issuer decline or Blocked payment error.
+                        </span>
+                    </p>
+                    <p class="c29 c12"><span class="c1 c23"></span></p>
+                </div>
+                <div class="table_block">
+                    <table class="c18">
+                        <tr class="c36">
+                            <td class="c25 c45" colspan="3" rowspan="1">
+                                <p class="c2"><span class="c16 c0">HTTP STATUS CODE SUMMARY</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c28" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">200</span></p>
+                            </td>
+                            <td class="c21" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">OK</span></p>
+                            </td>
+                            <td class="c31" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Everything worked as expected.</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c28" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">400</span></p>
+                            </td>
+                            <td class="c21" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Bad Request</span></p>
+                            </td>
+                            <td class="c31" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">The request was unacceptable, often due to missing a required parameter.</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c28" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">401</span></p>
+                            </td>
+                            <td class="c21" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Unauthorized</span></p>
+                            </td>
+                            <td class="c31" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">No valid Secret Token provided.</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c28" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">403</span></p>
+                            </td>
+                            <td class="c21" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Forbidden</span></p>
+                            </td>
+                            <td class="c31" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">The Secret Token doesn&rsquo;t have permissions to perform the request.</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c28" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">404</span></p>
+                            </td>
+                            <td class="c21" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Not Found</span></p>
+                            </td>
+                            <td class="c31" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">The requested resource doesn&#39;t exist.</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c28" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c0 c16">405</span></p>
+                            </td>
+                            <td class="c21" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Not Allowed</span></p>
+                            </td>
+                            <td class="c31" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">The request method is not supported for the requested resource.</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c28" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">406</span></p>
+                            </td>
+                            <td class="c21" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Not Acceptable</span></p>
+                            </td>
+                            <td class="c31" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">The requested resource could not be processed due to a conflict with this or related resources.</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c28" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">422</span></p>
+                            </td>
+                            <td class="c21" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Failed Validation</span></p>
+                            </td>
+                            <td class="c31" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">The request payload could not pass the validation (probably incorrect).</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c28" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">429</span></p>
+                            </td>
+                            <td class="c21" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Too Many Requests</span></p>
+                            </td>
+                            <td class="c31" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Too many requests hit the API too quickly. We recommend an exponential backoff of your requests.</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c28" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">500</span></p>
+                            </td>
+                            <td class="c21" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Server Errors</span></p>
+                            </td>
+                            <td class="c31" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Something went wrong on NPGW&rsquo;s end. (These are rare.)</span></p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+
             <p class="c29 c12"><span class="c1 c23"></span></p>
             
             <hr style="page-break-before: always; display: none;" />
             
             <h1 class="c6" id="One_time_payments"><span class="c38 c0 c24">One-time payments</span></h1>
-            <ol class="c41 lst-kix_us75fhk8r05x-0 start" start="1">
-                <li class="c5 c13 li-bullet-0"><span class="c1">When a customer is ready to complete a purchase, your application will submit a Transaction to the NPGW API.</span></li>
-                <li class="c5 c13 li-bullet-0"><span class="c1">The API provides a URL that redirects customers to an NPGW-hosted page for 3D Secure.</span></li>
-                <li class="c5 c13 li-bullet-0"><span class="c1">Customers authenticate with their bank when required to complete the transaction.</span></li>
-                <li class="c5 c13 li-bullet-0"><span class="c1">Asynchronously, the NPGW API delivers webhooks related to the Transaction and your application can further poll status.</span></li>
-            </ol>
+
+            <div class="flex flex-row">
+                <div class="text_block">
+                    <ol class="c41 lst-kix_us75fhk8r05x-0 start" start="1">
+                        <li class="c5 c13 li-bullet-0"><span class="c1">When a customer is ready to complete a purchase, your application will submit a Transaction to the NPGW API.</span></li>
+                        <li class="c5 c13 li-bullet-0"><span class="c1">The API provides a URL that redirects customers to an NPGW-hosted page for 3D Secure.</span></li>
+                        <li class="c5 c13 li-bullet-0"><span class="c1">Customers authenticate with their bank when required to complete the transaction.</span></li>
+                        <li class="c5 c13 li-bullet-0"><span class="c1">Asynchronously, the NPGW API delivers webhooks related to the Transaction and your application can further poll status.</span></li>
+                    </ol>
+                </div>
+                <div class="table_block">
+                    <p class="c42">
+                        <span style="overflow: hidden; display: inline-block; margin: 0px 0px; border: 0px solid #000000; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px); width: 714.7px; height: 656.75px;">
+                            <img alt="" src="images/image2.png" style="width: 714.7px; height: 656.75px; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+
             
-            <p class="c42">
-                <span style="overflow: hidden; display: inline-block; margin: 0px 0px; border: 0px solid #000000; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px); width: 714.7px; height: 656.75px;">
-                    <img alt="" src="images/image2.png" style="width: 714.7px; height: 656.75px; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
-                </span>
-            </p>
+            
             <p class="c42 c12"><span class="c1"></span></p>
             <h2 class="c6" id="Supported_currencies"><span class="c19 c0">Supported currencies</span></h2>
-            <p class="c5"><span>The list of available currencies depends on your account configuration. Please check with the Support Team.</span></p>
+
+            <div class="flex flex-row">
+                <div class="text_block">
+                    <p class="c5"><span>The list of available currencies depends on your account configuration. Please check with the Support Team.</span></p>
+                </div>
+                <div class="table_block">
+                    <table class="c18">
+                        <tr class="c17">
+                            <td class="c20 c25" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">CODE</span></p>
+                            </td>
+                            <td class="c20 c25" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">CURRENCY</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c20" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">USD</span></p>
+                            </td>
+                            <td class="c20" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">United States Dollars</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c20" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">EUR</span></p>
+                            </td>
+                            <td class="c20" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">Euro</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c20" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">GBP</span></p>
+                            </td>
+                            <td class="c20" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c1">British Pound</span></p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
             
-            <table class="c18">
-                <tr class="c17">
-                    <td class="c20 c25" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">CODE</span></p>
-                    </td>
-                    <td class="c20 c25" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">CURRENCY</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c20" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">USD</span></p>
-                    </td>
-                    <td class="c20" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">United States Dollars</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c20" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">EUR</span></p>
-                    </td>
-                    <td class="c20" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">Euro</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c20" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">GBP</span></p>
-                    </td>
-                    <td class="c20" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c1">British Pound</span></p>
-                    </td>
-                </tr>
-            </table>
+            
+            
             
             
             <h2 class="c6" id="Transaction_statuses"><span class="c19 c0">Transaction statuses</span></h2>
+
+            <!-- <div class="flex flex-row">
+                <div class="text_block">
+
+                </div>
+                <div class="table_block">
+
+                </div>
+            </div> -->
+            
             <p class="c42">
                 <span style="overflow: hidden; display: inline-block; margin: 0px 0px; border: 0px solid #000000; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px); width: 559.2px; height: 366.37px;">
                     <img alt="" src="images/image1.png" style="width: 559.2px; height: 366.37px; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
@@ -1313,112 +1380,126 @@
             <hr style="page-break-before: always; display: none;" />
             
             <h1 class="c6" id="Core_Resources"><span>Core Resources</span></h1>
-            <h2 class="c6" id="Token"><span>Token</span></h2>
-            <p class="c10">
-                <span class="c4">The Token endpoint is used to create a new </span><span class="c4 c22">Bearer token</span>
-                <span class="c1">&nbsp;or refresh an expired one for accessing the NPGW API. Tokens are valid for 15 minutes but can be regenerated at any time.</span>
-            </p>
-            <p class="c10">
-                <span class="c4">The request requires a plain text </span><span class="c4 c22">Secret Token</span><span class="c4">&nbsp;within the body. A successful response returns a JSON object containing the </span>
-                <span class="c0 c24">ID Token</span><span class="c1">&nbsp;which can be used for further operation of the NPGW API.</span>
-            </p>
 
-            <table class="c18">
-                <tr class="c17">
-                    <td class="c8" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">ENDPOINTS</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /token</span></p>
-                    </td>
-                </tr>
-            </table>
+            <div class="flex flex-row">
+                <div class="text_block">
+                    <h2 class="c6" id="Token"><span>Token</span></h2>
+                        <p class="c10">
+                            <span class="c4">The Token endpoint is used to create a new </span><span class="c4 c22">Bearer token</span>
+                            <span class="c1">&nbsp;or refresh an expired one for accessing the NPGW API. Tokens are valid for 15 minutes but can be regenerated at any time.</span>
+                        </p>
+                        <p class="c10">
+                            <span class="c4">The request requires a plain text </span><span class="c4 c22">Secret Token</span><span class="c4">&nbsp;within the body. A successful response returns a JSON object containing the </span>
+                            <span class="c0 c24">ID Token</span><span class="c1">&nbsp;which can be used for further operation of the NPGW API.</span>
+                        </p>
 
-            <table class="c18">
-                <tr class="c17">
-                    <td class="c8" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">VALIDATION WITH THE IDENTITY SERVICE</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c11" colspan="1" rowspan="1">
-                      
-                            <pre  class="prettyprint language-html prettyprinted" data-type="curl"> 
-                              
-    curl -X POST \
-    -H "Accept: application/json" \
-    -H "Content-Type: text/plain" \
-    "https://sandbox.npgw.xyz/merchant-v1/token" \
-    -d '{{Secret Token}}'
-                              
-              
+                        <a class="c4 underline" href="/docs/api/#api-Authentication-getToken"> See details </a>
+
+                        <!-- <table class="c18">
+                            <tr class="c17">
+                                <td class="c8" colspan="1" rowspan="1">
+                                    <p class="c2"><span class="c16 c0">ENDPOINTS</span></p>
+                                </td>
+                            </tr>
+                            <tr class="c17">
+                                <td class="c11" colspan="1" rowspan="1">
+                                    <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /token</span></p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="c18">
+                            <tr class="c17">
+                                <td class="c8" colspan="1" rowspan="1">
+                                    <p class="c2"><span class="c16 c0">VALIDATION WITH THE IDENTITY SERVICE</span></p>
+                                </td>
+                            </tr>
+                            <tr class="c17">
+                                <td class="c11" colspan="1" rowspan="1">
                                 
-                
-                            </pre>
-                  
+                                        <pre  class="prettyprint language-html prettyprinted" data-type="curl"> 
+                                        
+                curl -X POST \
+                -H "Accept: application/json" \
+                -H "Content-Type: text/plain" \
+                "https://sandbox.npgw.xyz/merchant-v1/token" \
+                -d '{{Secret Token}}'
+                                        
+                        
+                                            
+                            
+                                        </pre>
+                            
 
-                      
-                    </td>
-                </tr>
-            </table>
-            
-            <h2 class="c6" id="Payment"><span>Payment</span></h2>
-            <p class="c10"><span class="c1">Posting to the Transaction endpoint enables a new credit/debit card payment to be submitted for processing.</span></p>
-            <p class="c10">
-                <span class="c4">The NPGW supports both </span><span class="c0 c24">SALE</span><span class="c4">&nbsp;and </span><span class="c0 c24">AUTH</span><span class="c4">&nbsp;transaction types (the latter requiring a separate </span>
-                <span class="c4 c34"><a class="c37" href="#h.b2e4ix5gv9t0">Capture</a></span><span class="c4">&nbsp;action to be submitted to complete a payment). On success, the NPGW API returns a secure </span>
-                <span class="c0 c24">Payment URL</span><span class="c1">&nbsp; to which the end customer must be redirected in order to complete 3D Secure enrollment checks and authentication with their bank where necessary.</span>
-            </p>
-
-            <p><span class="c0 c24">Heads up!</span></p>
-            <p class="c10">The optional async query parameter (a boolean) determines whether a transaction should be processed asynchronously with the NPGW - if true, the API responds immediately while processing continues in the background.</p>
-            
-
-            <table class="c18">
-                <tr class="c17">
-                    <td class="c8" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">ENDPOINTS</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction</span></p>
-                    </td>
-                </tr>
-            </table>
-            
-            <table class="c18">
-                <tr class="c17">
-                    <td class="c8" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">PER REQUEST AUTHORIZATION</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c11" colspan="1" rowspan="1">
-                      
-                        <pre  class="prettyprint language-html prettyprinted" data-type="curl"> 
-                              
-    curl -X POST \
-    -H "Accept: application/json" \
-    -H "Content-Type: application/json" \
-    -H "Authorization: {{idToken}}" \
-    "https://sandbox.npgw.xyz/merchant-v1/transaction" \
-    -d 
-                              
-              
                                 
+                                </td>
+                            </tr>
+                        </table> -->
                 
-                        </pre>
-                  
+                        <h2 class="c6" id="Payment"><span>Payment</span></h2>
+                        <p class="c10"><span class="c1">Posting to the Transaction endpoint enables a new credit/debit card payment to be submitted for processing.</span></p>
+                        <p class="c10">
+                            <span class="c4">The NPGW supports both </span><span class="c0 c24">SALE</span><span class="c4">&nbsp;and </span><span class="c0 c24">AUTH</span><span class="c4">&nbsp;transaction types (the latter requiring a separate </span>
+                            <span class="c4 c34"><a class="c37" href="/docs/api/#api-PaymentOperations-captureTransaction">Capture</a></span><span class="c4">&nbsp;action to be submitted to complete a payment). On success, the NPGW API returns a secure </span>
+                            <span class="c0 c24">Payment URL</span><span class="c1">&nbsp; to which the end customer must be redirected in order to complete 3D Secure enrollment checks and authentication with their bank where necessary.</span>
+                        </p>
 
-                      
-                    </td>
-                </tr>
-            </table>
+                        <p><span class="c0 c24">Heads up!</span></p>
+                        <p class="c10">The optional async query parameter (a boolean) determines whether a transaction should be processed asynchronously with the NPGW - if true, the API responds immediately while processing continues in the background.</p>
+                        
+
+                </div>
+                <div class="table_block">
+                    <table class="c18">
+                        <tr class="c17">
+                            <td class="c8" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">ENDPOINTS</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c11" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction</span></p>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <table class="c18">
+                        <tr class="c17">
+                            <td class="c8" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">PER REQUEST AUTHORIZATION</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c11" colspan="1" rowspan="1">
+                            
+                                <pre  class="prettyprint language-html prettyprinted" data-type="curl"> 
+                                    
+            curl -X POST \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: {{idToken}}" \
+            "https://sandbox.npgw.xyz/merchant-v1/transaction" \
+            -d 
+                                    
+                    
+                                        
+                        
+                                </pre>
+                        
+
+                            
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
             
-            <h3 class="c6" id="The_Transaction_request_object"><span class="c0 c15">The Transaction request object</span></h3>
+            
+            <h3 class="c6" id="The_Transaction_object"><span class="c0 c15">The Transaction object</span></h3>
+
+            <a class="c4 underline" href="/docs/api/#api-Payment-createTransaction"> See details </a>
+            <!-- <h3 class="c6" id="The_Transaction_request_object"><span class="c0 c15">The Transaction request object</span></h3>
             <p class="c5">
                 <span class="c0 c24 c40">Attributes</span>
             </p>
@@ -1807,7 +1888,7 @@
 
             <div style="height: 500px;">
                 <iframe src="./trx_reponse_object.html" title="trx_reponse_object" height="500px"></iframe>
-            </div>
+            </div> -->
 
             
             <h2 class="c6" id="Payment_Operations"><span class="c19 c0">Payment Operations</span></h2>
@@ -1823,7 +1904,7 @@
                 <span class="c4 c22">A</span><span class="c22">uthorised</span><span class="c1">&nbsp;by referencing its transactionId.</span>
             </p>
             <p class="c10"><span class="c1">The NPGW supports both full and partial captures via this operation.</span></p>
-            <p class="c5"><span class="c35 c0 c24">Attributes</span></p>
+            <!-- <p class="c5"><span class="c35 c0 c24">Attributes</span></p>
             
             <p class="c5">
                 <span class="c0">Amount</span>
@@ -1831,8 +1912,8 @@
                     &nbsp; object<br />
                     The full or part amount and currency of the original Transaction to capture.
                 </span>
-            </p>
-            <p class="c10"><span class="c33 c4 c22">+Show child attributes</span></p>
+            </p> -->
+            <!-- <p class="c10"><span class="c33 c4 c22">+Show child attributes</span></p>
             <p class="c10">
                 <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c0">Amount.amount </span>
                 <span class="c1">
@@ -1858,7 +1939,9 @@
                         <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction/{transactionId}/capture</span></p>
                     </td>
                 </tr>
-            </table>
+            </table> -->
+
+            <a class="c4 underline" href="/docs/api/#api-PaymentOperations-captureTransaction"> See details </a>
             
             <h3 class="c6" id="Cancel"><span class="c32 c0 c22 c24">Cancel</span></h3>
             <p class="c10">
@@ -1870,7 +1953,9 @@
                 <span class="c4">Please note that this operation is irreversible. Once th</span><span>is</span><span class="c4">&nbsp;operation has been completed successfully, if you wish to charge the customer again</span>
                 <span>&nbsp;then</span><span class="c1">&nbsp;a new transaction must be submitted.</span>
             </p>
-            <table class="c18">
+
+            <a class="c4 underline" href="/docs/api/#api-PaymentOperations-cancelTransaction"> See details </a>
+            <!-- <table class="c18">
                 <tr class="c17">
                     <td class="c8" colspan="1" rowspan="1">
                         <p class="c2"><span class="c16 c0">ENDPOINTS</span></p>
@@ -1881,12 +1966,14 @@
                         <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction/{transactionId}/cancel</span></p>
                     </td>
                 </tr>
-            </table>
+            </table> -->
             
             <h3 class="c6" id="Refund"><span class="c32 c0 c22 c24">Refund</span></h3>
             <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span><span class="c1">&nbsp;of a successful Transaction by referencing its transactionId. </span></p>
             <p class="c10"><span class="c1">The NPGW supports both full and partial refunds via this operation.</span></p>
-            <p class="c10"><span class="c0 c24 c35">Attributes</span></p>
+
+            <a class="c4 underline" href="/docs/api/#api-PaymentOperations-refundTransaction"> See details </a>
+            <!-- <p class="c10"><span class="c0 c24 c35">Attributes</span></p>
             <p class="c5">
                 <span class="c0">Amount</span>
                 <span class="c1">
@@ -1920,12 +2007,12 @@
                         <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction/{transactionId}/refund</span></p>
                     </td>
                 </tr>
-            </table>
+            </table> -->
 
             <h3 class="c6" id="Refund"><span class="c32 c0 c22 c24">Refund a part capture</span></h3>
             <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span><span class="c1">&nbsp;of a partially captured Transaction by referencing its transactionId. </span></p>
             <p class="c10"><span class="c1">The NPGW supports both full and partial refunds via this operation.</span></p>
-            <p class="c10"><span class="c0 c24 c35">Attributes</span></p>
+<!--             <p class="c10"><span class="c0 c24 c35">Attributes</span></p>
             <p class="c5">
                 <span class="c0">Amount</span>
                 <span class="c1">
@@ -1947,8 +2034,10 @@
                     &nbsp;enum<br />
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Currency of refund. Must be the same currency as the original Transaction.
                 </span>
-            </p>
-            <table class="c18">
+            </p> -->
+
+            <a class="c4 underline" href="/docs/api/#api-PaymentOperations-refundCaptureTransaction"> See details </a>
+            <!-- <table class="c18">
                 <tr class="c17">
                     <td class="c8" colspan="1" rowspan="1">
                         <p class="c2"><span class="c16 c0">ENDPOINTS</span></p>
@@ -1959,7 +2048,7 @@
                         <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction/{transactionId}/refund/capture/{operationItemId}</span></p>
                     </td>
                 </tr>
-            </table>
+            </table> -->
             
             <h2 class="c6" id="Payment_Status"><span class="c19 c0">Payment Status</span></h2>
             <p class="c10">
@@ -1967,6 +2056,9 @@
                 <span class="c4 c22">transactionId</span><span class="c4">&nbsp;or your own submitted </span><span class="c4 c22">externalTransactionId</span><span class="c4">.</span>
                 <span class="c1">&nbsp;The full Transaction response object is returned.</span>
             </p>
+
+            <a class="c4 underline" href="/docs/api/#api-PaymentStatus-getTransaction"> See details </a>
+<!-- 
             <table class="c18">
                 <tr class="c17">
                     <td class="c8" colspan="1" rowspan="1">
@@ -1981,7 +2073,7 @@
                         </p>
                     </td>
                 </tr>
-            </table>
+            </table> -->
             
             <h2 class="c6" id="Webhooks">
                 <span>Webhooks</span>
@@ -2004,184 +2096,194 @@
             <hr style="page-break-before: always; display: none;" />
             <h1 class="c6 c27" id="h.zevk44ifkf9y"><span class="c38 c0 c24"></span></h1>
             <h1 class="c6" id="Testing"><span class="c38 c0 c24">Testing</span></h1>
-            <p class="c10"><span class="c1">All features of the NPGW can be tested via our Sandbox!</span></p>
-            <p class="c10"><span class="c4">However, we please ask you don&rsquo;t use the sandbox to load test your integration as it is a </span><span>non-performant</span><span class="c1">&nbsp;environment.</span></p>
-            <h2 class="c6" id="Test_Cards">
-                <span>Test Cards</span>
-            </h2>
-            <p class="c5"><span class="c1">To simulate payments and QA your integration, use test cards from the following list for each scenario you wish to fulfill.</span></p>
+
+            <div class="flex flex-row">
+                <div class="text_block">
+                    <p class="c10"><span class="c1">All features of the NPGW can be tested via our Sandbox!</span></p>
+                    <p class="c10"><span class="c4">However, we please ask you don&rsquo;t use the sandbox to load test your integration as it is a </span><span>non-performant</span><span class="c1">&nbsp;environment.</span></p>
+                    <h2 class="c6" id="Test_Cards">
+                        <span>Test Cards</span>
+                    </h2>
+                    <p class="c5"><span class="c1">To simulate payments and QA your integration, use test cards from the following list for each scenario you wish to fulfill.</span></p>
+                    
+                    <p class="c5">
+                        <span class="c0 c40">Heads up!</span>
+                        <span>
+                            <br />
+                            Don&rsquo;t use real card details. The NPGW prohibits testing with live card data on Sandbox.
+                        </span>
+                    </p>
+                </div>
+                <div class="table_block">
+                    <table class="c18">
+                        <tr class="c17">
+                            <td class="c3 c25" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">NUMBER</span></p>
+                            </td>
+                            <td class="c3 c25" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">CARD TYPE</span></p>
+                            </td>
+                            <td class="c3 c25" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">CVC/CVV</span></p>
+                            </td>
+                            <td class="c3 c25" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">DATE</span></p>
+                            </td>
+                            <td class="c3 c25" colspan="1" rowspan="1">
+                                <p class="c2"><span class="c16 c0">SCENARIO</span></p>
+                            </td>
+                        </tr>
+                        <tr class="c17">
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">2303779999000275</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>MASTERCARD</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any 3 digits</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any future date</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">3DS 2.0 Frictionless Success</span></p>
+                            </td>
+                        </tr>
+
+                        <tr class="c17">
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">2303779999000291</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>MASTERCARD</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any 3 digits</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any future date</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">3DS 2.0 Frictionless Fail</span></p>
+                            </td>
+                        </tr>
+
+                        <tr class="c17">
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">2303779999000317</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>MASTERCARD</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any 3 digits</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any future date</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">3DS 2.0 Frictionless Unknown</span></p>
+                            </td>
+                        </tr>
+
+                        <tr class="c17">
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">2303779999000408</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>MASTERCARD</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any 3 digits</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any future date</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">3DS 2.0 Challenge Success</span></p>
+                            </td>
+                        </tr>
+
+                        <tr class="c17">
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">2303779999000424</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>MASTERCARD</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any 3 digits</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any future date</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">3DS 2.0 Challenge Fail</span></p>
+                            </td>
+                        </tr>
+
+                        <tr class="c17">
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">4093191766216474</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>VISA</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any 3 digits</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any future date</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">None enrolled card Success</span></p>
+                            </td>
+                        </tr>
+
+                        <tr class="c17">
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">5126702681201744</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>MASTERCARD</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any 3 digits</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any future date</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">None enrolled card Fail</span></p>
+                            </td>
+                        </tr>
+
+                        <tr class="c17">
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">5513935292057458</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>MASTERCARD</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any 3 digits</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2"><span>Any future date</span></p>
+                            </td>
+                            <td class="c3" colspan="1" rowspan="1">
+                                <p class="c2 "><span class="c1">Issuer decline</span></p>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+
             
-            <p class="c5">
-                <span class="c0 c40">Heads up!</span>
-                <span>
-                    <br />
-                    Don&rsquo;t use real card details. The NPGW prohibits testing with live card data on Sandbox.
-                </span>
-            </p>
             
-            <table class="c18">
-                <tr class="c17">
-                    <td class="c3 c25" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">NUMBER</span></p>
-                    </td>
-                    <td class="c3 c25" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">CARD TYPE</span></p>
-                    </td>
-                    <td class="c3 c25" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">CVC/CVV</span></p>
-                    </td>
-                    <td class="c3 c25" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">DATE</span></p>
-                    </td>
-                    <td class="c3 c25" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c16 c0">SCENARIO</span></p>
-                    </td>
-                </tr>
-                <tr class="c17">
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">2303779999000275</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>MASTERCARD</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any 3 digits</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any future date</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">3DS 2.0 Frictionless Success</span></p>
-                    </td>
-                </tr>
-
-                <tr class="c17">
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">2303779999000291</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>MASTERCARD</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any 3 digits</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any future date</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">3DS 2.0 Frictionless Fail</span></p>
-                    </td>
-                </tr>
-
-                <tr class="c17">
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">2303779999000317</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>MASTERCARD</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any 3 digits</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any future date</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">3DS 2.0 Frictionless Unknown</span></p>
-                    </td>
-                </tr>
-
-                <tr class="c17">
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">2303779999000408</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>MASTERCARD</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any 3 digits</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any future date</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">3DS 2.0 Challenge Success</span></p>
-                    </td>
-                </tr>
-
-                <tr class="c17">
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">2303779999000424</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>MASTERCARD</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any 3 digits</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any future date</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">3DS 2.0 Challenge Fail</span></p>
-                    </td>
-                </tr>
-
-                <tr class="c17">
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">4093191766216474</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>VISA</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any 3 digits</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any future date</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">None enrolled card Success</span></p>
-                    </td>
-                </tr>
-
-                <tr class="c17">
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">5126702681201744</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>MASTERCARD</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any 3 digits</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any future date</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">None enrolled card Fail</span></p>
-                    </td>
-                </tr>
-
-                <tr class="c17">
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">5513935292057458</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>MASTERCARD</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any 3 digits</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2"><span>Any future date</span></p>
-                    </td>
-                    <td class="c3" colspan="1" rowspan="1">
-                        <p class="c2 "><span class="c1">Issuer decline</span></p>
-                    </td>
-                </tr>
-
-            </table>
+            
             
             <h2 class="c6" id="Fraud_controls"><span class="c19 c0">Fraud controls</span></h2>
             <p class="c10">
