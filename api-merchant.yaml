@@ -143,7 +143,7 @@ paths:
       description: Please note that this operation will void an Authorization in full and is irreversible. Once this operation has been completed successfully, if you wish to charge the customer again then a new transaction must be submitted.
       operationId: cancelTransaction
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       parameters:
         - in: path
           name: transactionId
@@ -176,7 +176,7 @@ paths:
       description: Enables an Authorization to be captured in full or multiple parts.
       operationId: captureTransaction
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       parameters:
         - in: path
           name: transactionId
@@ -215,7 +215,7 @@ paths:
       description: Enables a Successful Transaction to be refunded in full or multiple parts.
       operationId: refundTransaction
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       parameters:
         - in: path
           name: transactionId
@@ -254,7 +254,7 @@ paths:
       description: Enables a refund of partially captured Transactions, again in full or part.
       operationId: refundCaptureTransaction
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       parameters:
         - in: path
           name: transactionId
@@ -325,6 +325,12 @@ paths:
 components:
   securitySchemes:
     apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: JWT-based authentication where the token is passed in the Authorization header.
+
+    apiKeyAuth2:
       type: apiKey
       in: header
       name: Authorization
