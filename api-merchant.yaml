@@ -246,7 +246,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /transaction/{transactionId}/refund/capture/{operationItemId}:
+  /transaction/{transactionId}/refund/capture/{operationId}:
     post:
       tags:
         - payment operations
@@ -262,7 +262,7 @@ paths:
           schema:
             type: string
         - in: path
-          name: operationItemId
+          name: operationId
           required: true
           schema:
             type: string
@@ -657,7 +657,7 @@ components:
         currency:
           $ref: '#/components/schemas/CurrencyCode'
 
-    OperationItemStatus:
+    OperationStatus:
       type: string
       description: |
         PENDING - submitted for processing.
@@ -670,18 +670,20 @@ components:
         - REFUND
         - FAILED
 
-    OperationItem:
+    Operation:
       allOf:
         - $ref: '#/components/schemas/Amount'
         - type: object
           required:
-            - operationItemId
+            - operationId
             - status
           properties:
-            operationItemId:
+            operationId:
+              type: string
+            originalOperationId:
               type: string
             status:
-              $ref: '#/components/schemas/OperationItemStatus'
+              $ref: '#/components/schemas/OperationStatus'
 
     BaseTransaction:
       allOf:
@@ -801,7 +803,7 @@ components:
             operationList:
               type: array
               items:
-                $ref: '#/components/schemas/OperationItem'
+                $ref: '#/components/schemas/Operation'
 
     Transaction:
       allOf:
