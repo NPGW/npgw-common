@@ -3,7 +3,7 @@ paths:
     get:
       operationId: getInfo
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       responses:
         '200':
           content:

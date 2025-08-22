@@ -217,9 +217,14 @@ paths:
 components:
   securitySchemes:
     apiKeyAuth:
-      x-amazon-apigateway-authtype: ${x-amazon-apigateway-authtype}
+      x-amazon-apigateway-authtype: ${x-amazon-apigateway-authtype-cognito}
       x-amazon-apigateway-authorizer:
-        ${x-amazon-apigateway-authorizer}
+        ${x-amazon-apigateway-authorizer-cognito}
+
+    apiKeyAuth2:
+      x-amazon-apigateway-authtype: ${x-amazon-apigateway-authtype-lambda}
+      x-amazon-apigateway-authorizer:
+        ${x-amazon-apigateway-authorizer-lambda}
 
 x-amazon-apigateway-gateway-responses:
   DEFAULT_4XX:
