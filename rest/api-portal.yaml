@@ -904,6 +904,39 @@ paths:
         '500':
           $ref: '../api-merchant.yaml#/components/responses/Error'
 
+  /acquirer/codes:
+    get:
+      operationId: getAcquirersCodes
+      security:
+        - apiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+          description: Array of acquirers codes
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
   /acquirer/{acquirerName}:
     get:
       operationId: getOneAcquirer
@@ -1363,6 +1396,39 @@ paths:
           $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
         '409':
           $ref: '../api-merchant.yaml#/components/responses/Conflict'
+        '422':
+          $ref: '../api-merchant.yaml#/components/responses/Validation'
+        '429':
+          $ref: '../api-merchant.yaml#/components/responses/TooManyRequests'
+        '500':
+          $ref: '../api-merchant.yaml#/components/responses/Error'
+
+  /control/codes:
+    get:
+      operationId: getControlsCodes
+      security:
+        - apiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+          description: Array of controls codes
+        '400':
+          $ref: '../api-merchant.yaml#/components/responses/BadRequest'
+        '401':
+          $ref: '../api-merchant.yaml#/components/responses/Unauthorized'
+        '403':
+          $ref: '../api-merchant.yaml#/components/responses/Forbidden'
+        '404':
+          $ref: '../api-merchant.yaml#/components/responses/NotFound'
+        '405':
+          $ref: '../api-merchant.yaml#/components/responses/NotAllowed'
+        '406':
+          $ref: '../api-merchant.yaml#/components/responses/NotAcceptable'
         '422':
           $ref: '../api-merchant.yaml#/components/responses/Validation'
         '429':
@@ -2054,12 +2120,6 @@ components:
         notificationQueue:
           type: string
 
-    AcquirerCode:
-      type: string
-      description: An implemented acquirer
-      enum:
-        - NGenius
-
     BaseAcquirer:
       type: object
       required:
@@ -2075,7 +2135,7 @@ components:
         acquirerMid:
           type: string
         acquirerCode:
-          $ref: '#/components/schemas/AcquirerCode'
+          type: string
         acquirerConfig:
           type: string
         currencyList:
