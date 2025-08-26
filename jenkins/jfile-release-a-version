@@ -151,26 +151,24 @@ pipeline {
         stage('Merge - Soft') {
             when { expression { params.RELEASE_ACTION == 'merge (soft)' } }
             steps {
-                withCredentials([string(credentialsId: 'GH_TOKEN', variable: 'GH_TOKEN')]) {
-                    script {
-                        def reposToMerge = readJSON text: env.REPOS_TO_MERGE
-                        reposToMerge.each { repoName ->
-                            echo "Merging ${params.SOURCE_BRANCH} into ${params.TARGET_BRANCH} in ${repoName}"
-                            def mergeSuccessful = (sh(
-                                script: """
-                                    gh api -X POST /repos/NPGW/${repoName}/merges \
-                                        -f base=${params.TARGET_BRANCH} \
-                                        -f head=${params.SOURCE_BRANCH} \
-                                        -f commit_message="Automated: Merge ${params.SOURCE_BRANCH} into ${params.TARGET_BRANCH}"
-                                """,
-                                returnStatus: true
-                            ) == 0)
-                            if (!mergeSuccessful) {
-                                error "Merge failed possibly due to conflicts for repo ${repoName}"
-                            }
+                script {
+                    def reposToMerge = readJSON text: env.REPOS_TO_MERGE
+                    reposToMerge.each { repoName ->
+                        echo "Merging ${params.SOURCE_BRANCH} into ${params.TARGET_BRANCH} in ${repoName}"
+                        def mergeSuccessful = (sh(
+                            script: """
+                                gh api -X POST /repos/NPGW/${repoName}/merges \
+                                    -f base=${params.TARGET_BRANCH} \
+                                    -f head=${params.SOURCE_BRANCH} \
+                                    -f commit_message="Automated: Merge ${params.SOURCE_BRANCH} into ${params.TARGET_BRANCH}"
+                            """,
+                            returnStatus: true
+                        ) == 0)
+                        if (!mergeSuccessful) {
+                            error "Merge failed possibly due to conflicts for repo ${repoName}"
                         }
-                        echo "Merged ${params.SOURCE_BRANCH} into ${params.TARGET_BRANCH} for existing source repos"
-                        }
+                    }
+                    echo "Merged ${params.SOURCE_BRANCH} into ${params.TARGET_BRANCH} for existing source repos"
                     }
                 }
             }
