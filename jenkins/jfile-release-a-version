@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     if (!params.SOURCE_BRANCH?.trim() || !params.TARGET_BRANCH?.trim()) {
-                        error "SOURCE_BRANCH and TARGET_BRANCH fields cannot be empty.
+                        error "SOURCE_BRANCH and TARGET_BRANCH fields cannot be empty."
                     }
                 }
             }
@@ -155,7 +155,7 @@ pipeline {
                     script {
                         def reposToMerge = readJSON text: env.REPOS_TO_MERGE
                         reposToMerge.each { repoName ->
-                            echo "Merging ${params.SOURCE_BRANCH} into ${params.TARGET_BRANCH} in ${repo.repoName}"
+                            echo "Merging ${params.SOURCE_BRANCH} into ${params.TARGET_BRANCH} in ${repoName}"
                             def mergeSuccessful = (sh(
                                 script: """
                                     gh api -X POST /repos/NPGW/${repoName}/merges \
@@ -166,7 +166,7 @@ pipeline {
                                 returnStatus: true
                             ) == 0)
                             if (!mergeSuccessful) {
-                                error "Merge failed possibly due to conflicts for repo ${repo.repoName}"
+                                error "Merge failed possibly due to conflicts for repo ${repoName}"
                             }
                         }
                         echo "Merged ${params.SOURCE_BRANCH} into ${params.TARGET_BRANCH} for existing source repos"
