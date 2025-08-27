@@ -55,9 +55,6 @@ pipeline {
                 script {
                     echo "[DEBUG] Repo permissions for rename"
                     def repos  = readJSON file: env.REPO_FILE
-                    repos.each { r ->
-                      sh "gh api /repos/NPGW/${r.repoName} --jq '{name: .name, permissions: .permissions, role: .role_name, default_branch: .default_branch}'"
-                    }
 
                     repos.each { repo ->
                         echo "Validating target branch '${params.TARGET_BRANCH}' doesn't exist"
@@ -143,9 +140,10 @@ pipeline {
                     def repos = readJSON file: env.REPO_FILE
                     repos.each { repo ->
                         echo "Renaming from '${params.SOURCE_BRANCH}' to '${params.TARGET_BRANCH}' in ${repo.repoName}"
+                        def srcEncoded = java.net.URLEncoder.encode(params.SOURCE_BRANCH, 'UTF-8')
                         sh """
                             set -euo pipefail
-                            gh api -X PATCH /repos/NPGW/${repo.repoName}/branches/${java.net.URLEncoder.encode(params.SOURCE_BRANCH, 'UTF-8')}/rename \
+                            gh api -X PATCH "/repos/NPGW/${repo.repoName}/branches/${srcEncoded}/rename" \
                                 -f new_name="${params.TARGET_BRANCH}"
                         """
                     }
