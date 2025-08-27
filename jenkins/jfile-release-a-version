@@ -33,11 +33,11 @@ pipeline {
                     def shaMap = [:]
 
                     repos.each { repo ->
-                        echo "Validating target branch ${params.TARGET_BRANCH} doesn't exist"
+                        echo "Validating target branch ${params.TARGET_BRANCH} doesn't exist for repo.repoName"
                         if (branchValidator.branchExists(repo.repoName, params.TARGET_BRANCH)) {
                             error "Branch '${params.TARGET_BRANCH}' already exists in ${repo.repoName}"
                         }
-                        echo "Getting SHA if ${params.SOURCE_BRANCH} source exists"
+                        echo "Getting SHA if ${params.SOURCE_BRANCH} source exists in repo.repoName"
                         def sha = branchValidator.returnShaIfBranchExists(repo.repoName, params.SOURCE_BRANCH)
                         if (!sha) {
                             error "Source branch '${params.SOURCE_BRANCH}' not found in ${repo.repoName}"
@@ -210,12 +210,12 @@ pipeline {
         }
         success {
             script {
-                slackSend(channel: '#npgw-notification-jenkins', message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
+                //slackSend(channel: '#npgw-notification-jenkins', message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
             }
         }
         failure {
             script {
-                slackSend(channel: '#npgw-notification-jenkins', message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
+                //slackSend(channel: '#npgw-notification-jenkins', message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
             }
         }
     }
