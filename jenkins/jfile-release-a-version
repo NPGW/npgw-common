@@ -1,4 +1,4 @@
-@Library('npgw-lib@create-release-a-version') _
+@Library('npgw-lib') _
 
 pipeline {
     agent { label 'build-node' }
@@ -202,46 +202,6 @@ pipeline {
                     echo "Merged '${params.SOURCE_BRANCH}' into '${params.TARGET_BRANCH}' for all repos."
                 }
             }
-        }
-
-        stage('Cleanup test branches') {
-          steps {
-            script {
-              def repos = readJSON file: env.REPO_FILE
-              def branches = [params.SOURCE_BRANCH, params.TARGET_BRANCH].findAll { it?.trim() }
-
-              if (!branches) {
-                echo "No branch names provided; skipping cleanup"
-                return
-              }
-
-              repos.each { repo ->
-                branches.each { br ->
-                  echo "Checking '${br}' in ${repo.repoName}"
-                  def exists = (sh(
-                    script: """gh api --silent "/repos/NPGW/${repo.repoName}/git/ref/heads/${br}" """,
-                    returnStatus: true
-                  ) == 0)
-
-                  if (!exists) {
-                    echo "Branch '${br}' not found in ${repo.repoName}; skipping"
-                    return
-                  }
-
-                  echo "Deleting '${br}' in ${repo.repoName}'"
-                  def rc = sh(
-                    script: """gh api -X DELETE "/repos/NPGW/${repo.repoName}/git/refs/heads/${br}" """,
-                    returnStatus: true
-                  )
-                  if (rc == 0) {
-                    echo "Deleted '${br}' in ${repo.repoName}"
-                  } else {
-                    echo "Could not delete '${br}' in ${repo.repoName} (likely protected)"
-                  }
-                }
-              }
-            }
-          }
         }
     }
 
