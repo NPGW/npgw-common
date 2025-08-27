@@ -139,16 +139,23 @@ pipeline {
                     def repos = readJSON file: env.REPO_FILE
                     repos.each { repo ->
 
+                        echo "[DEBUG] GET branch visibility check"
+                        sh """
+                          set -euo pipefail
+                          gh api "/repos/NPGW/${repo.repoName}/branches/${params.SOURCE_BRANCH}" --jq .name
+                        """
+                        echo "[DEBUG] GHES version header (blank means dotcom)"
+                        sh 'gh api -i /meta | tr -d "\\r" | grep -i "^X-GitHub-Enterprise-Version:" || true'
+
+
                         echo "Renaming from '${params.SOURCE_BRANCH}' to '${params.TARGET_BRANCH}' in ${repo.repoName}"
                         def srcEncoded = java.net.URLEncoder.encode(params.SOURCE_BRANCH, 'UTF-8')
                         echo "Encoded branch name: ${srcEncoded}"
                         sh """
                             set -euo pipefail
-                            gh api -X PATCH \\
-                              -H 'Accept: application/vnd.github+json' \\
-                              -H 'Content-Type: application/json' \\
-                              /repos/NPGW/${repo.repoName}/branches/${java.net.URLEncoder.encode(params.SOURCE_BRANCH, 'UTF-8')}/rename \\
-                              --input - <<< '{\"new_name\": \"${params.TARGET_BRANCH}\"}'
+                            gh api -X PATCH -H "Accept: application/vnd.github+json" \
+                                "/repos/NPGW/${repo.repoName}/branches/${srcEncoded}/rename" \
+                                -f new_name="${params.TARGET_BRANCH}"
                         """
                     }
                 }
