@@ -914,9 +914,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: string
+                $ref: '#/components/schemas/CodeList'
           description: Array of acquirers codes
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -1413,9 +1411,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: string
+                $ref: '#/components/schemas/CodeList'
           description: Array of controls codes
         '400':
           $ref: '../api-merchant.yaml#/components/responses/BadRequest'
@@ -2251,6 +2247,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MerchantControlItem'
+
+    CodeList:
+      type: object
+      properties:
+        codes:
+          type: array
+          items:
+            type: string
 
     TransactionHistory:
       allOf:
