@@ -144,9 +144,11 @@ pipeline {
                         echo "Encoded branch name: ${srcEncoded}"
                         sh """
                             set -euo pipefail
-                            gh api -X PATCH -H "Accept: application/vnd.github+json" \
-                                "/repos/NPGW/${repo.repoName}/branches/${srcEncoded}/rename" \
-                                -f new_name="${params.TARGET_BRANCH}"
+                            gh api -X PATCH \\
+                              -H 'Accept: application/vnd.github+json' \\
+                              -H 'Content-Type: application/json' \\
+                              /repos/NPGW/${repo.repoName}/branches/${java.net.URLEncoder.encode(params.SOURCE_BRANCH, 'UTF-8')}/rename \\
+                              --input - <<< '{\"new_name\": \"${params.TARGET_BRANCH}\"}'
                         """
                     }
                 }
