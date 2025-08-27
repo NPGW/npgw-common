@@ -53,7 +53,6 @@ pipeline {
             when { expression { params.RELEASE_ACTION == 'rename' } }
             steps {
                 script {
-                    echo "[DEBUG] Repo permissions for rename"
                     def repos  = readJSON file: env.REPO_FILE
 
                     repos.each { repo ->
@@ -140,19 +139,13 @@ pipeline {
                     def repos = readJSON file: env.REPO_FILE
                     repos.each { repo ->
 
-                        echo "Checking if branch '${params.SOURCE_BRANCH}' is protected in ${repo.repoName}"
-                        def protectionStatus = sh(
-                            script: "gh api /repos/NPGW/${repo.repoName}/branches/${java.net.URLEncoder.encode(params.SOURCE_BRANCH, 'UTF-8')}/protection || echo 'Not protected or error'",
-                            returnStdout: true
-                        ).trim()
-                        echo "Protection status response: ${protectionStatus}"
-
                         echo "Renaming from '${params.SOURCE_BRANCH}' to '${params.TARGET_BRANCH}' in ${repo.repoName}"
                         def srcEncoded = java.net.URLEncoder.encode(params.SOURCE_BRANCH, 'UTF-8')
                         echo "Encoded branch name: ${srcEncoded}"
                         sh """
                             set -euo pipefail
-                            gh api -X PATCH "/repos/NPGW/${repo.repoName}/branches/${srcEncoded}/rename" \
+                            gh api -X PATCH -H "Accept: application/vnd.github+json" \
+                                "/repos/NPGW/${repo.repoName}/branches/${srcEncoded}/rename" \
                                 -f new_name="${params.TARGET_BRANCH}"
                         """
                     }
