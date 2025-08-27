@@ -1,4 +1,4 @@
-@Library('npgw-lib@create-release-a-version') _
+@Library('npgw-lib') _
 
 pipeline {
     agent { label 'build-node' }
@@ -138,7 +138,6 @@ pipeline {
                 script {
                     def repos = readJSON file: env.REPO_FILE
                     repos.each { repo ->
-
                         echo "Renaming from '${params.SOURCE_BRANCH}' to '${params.TARGET_BRANCH}' in ${repo.repoName}"
                         def srcEncoded = java.net.URLEncoder.encode(params.SOURCE_BRANCH, 'UTF-8')
                         echo "Encoded branch name: ${srcEncoded}"
@@ -212,15 +211,15 @@ pipeline {
                 cleanWs()
             }
         }
-        //success {
-            //script {
-                //slackSend(channel: '#npgw-notification-jenkins', message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
-            //}
-        //}
-        //failure {
-            //script {
-                //slackSend(channel: '#npgw-notification-jenkins', message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
-            //}
-        //}
+        success {
+            script {
+                slackSend(channel: '#npgw-notification-jenkins', message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
+            }
+        }
+        failure {
+            script {
+                slackSend(channel: '#npgw-notification-jenkins', message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
+            }
+        }
     }
 }
