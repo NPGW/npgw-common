@@ -54,11 +54,10 @@ pipeline {
             steps {
                 script {
                     echo "[DEBUG] Repo permissions for rename"
-                    def repos = readJSON file: env.REPO_FILE
+                    def repos  = readJSON file: env.REPO_FILE
                     repos.each { r ->
                       sh "gh api /repos/NPGW/${r.repoName} --jq '{name: .name, permissions: .permissions, role: .role_name, default_branch: .default_branch}'"
                     }
-                    def repos  = readJSON file: env.REPO_FILE
 
                     repos.each { repo ->
                         echo "Validating target branch '${params.TARGET_BRANCH}' doesn't exist"
