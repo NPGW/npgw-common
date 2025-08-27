@@ -1,0 +1,225 @@
+@Library('npgw-lib') _
+
+pipeline {
+    agent { label 'build-node' }
+
+    parameters {
+        choice(name: 'RELEASE_ACTION', choices: ['create', 'rename', 'merge (soft)', 'merge (hard)'], description: 'Select a flow')
+        string(name: 'SOURCE_BRANCH', description: 'Source branch name')
+        string(name: 'TARGET_BRANCH', description: 'Target branch name')
+    }
+
+    environment {
+        GH_TOKEN = credentials('GH_TOKEN')
+        REPO_FILE = 'pipeline/REPO_LIST.json'
+    }
+
+    stages {
+        stage('Validate Branches are Provided') {
+            steps {
+                script {
+                    if (!params.SOURCE_BRANCH?.trim() || !params.TARGET_BRANCH?.trim()) {
+                        error "SOURCE_BRANCH and TARGET_BRANCH fields cannot be empty."
+                    }
+                }
+            }
+        }
+
+        stage('Validate Create Action and Prepare SHA Map') {
+            when { expression { params.RELEASE_ACTION == 'create' } }
+            steps {
+                script {
+                    def repos  = readJSON file: env.REPO_FILE
+                    def shaMap = [:]
+
+                    repos.each { repo ->
+                        echo "Validating target branch ${params.TARGET_BRANCH} doesn't exist for repo.repoName"
+                        if (branchValidator.branchExists(repo.repoName, params.TARGET_BRANCH)) {
+                            error "Branch '${params.TARGET_BRANCH}' already exists in ${repo.repoName}"
+                        }
+                        echo "Getting SHA if ${params.SOURCE_BRANCH} source exists in repo.repoName"
+                        def sha = branchValidator.returnShaIfBranchExists(repo.repoName, params.SOURCE_BRANCH)
+                        if (!sha) {
+                            error "Source branch '${params.SOURCE_BRANCH}' not found in ${repo.repoName}"
+                        }
+                        shaMap[repo.repoName] = sha
+                    }
+                    env.SHA_MAP = groovy.json.JsonOutput.toJson(shaMap)
+                }
+            }
+        }
+
+        stage('Validate Rename Action') {
+            when { expression { params.RELEASE_ACTION == 'rename' } }
+            steps {
+                script {
+                    def repos  = readJSON file: env.REPO_FILE
+
+                    repos.each { repo ->
+                        echo "Validating target branch '${params.TARGET_BRANCH}' doesn't exist"
+                        if (branchValidator.branchExists(repo.repoName, params.TARGET_BRANCH)) {
+                            error "Branch '${params.TARGET_BRANCH}' already exists in ${repo.repoName}"
+                        }
+                        echo "Validating source branch '${params.SOURCE_BRANCH}' exists"
+                        if (!branchValidator.branchExists(repo.repoName, params.SOURCE_BRANCH)) {
+                            error "Source branch '${params.SOURCE_BRANCH}' not found in ${repo.repoName}"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Validate Merge Soft Action') {
+            when { expression { params.RELEASE_ACTION == 'merge (soft)' } }
+            steps {
+                script {
+                    def repos  = readJSON file: env.REPO_FILE
+                    def reposToMerge = []
+
+                    repos.each { repo ->
+                        echo "Validating target branch '${params.TARGET_BRANCH}' exists in ${repo.repoName}"
+                        if (!branchValidator.branchExists(repo.repoName, params.TARGET_BRANCH)) {
+                            error "Branch '${params.TARGET_BRANCH}' doesn't exist in ${repo.repoName}"
+                        } else if (branchValidator.branchExists(repo.repoName, params.SOURCE_BRANCH)) {
+                            reposToMerge << repo.repoName
+                        } else {
+                            echo "Source branch '${params.SOURCE_BRANCH}' not found in ${repo.repoName}, skipping"
+                        }
+                    }
+                    if (reposToMerge.isEmpty()) {
+                        error "No repositories eligible for soft merge. Exiting pipeline."
+                    }
+                    env.REPOS_TO_MERGE = groovy.json.JsonOutput.toJson(reposToMerge)
+                }
+            }
+        }
+
+        stage('Validate Merge Hard Action') {
+            when { expression { params.RELEASE_ACTION == 'merge (hard)' } }
+            steps {
+                script {
+                    def repos  = readJSON file: env.REPO_FILE
+
+                    repos.each { repo ->
+                        echo "Validating target branch '${params.TARGET_BRANCH}' exists"
+                        if (!branchValidator.branchExists(repo.repoName, params.TARGET_BRANCH)) {
+                            error "Branch '${params.TARGET_BRANCH}' doesn't exist in ${repo.repoName}"
+                        }
+                        echo "Validating source branch '${params.SOURCE_BRANCH}' exists"
+                        if (!branchValidator.branchExists(repo.repoName, params.SOURCE_BRANCH)) {
+                            error "Source branch '${params.SOURCE_BRANCH}' not found in ${repo.repoName}"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Create a branch') {
+            when { expression { params.RELEASE_ACTION == 'create' } }
+            steps {
+                script {
+                    def shaMap = readJSON text: env.SHA_MAP
+                    shaMap.each { repoName, sha ->
+                        echo "Creating '${params.TARGET_BRANCH}' from '${params.SOURCE_BRANCH}' in ${repoName} from ${sha}"
+                        sh """
+                            set -euo pipefail
+                            gh api -X POST /repos/NPGW/${repoName}/git/refs \\
+                                -f ref="refs/heads/${params.TARGET_BRANCH}" \\
+                                -f sha="${sha}"
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Rename a branch') {
+            when { expression { params.RELEASE_ACTION == 'rename' } }
+            steps {
+                script {
+                    def repos = readJSON file: env.REPO_FILE
+                    repos.each { repo ->
+                        echo "Renaming from '${params.SOURCE_BRANCH}' to '${params.TARGET_BRANCH}' in ${repo.repoName}"
+                        def srcEncoded = java.net.URLEncoder.encode(params.SOURCE_BRANCH, 'UTF-8')
+                        echo "Encoded branch name: ${srcEncoded}"
+                        sh """
+                            set -euo pipefail
+                            gh api -X POST -H "Accept: application/vnd.github+json" \
+                                "/repos/NPGW/${repo.repoName}/branches/${srcEncoded}/rename" \
+                                -f new_name="${params.TARGET_BRANCH}"
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Merge - Soft') {
+            when { expression { params.RELEASE_ACTION == 'merge (soft)' } }
+            steps {
+                script {
+                    def reposToMerge = readJSON text: env.REPOS_TO_MERGE
+                    reposToMerge.each { repoName ->
+                        echo "Merging '${params.SOURCE_BRANCH}' into '${params.TARGET_BRANCH}' in ${repoName}"
+                        def mergeSuccessful = (sh(
+                            script: """
+                                set -euo pipefail
+                                gh api -X POST /repos/NPGW/${repoName}/merges \
+                                    -f base="${params.TARGET_BRANCH}" \
+                                    -f head="${params.SOURCE_BRANCH}" \
+                                    -f commit_message="Automated: Merge ${params.SOURCE_BRANCH} into ${params.TARGET_BRANCH}"
+                            """,
+                            returnStatus: true
+                        ) == 0)
+                        if (!mergeSuccessful) {
+                            error "Merge failed possibly due to conflicts for repo ${repoName}"
+                        }
+                    }
+                    echo "Merged '${params.SOURCE_BRANCH}' into '${params.TARGET_BRANCH}' for existing source repos"
+                }
+            }
+        }
+
+        stage('Merge - Hard') {
+            when { expression { params.RELEASE_ACTION == 'merge (hard)' } }
+            steps {
+                script {
+                    def repos = readJSON file: env.REPO_FILE
+                    repos.each { repo ->
+                        echo "Merging '${params.SOURCE_BRANCH}' into '${params.TARGET_BRANCH}' in ${repo.repoName}"
+                        def mergeSuccessful = (sh(
+                            script: """
+                                set -euo pipefail
+                                gh api -X POST /repos/NPGW/${repo.repoName}/merges \
+                                    -f base="${params.TARGET_BRANCH}" \
+                                    -f head="${params.SOURCE_BRANCH}" \
+                                    -f commit_message="Automated: Merge ${params.SOURCE_BRANCH} into ${params.TARGET_BRANCH}"
+                            """,
+                            returnStatus:true
+                        ) == 0)
+                        if (!mergeSuccessful) {
+                            error "Merge failed possibly due to conflicts for repo ${repo.repoName}"
+                        }
+                    }
+                    echo "Merged '${params.SOURCE_BRANCH}' into '${params.TARGET_BRANCH}' for all repos."
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                cleanWs()
+            }
+        }
+        success {
+            script {
+                slackSend(channel: '#npgw-notification-jenkins', message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
+            }
+        }
+        failure {
+            script {
+                slackSend(channel: '#npgw-notification-jenkins', message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
+            }
+        }
+    }
+}
