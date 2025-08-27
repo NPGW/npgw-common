@@ -53,14 +53,11 @@ pipeline {
             when { expression { params.RELEASE_ACTION == 'rename' } }
             steps {
                 script {
-                    echo "[DEBUG] GH token identity"
-                          sh 'gh api /user --jq .login'
-
-                          echo "[DEBUG] GH token scopes (PAT shows X-OAuth-Scopes)"
-                          sh '''
-                            set -euo pipefail
-                            gh api -i /user | tr -d '\\r' | awk 'BEGIN{IGNORECASE=1} /^X-OAuth-Scopes:/ {sub(/^X-OAuth-Scopes: /,""); print "X-OAuth-Scopes:", $0}'
-                          '''
+                    echo "[DEBUG] Repo permissions for rename"
+                    def repos = readJSON file: env.REPO_FILE
+                    repos.each { r ->
+                      sh "gh api /repos/NPGW/${r.repoName} --jq '{name: .name, permissions: .permissions, role: .role_name, default_branch: .default_branch}'"
+                    }
                     def repos  = readJSON file: env.REPO_FILE
 
                     repos.each { repo ->
