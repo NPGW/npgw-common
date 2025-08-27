@@ -1,4 +1,4 @@
-@Library('npgw-lib'@create-release-a-version) _
+@Library('npgw-lib@create-release-a-version') _
 
 pipeline {
     agent { label 'build-node' }
