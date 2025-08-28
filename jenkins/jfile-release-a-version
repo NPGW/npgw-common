@@ -259,15 +259,15 @@ pipeline {
                 cleanWs()
             }
         }
-        //success {
-            //script {
-                //slackSend(channel: '#npgw-notification-jenkins', message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
-            //}
-        //}
-       // failure {
-           // script {
-              //  slackSend(channel: '#npgw-notification-jenkins', message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
-            //}
-        //}
+        success {
+            script {
+                slackSend(channel: '#npgw-notification-jenkins', message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
+            }
+        }
+        failure {
+            script {
+                slackSend(channel: '#npgw-notification-jenkins', message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
+            }
+        }
     }
 }
