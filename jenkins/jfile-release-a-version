@@ -124,12 +124,19 @@ pipeline {
                           }
 
                     def repos  = readJSON file: env.REPO_FILE
+                    def reposToDelete = []
                     repos.each { repo ->
                         echo "Validating target branch '${params.TARGET_BRANCH}' exists"
-                        if (!branchValidator.branchExists(repo.repoName, params.TARGET_BRANCH)) {
-                            error "Branch '${params.TARGET_BRANCH}' doesn't exist in ${repo.repoName}"
+                        if (branchValidator.branchExists(repo.repoName, params.TARGET_BRANCH)) {
+                            reposToDelete << repo.repoName
+                        } else {
+                            echo "Branch '${params.TARGET_BRANCH}' doesn't exist in ${repo.repoName}, skipping"
                         }
                     }
+                    if (reposToDelete.isEmpty()) {
+                        error "No branches to delete found"
+                    }
+                    env.REPOS_TO_DELETE = groovy.json.JsonOutput.toJson(reposToDelete)
                 }
             }
         }
@@ -227,12 +234,13 @@ pipeline {
             steps {
                 script {
                     def repos = readJSON file: env.REPO_FILE
-                    repos.each { repo ->
-                        echo "Deleting '${params.TARGET_BRANCH}' in ${repo.repoName}"
+                    def reposToDelete = readJSON text: env.REPOS_TO_DELETE
+                    reposToDelete.each { repoName ->
+                        echo "Deleting '${params.TARGET_BRANCH}' in ${repoName}"
                         def deleted = (sh(
                             script: """
                                 set -euo pipefail
-                                gh api -X DELETE "/repos/NPGW/${repo.repoName}/git/refs/heads/${params.TARGET_BRANCH}"
+                                gh api -X DELETE "/repos/NPGW/${repoName}/git/refs/heads/${params.TARGET_BRANCH}"
                             """,
                             returnStatus: true
                         ) == 0)
