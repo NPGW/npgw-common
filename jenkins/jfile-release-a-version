@@ -4,7 +4,7 @@ pipeline {
     agent { label 'build-node' }
 
     parameters {
-        choice(name: 'RELEASE_ACTION', choices: ['create', 'rename', 'merge (soft)', 'merge (hard)'], description: 'Select a flow')
+        choice(name: 'RELEASE_ACTION', choices: ['create', 'rename', 'merge (soft)', 'merge (hard)', 'delete'], description: 'Select a flow. If delete, type none into SOURCE_BRANCH field')
         string(name: 'SOURCE_BRANCH', description: 'Source branch name')
         string(name: 'TARGET_BRANCH', description: 'Target branch name')
     }
@@ -114,6 +114,33 @@ pipeline {
             }
         }
 
+        stage('Validate Delete') {
+            when { expression { params.RELEASE_ACTION == 'delete' } }
+            steps {
+                script {
+                    echo "Validating SOURCE_BRANCH is 'none'"
+                    if (params.SOURCE_BRANCH != 'none') {
+                        error "SOURCE_BRANCH must be 'none' for delete action, got '${params.SOURCE_BRANCH}'"
+                    }
+
+                    def repos  = readJSON file: env.REPO_FILE
+                    def reposToDelete = []
+                    repos.each { repo ->
+                        echo "Validating target branch '${params.TARGET_BRANCH}' exists"
+                        if (branchValidator.branchExists(repo.repoName, params.TARGET_BRANCH)) {
+                            reposToDelete << repo.repoName
+                        } else {
+                            echo "Branch '${params.TARGET_BRANCH}' doesn't exist in ${repo.repoName}, skipping"
+                        }
+                    }
+                    if (reposToDelete.isEmpty()) {
+                        error "No branches to delete found"
+                    }
+                    env.REPOS_TO_DELETE = groovy.json.JsonOutput.toJson(reposToDelete)
+                }
+            }
+        }
+
         stage('Create a branch') {
             when { expression { params.RELEASE_ACTION == 'create' } }
             steps {
@@ -139,12 +166,10 @@ pipeline {
                     def repos = readJSON file: env.REPO_FILE
                     repos.each { repo ->
                         echo "Renaming from '${params.SOURCE_BRANCH}' to '${params.TARGET_BRANCH}' in ${repo.repoName}"
-                        def srcEncoded = java.net.URLEncoder.encode(params.SOURCE_BRANCH, 'UTF-8')
-                        echo "Encoded branch name: ${srcEncoded}"
                         sh """
                             set -euo pipefail
                             gh api -X POST -H "Accept: application/vnd.github+json" \
-                                "/repos/NPGW/${repo.repoName}/branches/${srcEncoded}/rename" \
+                                "/repos/NPGW/${repo.repoName}/branches/${params.SOURCE_BRANCH}/rename" \
                                 -f new_name="${params.TARGET_BRANCH}"
                         """
                     }
@@ -200,6 +225,29 @@ pipeline {
                         }
                     }
                     echo "Merged '${params.SOURCE_BRANCH}' into '${params.TARGET_BRANCH}' for all repos."
+                }
+            }
+        }
+
+        stage('Delete a branch') {
+            when { expression { params.RELEASE_ACTION == 'delete' } }
+            steps {
+                script {
+                    def repos = readJSON file: env.REPO_FILE
+                    def reposToDelete = readJSON text: env.REPOS_TO_DELETE
+                    reposToDelete.each { repoName ->
+                        echo "Deleting '${params.TARGET_BRANCH}' in ${repoName}"
+                        def deleted = (sh(
+                            script: """
+                                set -euo pipefail
+                                gh api -X DELETE "/repos/NPGW/${repoName}/git/refs/heads/${params.TARGET_BRANCH}"
+                            """,
+                            returnStatus: true
+                        ) == 0)
+                        if (!deleted) {
+                            error "Can't delete ${params.TARGET_BRANCH}"
+                        }
+                    }
                 }
             }
         }
