@@ -159,7 +159,6 @@ pipeline {
                     def repos = readJSON file: env.REPO_FILE
                     repos.each { repo ->
                         echo "Renaming from '${params.SOURCE_BRANCH}' to '${params.TARGET_BRANCH}' in ${repo.repoName}"
-                        //def srcEncoded = java.net.URLEncoder.encode(params.SOURCE_BRANCH, 'UTF-8')
                         sh """
                             set -euo pipefail
                             gh api -X POST -H "Accept: application/vnd.github+json" \
@@ -231,7 +230,7 @@ pipeline {
                     repos.each { repo ->
                         echo "Deleting '${params.TARGET_BRANCH}' in ${repo.repoName}"
                         def deleted = (sh(
-                            """
+                            script: """
                                 set -euo pipefail
                                 gh api -X DELETE "/repos/NPGW/${repo.repoName}/git/refs/heads/${params.TARGET_BRANCH}"
                             """,
@@ -252,15 +251,15 @@ pipeline {
                 cleanWs()
             }
         }
-        success {
-            script {
-                slackSend(channel: '#npgw-notification-jenkins', message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
-            }
-        }
-        failure {
-            script {
-                slackSend(channel: '#npgw-notification-jenkins', message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
-            }
-        }
+        //success {
+            //script {
+                //slackSend(channel: '#npgw-notification-jenkins', message: ":white_check_mark: *SUCCESS*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
+            //}
+        //}
+       // failure {
+           // script {
+              //  slackSend(channel: '#npgw-notification-jenkins', message: ":x: *FAILURE*: `${env.JOB_NAME}` <${env.BUILD_URL}|#${env.BUILD_NUMBER}>")
+            //}
+        //}
     }
 }
