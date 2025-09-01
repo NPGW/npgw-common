@@ -667,7 +667,7 @@ components:
       type: string
       description: |
         PENDING - submitted for processing.
-        CAPTURE - Capture payment opertaion confirmed.
+        CAPTURE - Capture payment operation confirmed.
         REFUND - Refund payment operation confirmed.
         FAILED - Processing failed; the payment operation was not successful, please verify the status of a Transaction before resubmitting to ensure the operation can be completed.
       enum:
