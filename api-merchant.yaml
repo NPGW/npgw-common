@@ -692,6 +692,7 @@ components:
               $ref: '#/components/schemas/OperationStatus'
             timestamp:
               type: string
+
     BaseTransaction:
       allOf:
         - $ref: '#/components/schemas/Amount'
