@@ -690,6 +690,8 @@ components:
               type: string
             status:
               $ref: '#/components/schemas/OperationStatus'
+            timestamp:
+              type: string
 
     BaseTransaction:
       allOf:
