@@ -1,7 +1,7 @@
 openapi: 3.0.3
 
 info:
-  title: NPGW Merchant API
+  title: Merchant API
   version: DEV
 
 externalDocs:
@@ -250,7 +250,7 @@ paths:
     post:
       tags:
         - payment operations
-      summary: Refund a part captured Transaction by Gateway Transaction ID
+      summary: Refund against a successful Capture within a Transaction by Gateway Operation ID
       description: Enables a refund of partially captured Transactions, again in full or part.
       operationId: refundCaptureTransaction
       security:
@@ -289,7 +289,7 @@ paths:
       tags:
         - authentication
       summary: Create a new or refresh an expired Bearer Token.
-      description: This token allows you to execute operations on the NPGW Gateway APIs with authority, and whilst a single token will expire after 15 minutes, you can generate one at any time.
+      description: This token allows you to execute operations on the Gateway APIs with authority, and whilst a single token will expire after 15 minutes, you can generate one at any time.
       operationId: getToken
       requestBody:
         content:
@@ -522,7 +522,7 @@ components:
       properties:
         externalCustomerId:
           type: string
-          description: Unique id for each customer in the merchant's system.
+          description: Unique ID for each customer in the merchant's system.
           example: 32556
           maxLength: 40
           pattern: '^[a-zA-Z0-9\-]*$'
@@ -706,11 +706,11 @@ components:
           properties:
             merchantId:
               type: string
-              description: Unique merchant id in the NPGW system.
+              description: Unique Merchant ID in the Gateway.
               example: company786
             externalTransactionId:
               type: string
-              description: Unique transaction id in merchant's system.
+              description: Unique Transaction ID in merchant's system.
               example: REF00L00000
               minLength: 1
               maxLength: 30
@@ -719,7 +719,7 @@ components:
               $ref: '#/components/schemas/TransactionType'
             notificationUrl:
               type: string
-              description: The merchant HTTPS Endpoint to be used for server-to-server webhooks. Please note that the Gateway doesn’t guarantee the delivery of notifications in the order that they’re generated, and as such ensure your event destination isn't dependent on receiving events in a specific order.
+              description: The merchant HTTPS Endpoint to be used to deliver server-to-server notifications. Please note that the Gateway doesn’t guarantee the delivery of notifications in the order that they’re generated, and as such ensure your event destination isn't dependent on receiving events in a specific order.
               example: https://example.com/notification_endpoint
             redirectUrlSuccess:
               type: string
@@ -786,7 +786,7 @@ components:
           properties:
             transactionId:
               type: string
-              description: Unique transaction id in the NPGW system.
+              description: Unique Transaction ID in the Gateway.
               example: id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g
             status:
               $ref: '#/components/schemas/TransactionStatus'
