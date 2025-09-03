@@ -251,7 +251,7 @@ paths:
       tags:
         - payment operations
       summary: Refund against a successful Capture within a Transaction by Gateway Operation ID
-      description: Enables a refund of partially captured Transactions, again in full or part.
+      description: Enables a refund of a capture Operation.
       operationId: refundCaptureTransaction
       security:
         - apiKeyAuth2: []
