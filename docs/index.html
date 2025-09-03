@@ -1011,67 +1011,78 @@
             </ul>
         </div>
         <div class="data_block">
-            <h1 class="c6" id="API_Reference"><span>API Reference</span></h1>
-            <p class="c5">
-                <span class="c1">
-                    The NPGW API is organized around the principles of REST. It has predictable resource-oriented URLs, accepts and returns JSON-encoded bodies and responses, all while using standard HTTP response codes &amp; authentication.
-                </span>
-            </p>
-           
-            <p class="c5">
-                <span class="c4">
-                    You can use the NPGW API via our Sandbox while completing your integration, which won&rsquo;t affect your live data or interact with the Acquiring networks. The domain and credentials you use to authenticate and
-                </span>
-                <span>submit yours </span><span class="c4">request determines whether </span><span>a payment </span><span class="c1">is processed via Production or Sandbox.</span>
-            </p>
-           
-            <p class="c5"><span class="c1">The NPGW API doesn&rsquo;t currently support bulk updates. You can work on only one object per request.</span></p>
-            
-            <h2 class="c6" id="Technical_Documentation"><span>Technical Documentation</span></h2>
-            <p class="c5"><span class="c1">Further detailed documentation for developers is available via the following links.</span></p>
-        
-            <ul class="c41 lst-kix_ksvcksyqiwbz-0 start">                
-                <li class="c5 c13 li-bullet-0">
-                    <a class="c4 underline" href="/docs/api/">Technical Documentation </a>
-                </li>
-                <li class="c5 c13 li-bullet-0">
-                    <a class="c4 underline" type="text/yaml" href="/docs/api/api.yaml">API Specification</a>
-                </li>
-            </ul>
-           
-            <h2 class="c6" id="Usage"><span>Usage</span></h2>
-            <p ><span class="c1">There are multiple ways you can explore the Merchant API:</span></p>
-            <ul class="c41 lst-kix_azv0bdsdg6gt-0 start">
-                <li class="c10 c13 li-bullet-0">
-                    <span class="c4">By using the classic Swagger toolset, upload the definition to the</span>
-                   
-                    <span class="c34 c4"><a class="c37" href="http://editor.swagger.io/">Swagger Editor</a></span>
-         
-                </li>
-                <li class="c10 c13 li-bullet-0">
-                    <span class="c4">By using</span>
-                    
-                    <span class="c34 c4"><a class="c37" href="https://www.getpostman.com/postman">Postman</a></span>
-                    <span class="c1">&nbsp;to import the API definition and create your personal collection of requests.</span>
-                </li>
-            </ul>
-            <hr style="page-break-before: always; display: none;" />
-            
-            <h1 class="c6" id="Authentication"><span class="c38 c0 c24">Authentication</span></h1>
-            <p class="c10">
-                <span class="c4">The NPGW API uses a </span><span class="c0 c24">Secret Token</span>                
-                <span class="c1">to authenticate requests. You can view and manage your tokens within your account.</span>
-            </p>
-            <p class="c10">
-                <span class="c4">Your </span><span class="c4 c22">Secret Token</span>
-                <span class="c1">&nbsp;carries many privileges, so be sure to keep it secure! Do not share your Token in publicly accessible areas such as GitHub, client-side code, and so forth.</span>
-            </p>
-            <p class="c10">
-                <span class="c4">All API requests must be made over</span>
+
+            <div class="flex flex-row">
+                <div class="text_block">
+                    <h1 class="c6" id="API_Reference"><span>API Reference</span></h1>
+                    <p class="c5">
+                        <span class="c1">
+                            The NPGW API is organized around the principles of REST. It has predictable resource-oriented URLs, accepts and returns JSON-encoded bodies and responses, all while using standard HTTP response codes &amp; authentication.
+                        </span>
+                    </p>
                 
-                <span class="c34 c4"><a class="c37" href="http://en.wikipedia.org/wiki/HTTP_Secure">HTTPS</a></span>
-                <span class="c1">. Calls made over plain HTTP will fail. API requests without authentication will also fail.</span>
-            </p>
+                    <p class="c5">
+                        <span class="c4">
+                            You can use the NPGW API via our Sandbox while completing your integration, which won&rsquo;t affect your live data or interact with the Acquiring networks. The domain and credentials you use to authenticate and
+                        </span>
+                        <span>submit yours </span><span class="c4">request determines whether </span><span>a payment </span><span class="c1">is processed via Production or Sandbox.</span>
+                    </p>
+                
+                    <p class="c5"><span class="c1">The NPGW API doesn&rsquo;t currently support bulk updates. You can work on only one object per request.</span></p>
+                    
+                    <h2 class="c6" id="Technical_Documentation"><span>Technical Documentation</span></h2>
+                    <p class="c5"><span class="c1">Further detailed documentation for developers is available via the following links.</span></p>
+                
+                    <ul class="c41 lst-kix_ksvcksyqiwbz-0 start">                
+                        <li class="c5 c13 li-bullet-0">
+                            <a class="c4 underline" href="/docs/api/">Technical Documentation </a>
+                        </li>
+                        <li class="c5 c13 li-bullet-0">
+                            <a class="c4 underline" type="text/yaml" href="/docs/api/api.yaml">API Specification</a>
+                        </li>
+                    </ul>
+                
+                    <h2 class="c6" id="Usage"><span>Usage</span></h2>
+                    <p ><span class="c1">There are multiple ways you can explore the Merchant API:</span></p>
+                    <ul class="c41 lst-kix_azv0bdsdg6gt-0 start">
+                        <li class="c10 c13 li-bullet-0">
+                            <span class="c4">By using the classic Swagger toolset, upload the definition to the</span>
+                        
+                            <span class="c34 c4"><a class="c37" href="http://editor.swagger.io/">Swagger Editor</a></span>
+                
+                        </li>
+                        <li class="c10 c13 li-bullet-0">
+                            <span class="c4">By using</span>
+                            
+                            <span class="c34 c4"><a class="c37" href="https://www.getpostman.com/postman">Postman</a></span>
+                            <span class="c1">&nbsp;to import the API definition and create your personal collection of requests.</span>
+                        </li>
+                    </ul>
+                    <hr style="page-break-before: always; display: none;" />
+                    
+                    <h1 class="c6" id="Authentication"><span class="c38 c0 c24">Authentication</span></h1>
+                    <p class="c10">
+                        <span class="c4">The NPGW API uses a </span><span class="c0 c24">Secret Token</span>                
+                        <span class="c1">to authenticate requests. You can view and manage your tokens within your account.</span>
+                    </p>
+                    <p class="c10">
+                        <span class="c4">Your </span><span class="c4 c22">Secret Token</span>
+                        <span class="c1">&nbsp;carries many privileges, so be sure to keep it secure! Do not share your Token in publicly accessible areas such as GitHub, client-side code, and so forth.</span>
+                    </p>
+                    <p class="c10">
+                        <span class="c4">All API requests must be made over</span>
+                        
+                        <span class="c34 c4"><a class="c37" href="http://en.wikipedia.org/wiki/HTTP_Secure">HTTPS</a></span>
+                        <span class="c1">. Calls made over plain HTTP will fail. API requests without authentication will also fail.</span>
+                    </p>
+                </div>
+                <div>
+
+                </div>
+            </div>
+
+
+            
             <hr style="page-break-before: always; display: none;" />
             
             <h1 class="c6" id="Environments"><span class="c38 c0 c24">Environments</span></h1>
@@ -1143,23 +1154,7 @@
                         <span class="c4">&nbsp;range indicate an error that failed given the information provided (e.g. a required parameter was omitted etc). Codes in the </span><span class="c14 c0 c24">5xx</span>
                         <span class="c1">&nbsp;range indicate an error with our servers (these are rare).</span>
                     </p>
-                    <p class="c29"><span class="c35 c0 c24">Attributes</span></p>
-                    <p class="c29">
-                        <span class="c0">error</span>
-                        <span class="c1">
-                            &nbsp; object<br />
-                            Provides granular detail of the error returned by the NPGW API.
-                        </span>
-                    </p>
-                    <p class="c10"><span class="c33 c4 c22">+Show child attributes</span></p>
-                    <p class="c10">
-                        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="c0">error.message</span>
-                        <span class="c1">
-                            &nbsp; string<br />
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plain text message with detail of the API, Issuer decline or Blocked payment error.
-                        </span>
-                    </p>
-                    <p class="c29 c12"><span class="c1 c23"></span></p>
+ 
                 </div>
                 <div class="table_block">
                     <table class="c18">
@@ -1463,7 +1458,7 @@
                         </tr>
                     </table>
                     
-                    <table class="c18">
+<!--                     <table class="c18">
                         <tr class="c17">
                             <td class="c8" colspan="1" rowspan="1">
                                 <p class="c2"><span class="c16 c0">PER REQUEST AUTHORIZATION</span></p>
@@ -1490,7 +1485,7 @@
                             
                             </td>
                         </tr>
-                    </table>
+                    </table> -->
                 </div>
             </div>
 
@@ -1892,7 +1887,10 @@
 
             
             <h2 class="c6" id="Payment_Operations"><span class="c19 c0">Payment Operations</span></h2>
-            <p class="c10">
+
+            <div class="flex flex-row">
+                <div class="text_block">
+                    <p class="c10">
                 <span>The NPGW API provides further </span><span class="c0">Management</span>
                 <span class="c1">
                     &nbsp;functions that can be used with previously processed Transactions in order to collect or return funds as necessary. The full Transaction response object is returned to confirm the status of each operation.
@@ -2045,7 +2043,7 @@
                 </tr>
                 <tr class="c17">
                     <td class="c11" colspan="1" rowspan="1">
-                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction/{transactionId}/refund/capture/{operationItemId}</span></p>
+                        <p class="c2"><span class="c14 c0 c24">POST</span><span class="c4 c14">&nbsp;</span><span class="c1"> /transaction/{transactionId}/refund/capture/{operationId}</span></p>
                     </td>
                 </tr>
             </table> -->
@@ -2078,11 +2076,26 @@
             <h2 class="c6" id="Webhooks">
                 <span>Webhooks</span>
             </h2>
-            <p class="c10"><span class="c4">The NPGW is able to post webhooks to your servers for each event that occurs during the lifecycle of a </span><span class="c4 c22">Transaction</span><span class="c1">. </span></p>
             <p class="c10">
-                <span class="c4">Webhooks will be </span><span>pushed </span><span class="c4">automatically should you include a valid, fully qualified HTTPS secured endpoint to receive them with each submitted </span>
-                <span class="c4 c22">Transaction</span><span>&nbsp;and will </span><span class="c4">include the full </span><span class="c4 c22">Transaction response object</span><span class="c1">&nbsp;in the body. </span>
+                <span class="c4">The NPGW is able to post webhooks to your servers for each event that occurs during the lifecycle of a </span>
+                <span class="c4 c22">Transaction</span><span class="c1">. </span>
             </p>
+            <p class="c10">
+
+                <span class="c4"></span>Webhooks will be automatically sent if a valid, fully qualified HTTPS-secured endpoint is provided in the <b>notificationUrl</b> field with each submitted 
+                <span class="c4 c22">Transaction</span>. The webhook request body will contain the full <span class="c4 c22">Transaction response object</span>. 
+                You can append query string parameters (e.g. a security token) 
+                to the <b>notificationUrl</b>. 
+                These parameters will be returned unmodified with each webhook, allowing you to verify that the communication originated from our gateway.</span> 
+                
+<!-- 
+                <span class="c4">Webhooks will be pushed automatically should you include a valid, 
+                    fully qualified HTTPS secured endpoint to receive them with each submitted </span>
+
+                <span class="c4 c22">Transaction</span><span>&nbsp;and will </span><span class="c4">include the full </span><span class="c4 c22">
+                    Transaction response object</span><span class="c1">&nbsp;in the body. </span> -->
+            </p>
+
             <p class="c10">
                 <span class="c0 c24 c40">Heads up!</span>
                 <span class="c4">
@@ -2091,10 +2104,16 @@
                 </span>
                 <span class="c1">They are also sent asynchronously and so may arrive out of order.</span>
             </p>
-            <p class="c10"><span class="c1 c23">Still in progress&hellip;</span></p>
+           
             
             <hr style="page-break-before: always; display: none;" />
             <h1 class="c6 c27" id="h.zevk44ifkf9y"><span class="c38 c0 c24"></span></h1>
+                </div>
+                <div>
+
+                </div>
+            </div>
+            
             <h1 class="c6" id="Testing"><span class="c38 c0 c24">Testing</span></h1>
 
             <div class="flex flex-row">
@@ -2281,20 +2300,28 @@
                 </div>
             </div>
 
-            
-            
-            
-            
             <h2 class="c6" id="Fraud_controls"><span class="c19 c0">Fraud controls</span></h2>
-            <p class="c10">
-                <span class="c4">The NPGW&rsquo;s Fraud Controls can block payments when they have a high risk level or fail verification checks. This automated fraud prevention </span><span>process </span>
-                <span class="c1">evaluates each payment, without requiring any action from you.</span>
-            </p>
-            <p class="c10">
-                <span class="c4">When </span><span>NPGW </span>
-                <span class="c1">blocks a payment, it doesn&rsquo;t obtain authorization from the card issuer. This precaution helps prevent potential fraudulent payments that might lead to disputes.</span>
-            </p>
-            <p class="c10"><span class="c4">Use an email address with domain </span><span class="c4 c22">fraudster.com</span><span class="c1">&nbsp;to test how your integration responds to blocked payments.</span></p>
+            <div class="flex flex-row">
+                <div class="text_block">
+                    <p class="c10">
+                        <span class="c4">The NPGW&rsquo;s Fraud Controls can block payments when they have a high risk level or fail verification checks. This automated fraud prevention </span><span>process </span>
+                        <span class="c1">evaluates each payment, without requiring any action from you.</span>
+                    </p>
+                    <p class="c10">
+                        <span class="c4">When </span><span>NPGW </span>
+                        <span class="c1">blocks a payment, it doesn&rsquo;t obtain authorization from the card issuer. This precaution helps prevent potential fraudulent payments that might lead to disputes.</span>
+                    </p>
+                    <p class="c10"><span class="c4">Use an email address with domain </span><span class="c4 c22">fraudster.com</span><span class="c1">&nbsp;to test how your integration responds to blocked payments.</span></p>
+                </div>
+                <div>
+
+                </div>
+
+            </div>
+            
+            
+            
+            
         </div>
         
         

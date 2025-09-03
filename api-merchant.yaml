@@ -143,7 +143,7 @@ paths:
       description: Please note that this operation will void an Authorization in full and is irreversible. Once this operation has been completed successfully, if you wish to charge the customer again then a new transaction must be submitted.
       operationId: cancelTransaction
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       parameters:
         - in: path
           name: transactionId
@@ -176,7 +176,7 @@ paths:
       description: Enables an Authorization to be captured in full or multiple parts.
       operationId: captureTransaction
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       parameters:
         - in: path
           name: transactionId
@@ -215,7 +215,7 @@ paths:
       description: Enables a Successful Transaction to be refunded in full or multiple parts.
       operationId: refundTransaction
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       parameters:
         - in: path
           name: transactionId
@@ -246,7 +246,7 @@ paths:
         '500':
           $ref: '#/components/responses/Error'
 
-  /transaction/{transactionId}/refund/capture/{operationItemId}:
+  /transaction/{transactionId}/refund/capture/{operationId}:
     post:
       tags:
         - payment operations
@@ -254,7 +254,7 @@ paths:
       description: Enables a refund of partially captured Transactions, again in full or part.
       operationId: refundCaptureTransaction
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       parameters:
         - in: path
           name: transactionId
@@ -262,7 +262,7 @@ paths:
           schema:
             type: string
         - in: path
-          name: operationItemId
+          name: operationId
           required: true
           schema:
             type: string
@@ -325,6 +325,12 @@ paths:
 components:
   securitySchemes:
     apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: JWT-based authentication where the token is passed in the Authorization header.
+
+    apiKeyAuth2:
       type: apiKey
       in: header
       name: Authorization
@@ -657,11 +663,11 @@ components:
         currency:
           $ref: '#/components/schemas/CurrencyCode'
 
-    OperationItemStatus:
+    OperationStatus:
       type: string
       description: |
         PENDING - submitted for processing.
-        CAPTURE - Capture payment opertaion confirmed.
+        CAPTURE - Capture payment operation confirmed.
         REFUND - Refund payment operation confirmed.
         FAILED - Processing failed; the payment operation was not successful, please verify the status of a Transaction before resubmitting to ensure the operation can be completed.
       enum:
@@ -670,18 +676,22 @@ components:
         - REFUND
         - FAILED
 
-    OperationItem:
+    Operation:
       allOf:
         - $ref: '#/components/schemas/Amount'
         - type: object
           required:
-            - operationItemId
+            - operationId
             - status
           properties:
-            operationItemId:
+            operationId:
+              type: string
+            originalOperationId:
               type: string
             status:
-              $ref: '#/components/schemas/OperationItemStatus'
+              $ref: '#/components/schemas/OperationStatus'
+            timestamp:
+              type: string
 
     BaseTransaction:
       allOf:
@@ -801,7 +811,7 @@ components:
             operationList:
               type: array
               items:
-                $ref: '#/components/schemas/OperationItem'
+                $ref: '#/components/schemas/Operation'
 
     Transaction:
       allOf:
