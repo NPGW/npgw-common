@@ -1,0 +1,23 @@
+{
+  "amount": 150,
+  "createdOn": "2000-01-01T01:01:01.099263555Z",
+  "currency": "EUR",
+  "expiresAt": "2000-01-01T01:03:01.099263555Z",
+  "externalTransactionId": "dummy",
+  "merchantId": "dummy",
+  "paymentDetails": {
+    "paymentMethod": "CreditCard",
+    "pan": "************0432",
+    "expMonth": "06",
+    "expYear": "2029",
+    "cvv": "***",
+    "cardHolderName": "John Doe",
+    "cardType": "Visa"
+  },
+  "status": "Initiated",
+  "threeDSecureDetails": null,
+  "transactionId": "id.transaction.dummy",
+  "type": null,
+  "updatedOn": "2000-01-01T01:02:01.099263555Z"
+}
+

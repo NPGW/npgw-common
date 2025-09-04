@@ -1,0 +1,65 @@
+{
+    "mappings": {
+      "properties": {
+        "averageAmount": {
+          "type": "float",
+          "index": false
+        },
+        "currency": {
+          "type": "text",
+          "index": true,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "merchantId": {
+          "type": "text",
+          "index": true,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "status": {
+          "type": "text",
+          "index": false,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "totalAmount": {
+          "type": "integer",
+          "index": false
+        },
+        "totalCount": {
+          "type": "integer",
+          "index": false
+        },
+        "transform": {
+          "properties": {
+            "_doc_count": {
+              "type": "long"
+            },
+            "_id": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        },
+        "updatedOn": {
+          "type": "date",
+          "index": true
+        }
+      }
+    }
+}
