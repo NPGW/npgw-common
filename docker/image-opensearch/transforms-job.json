@@ -1,0 +1,64 @@
+{
+  "transform": {
+    "enabled": true,
+    "continuous": true,
+    "schedule": {
+      "interval": {
+        "period": 1,
+        "unit": "Minutes"
+      }
+    },
+    "description": "Transform job created by API call",
+    "source_index": "npgw.transaction.log",
+    "data_selection_query": {
+      "match_all": {}
+    },
+    "target_index": "npgw.transaction.summary",
+    "page_size": 1000,
+    "groups": [
+      {
+        "date_histogram": {
+          "calendar_interval": "1d",
+          "source_field": "updatedOn",
+          "target_field": "updatedOn",
+          "timezone": "UTC"
+        }
+      },
+      {
+        "terms": {
+          "source_field": "status.keyword",
+          "target_field": "status"
+        }
+      },
+      {
+        "terms": {
+          "source_field": "currency.keyword",
+          "target_field": "currency"
+        }
+      },
+      {
+        "terms": {
+          "source_field": "merchantId.keyword",
+          "target_field": "merchantId"
+        }
+      }
+    ],
+    "aggregations": {
+      "totalCount": {
+        "value_count": {
+          "field": "_id"
+        }
+      },
+      "totalAmount": {
+        "sum": {
+          "field": "amount"
+        }
+      },
+      "averageAmount": {
+        "avg": {
+          "field": "amount"
+        }
+      }
+    }
+  }
+}
