@@ -144,7 +144,7 @@ ITEM=$(cat <<EOF
 \"captureUrl\":\"http://mock-acquirer-ngenius-service/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/captures\", \
 \"refundUrl\":\"http://mock-acquirer-ngenius-service/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/purchases/%s/refund\", \
 \"refundCaptureUrl\":\"http://mock-acquirer-ngenius-service/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/captures/%s/refund\", \
-\"cancelUrl\":\"http://mock-acquirer-ngenius-service/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/cancel\", \
+\"cancelUrl\":\"http://mock-acquirer-ngenius-service/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/cancel\", \
 \"serviceUrl\":\"http://acquirer-ngenius-service:8082/ngenius-v1/token\",\"transactionMinAmount\":1000,\"transactionMaxAmount\":250000}"},
         "isActive": {"BOOL": true},
         "currencyList": {"L": [{"S": "EUR"}]},
@@ -182,7 +182,7 @@ ITEM=$(cat <<EOF
 \"captureUrl\":\"http://mock-acquirer-ngenius-service/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/captures\", \
 \"refundUrl\":\"http://mock-acquirer-ngenius-service/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/purchases/%s/refund\", \
 \"refundCaptureUrl\":\"http://mock-acquirer-ngenius-service/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/captures/%s/refund\", \
-\"cancelUrl\":\"http://mock-acquirer-ngenius-service/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/cancel\", \
+\"cancelUrl\":\"http://mock-acquirer-ngenius-service/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/cancel\", \
 \"serviceUrl\":\"http://acquirer-ngenius-service:8082/ngenius-v1/token\",\"transactionMinAmount\":1000,\"transactionMaxAmount\":250000}"},
         "isActive": {"BOOL": true},
         "currencyList": {"L": [{"S": "EUR"}]},
@@ -220,7 +220,7 @@ ITEM=$(cat <<EOF
 \"captureUrl\":\"https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/captures\", \
 \"refundUrl\":\"https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/purchases/%s/refund\", \
 \"refundCaptureUrl\":\"https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/captures/%s/refund\", \
-\"cancelUrl\":\"https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/cancel\", \
+\"cancelUrl\":\"https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/cancel\", \
 \"serviceUrl\":\"http://acquirer-ngenius.acquirer-ngenius-terraform:8082/ngenius-v1/token\",\"transactionMinAmount\":1000,\"transactionMaxAmount\":250000}"},
         "isActive": {"BOOL": true},
         "currencyList": {"L": [{"S": "EUR"}]},
@@ -258,7 +258,7 @@ ITEM=$(cat <<EOF
 \"captureUrl\":\"https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/captures\", \
 \"refundUrl\":\"https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/purchases/%s/refund\", \
 \"refundCaptureUrl\":\"https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/captures/%s/refund\", \
-\"cancelUrl\":\"https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/cancel\", \
+\"cancelUrl\":\"https://api-gateway.sandbox.ngenius-payments.com/transactions/outlets/9af51c82-3525-491b-b4f1-4708d8a8608f/orders/%s/payments/%s/cancel\", \
 \"serviceUrl\":\"http://localhost:8082/ngenius-v1/token\",\"transactionMinAmount\":1000,\"transactionMaxAmount\":250000}"},
         "isActive": {"BOOL": true},
         "currencyList": {"L": [{"S": "EUR"}]},
