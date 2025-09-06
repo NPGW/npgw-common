@@ -1,0 +1,453 @@
+{
+  "mappings": {
+      "properties": {
+        "acquirerDetails": {
+          "properties": {
+            "acquirerCode": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "acquirerConfig": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "additionalDetails": {
+          "properties": {
+            "acsData": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "acsUrl": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "additionalPendingStatus": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "async": {
+              "type": "boolean",
+              "index": false
+            },
+            "challengeResponse": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "fingerprintResponse": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "link3DSAuthentication": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "link3DSChallenge": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "paymentResponse": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "amount": {
+          "type": "long",
+          "index": true
+        },
+        "createdOn": {
+          "type": "date",
+          "index": false
+        },
+        "currency": {
+          "type": "text",
+          "index": true,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "customerDetails": {
+          "properties": {
+            "address1": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "address2": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "city": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "country": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "dateOfBirth": {
+              "type": "date",
+              "index": false
+            },
+            "email": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "externalCustomerId": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "firstName": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "ipAddress": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "lastName": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "phone": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "state": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "zip": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "error": {
+          "properties": {
+            "message": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "expiresAt": {
+          "type": "date",
+          "index": false
+        },
+        "externalTransactionId": {
+          "type": "text",
+          "index": true,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "merchantId": {
+          "type": "text",
+          "index": true,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "paymentDetails": {
+          "properties": {
+            "cardHolderName": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "cardType": {
+              "type": "text",
+              "index": true,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "cvv": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "expMonth": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "expYear": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "pan": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "paymentMethod": {
+              "type": "text",
+              "index": true,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "paymentUrl": {
+          "type": "text",
+          "index": false,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "redirectUrlCancel": {
+          "type": "text",
+          "index": false,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "redirectUrlFail": {
+          "type": "text",
+          "index": false,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "redirectUrlSuccess": {
+          "type": "text",
+          "index": false,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "status": {
+          "type": "text",
+          "index": true,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "systemConfig": {
+          "properties": {
+            "challengeUrl": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "fingerprintUrl": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "notificationQueue": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "resourceUrl": {
+              "type": "text",
+              "index": false,
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "threeDSecureDetails": {
+          "type": "object"
+        },
+        "transactionId": {
+          "type": "text",
+          "index": true,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "type": {
+          "type": "text",
+          "index": false,
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "updatedOn": {
+          "type": "date",
+          "index": true
+        }
+      }
+    }
+}
