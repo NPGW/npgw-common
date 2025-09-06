@@ -1,34 +1,38 @@
 openapi: 3.0.3
 
 info:
-  title: NPGW Merchant API
+  title: Merchant API
   version: DEV
 
 externalDocs:
-    url: https://docs.npgw.xyz
+    url: https://npgw.xyz/docs/
     description: View our full Technical Documentation here
 
 servers:
+  - url: https://sandbox.npgw.xyz/merchant-v1
+    description: Sandbox server
   - url: https://npgw.xyz/merchant-v1
     description: Production server
 
 tags:
   - name: authentication
-    description: Validate yourself with the identity service and obtain an access token.
+    description: Obtain an access token from the Identity Service to securely authenticate with the Gateway.
   - name: payment
-    description: Submit a Payment to the NPGW Gateway.
+    description: Create and authorize new transactions through the Gateway.
     externalDocs:
-      url: https://docs.npgw.xyz/
-  - name: status
-    description: Query the status of a Transaction on the NPGW Gateway.
+      url: https://npgw.xyz/docs/
+  - name: payment status
+    description: Retrieve the current processing status of a transaction from the Gateway.
+  - name: payment operations
+    description: Perform post-authorization actions such as capture, cancel, or refund on existing transactions.
 
 paths:
   /transaction:
     get:
       tags:
-        - status
-      summary: Get Transaction
-      description: Retrieve transaction details using your External Transaction ID
+        - payment status
+      summary: Get Transaction status by externalTransactionId
+      description: Retrieve the current processing status of a transaction using your External Transaction ID
       operationId: getTransaction
       security:
         - apiKeyAuth: []
@@ -103,9 +107,9 @@ paths:
   /transaction/{transactionId}:
     get:
       tags:
-        - status
-      summary: Get Transaction by ID
-      description: Retrieve transaction details using the NPGW Transaction ID
+        - payment status
+      summary: Get Transaction status by Gateway Transaction ID
+      description: Retrieve the current processing status of a transaction using the Gateway Transaction ID
       operationId: getTransactionById
       security:
         - apiKeyAuth: []
@@ -133,9 +137,13 @@ paths:
 
   /transaction/{transactionId}/cancel:
     post:
+      tags:
+        - payment operations
+      summary: Cancel an Authorized Transaction by Gateway Transaction ID
+      description: Please note that this operation will void an Authorization in full and is irreversible. Once this operation has been completed successfully, if you wish to charge the customer again then a new transaction must be submitted.
       operationId: cancelTransaction
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       parameters:
         - in: path
           name: transactionId
@@ -162,9 +170,13 @@ paths:
 
   /transaction/{transactionId}/capture:
     post:
+      tags:
+        - payment operations
+      summary: Capture an Authorized Transaction by Gateway Transaction ID
+      description: Enables an Authorization to be captured in full or multiple parts.
       operationId: captureTransaction
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       parameters:
         - in: path
           name: transactionId
@@ -197,9 +209,13 @@ paths:
 
   /transaction/{transactionId}/refund:
     post:
+      tags:
+        - payment operations
+      summary: Refund a successful Transaction by Gateway Transaction ID
+      description: Enables a Successful Transaction to be refunded in full or multiple parts.
       operationId: refundTransaction
       security:
-        - apiKeyAuth: []
+        - apiKeyAuth2: []
       parameters:
         - in: path
           name: transactionId
@@ -210,8 +226,46 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Transaction'
+              $ref: '#/components/schemas/Amount'
         required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/TransactionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/NotAllowed'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '406':
+          $ref: '#/components/responses/NotAcceptable'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        '500':
+          $ref: '#/components/responses/Error'
+
+  /transaction/{transactionId}/refund/capture/{operationId}:
+    post:
+      tags:
+        - payment operations
+      summary: Refund against a successful Capture within a Transaction by Gateway Operation ID
+      description: Enables a refund of a capture Operation.
+      operationId: refundCaptureTransaction
+      security:
+        - apiKeyAuth2: []
+      parameters:
+        - in: path
+          name: transactionId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: operationId
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           $ref: '#/components/responses/TransactionResponse'
@@ -235,8 +289,7 @@ paths:
       tags:
         - authentication
       summary: Create a new or refresh an expired Bearer Token.
-      description: |
-        This token allows you to execute operations on the NPGW Gateway APIs with authority, and whilst a single token will expire after 15 minutes, you can generate one at any time.
+      description: This token allows you to execute operations on the Gateway APIs with authority, and whilst a single token will expire after 15 minutes, you can generate one at any time.
       operationId: getToken
       requestBody:
         content:
@@ -272,6 +325,12 @@ paths:
 components:
   securitySchemes:
     apiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: JWT-based authentication where the token is passed in the Authorization header.
+
+    apiKeyAuth2:
       type: apiKey
       in: header
       name: Authorization
@@ -463,7 +522,7 @@ components:
       properties:
         externalCustomerId:
           type: string
-          description: Unique id for each customer in the merchant's system.
+          description: Unique ID for each customer in the merchant's system.
           example: 32556
           maxLength: 40
           pattern: '^[a-zA-Z0-9\-]*$'
@@ -483,7 +542,7 @@ components:
           pattern: '^[\p{L} ''\-]+$'
         email:
           type: string
-          description: Customer email addres - must be a valid email address format.
+          description: Customer email address - must be a valid email address format.
           example: hal@greenlantern.com
           maxLength: 255
           pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
@@ -549,7 +608,7 @@ components:
 
     CurrencyCode:
       type: string
-      description: Currency Type (ISO 4217)
+      description: Currency code (ISO 4217)
       enum:
         - EUR
         - USD
@@ -565,7 +624,7 @@ components:
 
     ThreeDSecureStatus:
       type: string
-      description: 3DSecure status
+      description: 3DSecure status of the Transaction
       enum:
         - PENDING
         - SUCCESS
@@ -583,8 +642,8 @@ components:
     TransactionType:
       type: string
       description: |
-        SALE - purchase order is a document issued by a buyer to a supplier for goods or services.
-        AUTH - authorization refers to the process of verifying a cardholder's ability to make a purchase.
+        SALE - immediate purchase of goods or services, the payment is authorized and captured in a single step.
+        AUTH - reserves funds on the cardholder account by verifying availability and placing a hold, requires a separate action to capture.
       enum:
         - SALE
         - AUTH
@@ -599,33 +658,40 @@ components:
           type: integer
           minimum: 1
           maximum: 9999999
-          description: Transaction amount. Actual limits could vary depending on the end acquirer.
+          description: Transaction amount for the submitted payment operation. Cannot exceed the total value of the original Transaction amount.
           example: 1999 -> 19.99
         currency:
           $ref: '#/components/schemas/CurrencyCode'
 
-    AmountItemStatus:
+    OperationStatus:
       type: string
       description: |
-        PENDING - submitted to an acquirer.
-        CAPTURE - 
-        REFUND - 
-        FAILED - confirmed failed at acquirer; the customer has not paid and must try again via a new transaction.
+        PENDING - submitted for processing.
+        CAPTURE - Capture payment operation confirmed.
+        REFUND - Refund payment operation confirmed.
+        FAILED - Processing failed; the payment operation was not successful, please verify the status of a Transaction before resubmitting to ensure the operation can be completed.
       enum:
         - PENDING
         - CAPTURE
         - REFUND
         - FAILED
 
-    AmountItem:
+    Operation:
       allOf:
         - $ref: '#/components/schemas/Amount'
         - type: object
           required:
-            - amountItemStatus
+            - operationId
+            - status
           properties:
-            amountItemStatus:
-              $ref: '#/components/schemas/AmountItemStatus'
+            operationId:
+              type: string
+            originalOperationId:
+              type: string
+            status:
+              $ref: '#/components/schemas/OperationStatus'
+            timestamp:
+              type: string
 
     BaseTransaction:
       allOf:
@@ -640,21 +706,20 @@ components:
           properties:
             merchantId:
               type: string
-              description: Unique merchant id in the NPGW system.
+              description: Unique Merchant ID in the Gateway.
               example: company786
             externalTransactionId:
               type: string
-              description: Unique transaction id in merchant's system.
+              description: Unique Transaction ID in merchant's system.
               example: REF00L00000
               minLength: 1
               maxLength: 30
               pattern: '^[a-zA-Z0-9]*$'
             type:
               $ref: '#/components/schemas/TransactionType'
-              default: SALE
             notificationUrl:
               type: string
-              description: The merchant HTTPS Endpoint to be used for server-to-server webhooks. Please note that the Gateway doesn’t guarantee the delivery of notifications in the order that they’re generated, and as such ensure your event destination isn't dependent on receiving events in a specific order.
+              description: The merchant HTTPS Endpoint to be used to deliver server-to-server notifications. Please note that the Gateway doesn’t guarantee the delivery of notifications in the order that they’re generated, and as such ensure your event destination isn't dependent on receiving events in a specific order.
               example: https://example.com/notification_endpoint
             redirectUrlSuccess:
               type: string
@@ -676,7 +741,7 @@ components:
                 If the transaction is not completed within this time, we will reject any attempt to complete it. 
                 The expiration is extended each time a user (re-)submits a payment, so provided expiration date will be updated in most cases. 
                 Max value is _(now)+3h_
-              example: 2021-12-22T05:17:56.323Z
+              example: 2025-08-12T05:17:56.323Z
             paymentDetails:
               oneOf:
                 - $ref: '#/components/schemas/CreditCardDetails'
@@ -684,16 +749,16 @@ components:
     TransactionStatus:
       type: string
       description: |
-        INITIATED - submitted to NPGW.
-        PENDING - submitted to an acquirer.
-        SUCCESS - confirmed success/captured at acquirer, customer has paid.
-        AUTHORISED - 
-        PARTIAL_CAPTURE - 
-        PARTIAL_REFUND - 
-        REFUND - 
-        FAILED - confirmed failed at acquirer; the customer has not paid and must try again via a new transaction.
-        CANCELLED - cancelled by customer (generally a UI cancel button), must try again via a new transaction.
-        EXPIRED - unsuccessful transaction after the time specified in the "expires At" field, must try again via a new transaction.
+        INITIATED - Transaction submitted to and accepted by the Gateway.
+        PENDING - submitted to an acquirer for processing; awaiting outcome.
+        SUCCESS - successfully captured at the acquirer; customer’s payment completed.
+        AUTHORISED - funds reserved on the customer’s account; awaiting capture
+        PARTIAL_CAPTURE - a part of an authorised Transaction has been captured.
+        PARTIAL_REFUND - a part of a successful Transaction has been captured.
+        REFUND - full amount of a Transaction has been refunded.
+        FAILED - processing failed; the customer has not paid and must try again via a new transaction.
+        CANCELLED - authorisation voided via the API or expired before capture; no payment taken.
+        EXPIRED - transaction not completed before the time specified in "expires At" field has elapsed, must try again via a new transaction.
       enum:
         - INITIATED
         - PENDING
@@ -721,7 +786,7 @@ components:
           properties:
             transactionId:
               type: string
-              description: Unique transaction id in the NPGW system.
+              description: Unique Transaction ID in the Gateway.
               example: id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g
             status:
               $ref: '#/components/schemas/TransactionStatus'
@@ -731,22 +796,22 @@ components:
               format: date-time
               type: string
               description: Created time (ISO 8601).
-              example: 2022-04-08T11:11:59.711Z
+              example: 2025-08-12T11:11:59.711Z
             updatedOn:
               format: date-time
               type: string
               description: Updated time (ISO 8601).
-              example: 2022-04-08T11:11:59.711Z
+              example: 2025-08-12T11:11:59.711Z
             paymentUrl:
               type: string
               description: Payment link to which the customer should be redirected to complete 3DSecure and subsequent processing.
-              example: https://api-staging.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
+              example: https://sandbox.npgw.xyz/merchant-v1/resource/page/id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g?token=lUQu10zR3wnroN4a_n7EsyXokK6kJR0NK4USWC_1FZIDrs_bwGFXHfaEGkNv9UUq
             threeDSecureDetails:
               $ref: '#/components/schemas/ThreeDSecureDetails'
-            amountItems:
+            operationList:
               type: array
               items:
-                $ref: '#/components/schemas/AmountItem'
+                $ref: '#/components/schemas/Operation'
 
     Transaction:
       allOf:
@@ -757,3 +822,4 @@ components:
           properties:
             customerDetails:
               $ref: '#/components/schemas/CustomerDetails'
+

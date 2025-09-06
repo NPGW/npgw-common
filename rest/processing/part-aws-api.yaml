@@ -35,6 +35,19 @@ paths:
           integration.request.header.Accept: "' '"
           integration.request.path.transactionId: method.request.path.transactionId
 
+  /transaction/{transactionId}/cancel:
+    post:
+      x-amazon-apigateway-integration:
+        connectionType: ${connectionType}
+        connectionId: ${connectionId}
+        type: ${type}
+        httpMethod: POST
+        uri: '${uri}/transaction/{transactionId}/cancel'
+        passthroughBehavior: ${passthroughBehavior}
+        requestParameters:
+          integration.request.header.Accept: "' '"
+          integration.request.path.transactionId: method.request.path.transactionId
+
   /transaction/{transactionId}/capture:
     post:
       x-amazon-apigateway-integration:
@@ -61,18 +74,19 @@ paths:
           integration.request.header.Accept: "' '"
           integration.request.path.transactionId: method.request.path.transactionId
 
-  /transaction/{transactionId}/cancel:
+  /transaction/{transactionId}/refund/capture/{operationId}:
     post:
       x-amazon-apigateway-integration:
         connectionType: ${connectionType}
         connectionId: ${connectionId}
         type: ${type}
         httpMethod: POST
-        uri: '${uri}/transaction/{transactionId}/cancel'
+        uri: '${uri}/transaction/{transactionId}/refund/capture/{operationId}'
         passthroughBehavior: ${passthroughBehavior}
         requestParameters:
           integration.request.header.Accept: "' '"
           integration.request.path.transactionId: method.request.path.transactionId
+          integration.request.path.operationId: method.request.path.operationId
 
   /token:
     post:
@@ -203,9 +217,14 @@ paths:
 components:
   securitySchemes:
     apiKeyAuth:
-      x-amazon-apigateway-authtype: ${x-amazon-apigateway-authtype}
+      x-amazon-apigateway-authtype: ${x-amazon-apigateway-authtype-cognito}
       x-amazon-apigateway-authorizer:
-        ${x-amazon-apigateway-authorizer}
+        ${x-amazon-apigateway-authorizer-cognito}
+
+    apiKeyAuth2:
+      x-amazon-apigateway-authtype: ${x-amazon-apigateway-authtype-lambda}
+      x-amazon-apigateway-authorizer:
+        ${x-amazon-apigateway-authorizer-lambda}
 
 x-amazon-apigateway-gateway-responses:
   DEFAULT_4XX:
