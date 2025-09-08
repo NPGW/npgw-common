@@ -406,25 +406,39 @@ components:
       description: Everything works as expected.
 
   schemas:
-    Error:
+    TransactionError:
       type: object
       required:
-        - timestamp
-        - status
         - message
-        - path
       properties:
-        timestamp:
-          type: integer
-          format: int64
-        status:
-          type: integer
         message:
           type: string
-        path:
-          type: string
-        code:
-          type: string
+
+    CodeError:
+      allOf:
+        - $ref: '#/components/schemas/TransactionError'
+        - type: object
+          required:
+            - status
+          properties:
+            status:
+              type: integer
+            code:
+              type: string
+
+    Error:
+      allOf:
+        - $ref: '#/components/schemas/CodeError'
+        - type: object
+          required:
+            - timestamp
+            - path
+          properties:
+            timestamp:
+              type: integer
+              format: int64
+            path:
+              type: string
 
     ResponseToken:
       type: object
@@ -663,18 +677,35 @@ components:
         currency:
           $ref: '#/components/schemas/CurrencyCode'
 
+    OperationType:
+      type: string
+      description: |
+        SALE - funds reserved on the customer’s account; awaiting capture
+        AUTHORISATION - funds reserved on the customer’s account; awaiting capture        
+        CAPTURE - Capture payment operation confirmed.
+        REFUND - Refund payment operation confirmed.
+        CANCELLATION - authorisation voided via the API or expired before capture; no payment taken.
+      enum:
+        - SALE
+        - AUTHORISATION
+        - CAPTURE
+        - REFUND
+        - CANCELLATION
+
     OperationStatus:
       type: string
       description: |
+        INITIATED -
         PENDING - submitted for processing.
-        CAPTURE - Capture payment operation confirmed.
-        REFUND - Refund payment operation confirmed.
+        SUCCESS -
         FAILED - Processing failed; the payment operation was not successful, please verify the status of a Transaction before resubmitting to ensure the operation can be completed.
+        EXPIRED -
       enum:
+        - INITIATED
         - PENDING
-        - CAPTURE
-        - REFUND
+        - SUCCESS
         - FAILED
+        - EXPIRED
 
     Operation:
       allOf:
@@ -682,16 +713,21 @@ components:
         - type: object
           required:
             - operationId
+            - type
             - status
           properties:
             operationId:
               type: string
             originalOperationId:
               type: string
+            type:
+              $ref: '#/components/schemas/OperationType'
             status:
               $ref: '#/components/schemas/OperationStatus'
             timestamp:
               type: string
+            error:
+              $ref: '#/components/schemas/CodeError'
 
     BaseTransaction:
       allOf:
@@ -770,14 +806,6 @@ components:
         - FAILED
         - CANCELLED
         - EXPIRED
-
-    TransactionError:
-      type: object
-      required:
-        - message
-      properties:
-        message:
-          type: string
 
     TransactionResponse:
       allOf:
