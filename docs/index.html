@@ -764,22 +764,48 @@
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, Apple Color Emoji, "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
             }
             body {
+                width: calc(100vw - 10px);
+                height: calc(100vh - 30px);
+                display: flex;
+                flex-direction: column;
+            }
+            .content {
                 display: flex;
                 flex-direction: row;
 
+                padding: 15px 5px 15px 0px;
+                /* width: calc(100vw - 80px); */
+                height: calc(100vh - 80px);
                 gap: 25px;
-                padding: 15px 15px;
-                width: calc(100vw - 50px);
-                height: calc(100vh - 50px);
             }
-
+            .topMenuBlock {
+                display: flex;
+                flex-direction: row;
+                justify-content: end;
+                gap: 10px;
+                height: 25px;
+                text-align: right;
+                padding: 0px 20px 0px 0px;
+            }
             .menu_block {
-                width: 250px;
+                /* width: 250px;
                 display: flex;
                 flex-direction: column;
-                max-height: 100%;/* calc(100vh - 100px); */
-                overflow-y: auto;
+                max-height: 100%;
+                overflow-y: auto; */
                 border-right: #666666 solid 1px;
+
+                padding: 8px 8px 8px 0px;
+                overflow-y: auto;
+                width: 280px;
+                gap: 12px;
+                display: flex;
+                flex: 1 1 auto;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: space-between;
+                box-sizing: border-box;
+                overflow: hidden;
             }
             .data_block {
                 flex-grow: 1;
@@ -791,23 +817,47 @@
                 
             }
             .menu_list {
-                margin-top: 0px !important;
+                /* margin-top: 0px !important;
               
                 padding-left: 20px;
+                 */
+                display: flex;
+                flex-direction: column;
+                margin-top: 0px !important;
+                padding-left: 20px;
                 list-style-type: none;
+                gap: 1px;
+                
             }
             .menu_item {
                 cursor: pointer;
-                padding: 3px 0px 3px 0px;
-                font-size: 1.25rem;
+                /* padding: 3px 0px 3px 0px;
+                font-size: 1.25rem; */
+                /* color: #353a44; */
                 
+                line-height: 20px;
+                width: 100%;
             }
             .menu_item_txt:hover {
-                background-color: lightblue;
-                border-radius: 5px;
+                /* background-color: lightblue;
+                border-radius: 5px; */
+
+                border-radius: 4px;
+                min-width: 90%;
+                width: 90%;
+                border-color: #675dff1A;
+                font-weight: 500;
+                background-color: #675dff1A;
+                
             }
             .menu_item_txt {
-                padding: 5px 5px 5px 5px;
+                color: #3387CC;
+                text-decoration: none;
+                font-weight: 500;
+                width: 90%;
+                display: block;
+                padding: 5px 5px;
+                /* padding: 5px 5px 5px 5px;
                 min-width: 90%;
                 max-width: 90%;
                 display: block;
@@ -815,15 +865,13 @@
                 text-decoration: none;
                 color: inherit;
 
-                
-                /* padding: 5px 15px; */
                 border: 1px solid #e5e5e5;
-                /* width: 190px; */
+          
                 font-family: "Source Sans Pro", sans-serif;
                 font-weight: 700;
                 font-size: 16px;
                 background-color: #4c8eca;
-                color: #fff;
+                color: #fff; */
 
             }
       
@@ -832,13 +880,19 @@
                 list-style-type: none;
             }
             .sub_menu_item {
-                font-size: 1rem;
+                /* font-size: 1rem; */
+                margin-top: 0px;
+                margin-bottom: 0px;
+                white-space: nowrap;
             }
             .sub_menu_item_txt {
+                color: #596171;
+                text-decoration: none;
+                width: 90%;
                 display: block;
-                /* width: 192px; */
+                padding: 5px 5px;
+                /* display: block;
                 margin: 0;
-                /* padding: 2px 11px; */
                 padding-top: 5px;
                 padding-bottom: 5px;
                 border: 0;
@@ -848,7 +902,15 @@
                 font-weight: 400;
                 font-size: 14px;
                 color: #08c;
-                text-decoration: none;
+                text-decoration: none; */
+            }
+            .sub_menu_item_txt:hover {
+                border-radius: 4px;
+                min-width: 90%;
+                width: 90%;
+                border-color: #675dff1A;
+                font-weight: 500;
+                background-color: #675dff1A;
             }
             .underline {
                 text-decoration: underline;
@@ -905,11 +967,11 @@
                 color: #ffffff;
             }
             .text_block {
-                width: 50%;
+                width: 60%;
                 padding: 10px 50px 10px 50px;
             }
             .table_block {
-                width: 50%;
+                width: 40%;
                 padding: 10px 50px 10px 50px;
             }
             .flex {
@@ -917,6 +979,9 @@
             }
             .flex-row {
                 flex-direction: row;
+            }
+            .borderBottom {
+                border-bottom: 1px solid #d8dee4;
             }
             .table_block table {
                 width: 100%;
@@ -969,11 +1034,27 @@
                 border-bottom-width: 1px !important;
                 
             }
+            .tableDivHeaderHeadsUp {
+                background-color: #b8d4f0;
+            }
+            .tableDivHeader tr {
+                height: 30px;
+            }
+            .tableDivHeader tr th {
+                padding-left: 8px;
+                text-align: left;
+            }
             .tableDivContainer {
                 overflow-x: auto;
-                padding: 12px;
-                width: 718px;
+                /* padding: 12px; */
+                /* max-width: 718px; */
 
+            }
+            .p12 {
+                padding: 12px;
+            }
+            .mb15px {
+                margin-bottom: 15px;
             }
             .tableDivContainer table {
                 width: 100%;
@@ -1015,8 +1096,15 @@
                 line-height: 16px;
                 padding: 8px;
             }
+            .w10percent {
+                width: 10%;
+            }
             .w15percent {
                 width: 15%;
+            }
+            
+            .w18percent {
+                width: 18%;
             }
             .w20percent {
                 width: 20%;
@@ -1024,14 +1112,16 @@
             .w22percent {
                 width: 22%;
             }
-            .w18percent {
-                width: 18%;
-            }
             .w25percent {
                 width: 25%;
             }
             .w50percent {
                 width: 50%;
+            }
+            .w65percent {
+                width: 65%;
+                max-width: 65%;
+                
             }
             .link {
                 border-color: #3387CC;
@@ -1043,1415 +1133,1671 @@
             }
         </style>
     </head>
-    <body class="c39 doc-content">
-        <div class="menu_block">
-            <ul class="menu_list">
-                <li class="menu_item">
-                    <a class="menu_item_txt" href="#API_Reference" >API Reference</a>
-                    <ul class="sub_menu_list">
-                        <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Technical_Documentation" >Technical Documentation</a>
-                        </li>
-                        <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Usage" >Usage</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="menu_item">
-                    <a class="menu_item_txt" href="#Authentication">Authentication</a></li>
-                <li class="menu_item">
-                    <a class="menu_item_txt" href="#Environments">Environments</a>
-                </li>
-
-                <li class="menu_item">
-                    <a class="menu_item_txt" href="#Company_Registration">Company Registration</a></li>
-                <li class="menu_item">
-                    <a class="menu_item_txt" href="#Errors">Errors</a></li>
-                <li class="menu_item">
-                    <a class="menu_item_txt" href="#One_time_payments">One-time payments</a>
-                    <ul class="sub_menu_list">
-                        <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Supported_currencies" >Supported currencies</a>
-                        </li>
-                        <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Transaction_statuses" >Transaction statuses</a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="menu_item">
-                    <a class="menu_item_txt" href="#Core_Resources">Core Resources</a>
-                    <ul class="sub_menu_list">
-                        <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Token" >Token</a>
-                        </li>
-                        <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Payment" >Payment</a>
-                            <ul class="sub_menu_list">
-                                <li class="sub_menu_item">
-                                    <a class="sub_menu_item_txt" href="#The_Transaction_object" >The Transaction object</a>
-                                </li>
-<!--                                 <li class="sub_menu_item">
-                                    <a class="sub_menu_item_txt" href="#The_Transaction_request_object" >The Transaction request object</a>
-                                </li>
-                                <li class="sub_menu_item">
-                                    <a class="sub_menu_item_txt" href="#The_Transaction_response_object" >The Transaction response object</a>
-                                </li> -->
-                            </ul>
-                        </li>
-                        <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Payment_Operations" >Payment Operations</a>
-                            <ul class="sub_menu_list">
-                                <li class="sub_menu_item">
-                                    <a class="sub_menu_item_txt" href="#Capture" >Capture</a>
-                                </li>
-                                <li class="sub_menu_item">
-                                    <a class="sub_menu_item_txt" href="#Cancel" >Cancel</a>
-                                </li>
-                                <li class="sub_menu_item">
-                                    <a class="sub_menu_item_txt" href="#Refund" >Refund</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Payment_Status" >Payment Status</a>
-                        </li>
-                        <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Notifications" >Notifications</a>
-                        </li>
-
-                    </ul>
-                </li>
-                <li class="menu_item">
-                    <a class="menu_item_txt" href="#Testing">Testing</a>
-                    <ul class="sub_menu_list">
-                        <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Test_Cards" >Test Cards</a>
-                        </li>
-                        <!-- <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Fraud_controls" >Fraud controls</a>
-                        </li> -->
-                    </ul>
-                </li>
-                <li class="menu_item">
-                    <a class="menu_item_txt" href="#Appendix">Appendix</a>
-                    <ul class="sub_menu_list">
-                        <li class="sub_menu_item">
-                            <a class="sub_menu_item_txt" href="#Error_Codes" >Error Codes</a>
-                        </li>
-                    
-                    </ul>
-                </li>
-            </ul>
+    <body class="c39">
+        <div class="topMenuBlock">
+            <a class="c4 underline link" href="/docs/api/">API Reference </a>      
+            <a class="c4 underline link" href="/login">Portal Login </a>
         </div>
-        <div class="data_block">
+        <div class="content">
+            <div class="menu_block">
+                <ul class="menu_list">
+                    <li class="menu_item">
+                        <a class="menu_item_txt" href="#API_Reference" >API Reference</a>
+                        <ul class="sub_menu_list">
+                            <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Technical_Documentation" >Technical Documentation</a>
+                            </li>
+                            <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Usage" >Usage</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu_item">
+                        <a class="menu_item_txt" href="#Authentication">Authentication</a></li>
+                    <li class="menu_item">
+                        <a class="menu_item_txt" href="#Environments">Environments</a>
+                    </li>
 
-            <div class="flex flex-row">
-                <div class="text_block">
-                    <h1 class="c6 mt5px" id="API_Reference"><span>API Reference</span></h1>
-                    <p class="c5">
-                        <span class="c1">
-                            The NPGW API is organized around the principles of REST. It has predictable resource-oriented URLs, accepts and returns JSON-encoded bodies and responses, all while using standard HTTP response codes &amp; authentication.
-                        </span>
-                    </p>
-                
-                    <p class="c5">
-                        <span class="c4">
-                            You can use the NPGW API via our Sandbox while completing your integration, which won&rsquo;t affect your live data or interact with the Acquiring networks. The domain and credentials you use to authenticate and
-                        </span>
-                        <span>submit yours </span><span class="c4">request determines whether </span><span>a payment </span><span class="c1">is processed via Production or Sandbox.</span>
-                    </p>
-                
-                    <p class="c5"><span class="c1">The NPGW API doesn&rsquo;t currently support bulk updates. You can work on only one object per request.</span></p>
-                    
-                    <h2 class="c6" id="Technical_Documentation"><span>Technical Documentation</span></h2>
-                    <p class="c5"><span class="c1">Further detailed documentation for developers is available via the following links.</span></p>
-                
-                    <ul class="c41 lst-kix_ksvcksyqiwbz-0 start">                
-                        <li class="c5 c13 li-bullet-0">
-                            <a class="c4 underline link" href="/docs/api/">API Documentation </a>
-                        </li>
-                        <!-- <li class="c5 c13 li-bullet-0">
-                            <a class="c4 underline link" type="text/yaml" href="/docs/api/api.yaml">Swagger Editor</a>
-                        </li> -->
-                    </ul>
-                
-                    <h2 class="c6" id="Usage"><span>Usage</span></h2>
-                    <p ><span class="c1">There are multiple ways you can explore the Merchant API:</span></p>
-                    <ul class="c41 lst-kix_azv0bdsdg6gt-0 start">
-                        <li class="c10 c13 li-bullet-0">
-                            <span class="c4">By using the classic Swagger toolset, upload the definition to the</span>
-                        
-                            <a class="c37 link" href="http://editor.swagger.io/">Swagger Editor</a>
-                
-                        </li>
-                        <li class="c10 c13 li-bullet-0">
-                            <span class="c4">By using</span>
+                    <li class="menu_item">
+                        <a class="menu_item_txt" href="#Company_Registration">Company Registration</a></li>
+                    <li class="menu_item">
+                        <a class="menu_item_txt" href="#Errors">Errors</a></li>
+                    <li class="menu_item">
+                        <a class="menu_item_txt" href="#One_time_payments">One-time payments</a>
+                    </li>
+                    <li class="menu_item">
+                        <a class="menu_item_txt" href="#Core_Resources">Core Resources</a>
+                        <ul class="sub_menu_list">
+                            <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Token" >Token</a>
+                            </li>
+                            <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Payment" >Payment</a>
+                                <ul class="sub_menu_list">
+                                    <li class="sub_menu_item">
+                                        <a class="sub_menu_item_txt" href="#The_Transaction_object" >The Transaction object</a>
+                                    </li>
+    <!--                                 <li class="sub_menu_item">
+                                        <a class="sub_menu_item_txt" href="#The_Transaction_request_object" >The Transaction request object</a>
+                                    </li>
+                                    <li class="sub_menu_item">
+                                        <a class="sub_menu_item_txt" href="#The_Transaction_response_object" >The Transaction response object</a>
+                                    </li> -->
+                                </ul>
+                            </li>
+                            <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Payment_Operations" >Payment Operations</a>
+                                <ul class="sub_menu_list">
+                                    <li class="sub_menu_item">
+                                        <a class="sub_menu_item_txt" href="#Capture" >Capture</a>
+                                    </li>
+                                    <li class="sub_menu_item">
+                                        <a class="sub_menu_item_txt" href="#Cancel" >Cancel</a>
+                                    </li>
+                                    <li class="sub_menu_item">
+                                        <a class="sub_menu_item_txt" href="#Refund" >Refund</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Payment_Status" >Payment Status</a>
+                            </li>
+                            <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Notifications" >Notifications</a>
+                            </li>
+
+                        </ul>
+                    </li>
+                    <li class="menu_item">
+                        <a class="menu_item_txt" href="#Testing">Testing</a>
+                        <ul class="sub_menu_list">
+                            <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Test_Cards" >Test Cards</a>
+                            </li>
+                            <!-- <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Fraud_controls" >Fraud controls</a>
+                            </li> -->
+                        </ul>
+                    </li>
+                    <li class="menu_item">
+                        <a class="menu_item_txt" href="#Appendix">Appendix</a>
+
+                        <ul class="sub_menu_list">
+                            <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Transaction_statuses" >Transaction statuses</a>
+                            </li>
+
+                            <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Supported_currencies" >Supported currencies</a>
+                            </li>
                             
-                            <a class="c37 link" href="https://www.getpostman.com/postman">Postman</a>
-                            <span class="c1">&nbsp;to import the API definition and create your personal collection of requests.</span>
-                        </li>
-                    </ul>
-                    <hr style="page-break-before: always; display: none;" />
-                    
-                    <h1 class="c6" id="Authentication"><span class="c38 c0 c24">Authentication</span></h1>
-                    <p class="c10">
-                        <span class="c4">The NPGW API uses a </span><span class="c0 c24">Secret Token</span>                
-                        <span class="c1">to authenticate requests. You can view and manage your tokens within your account.</span>
-                    </p>
-                    <p class="c10">
-                        <span class="c4">Your </span><span class="c4 c22">Secret Token</span>
-                        <span class="c1">&nbsp;carries many privileges, so be sure to keep it secure! Do not share your Token in publicly accessible areas such as GitHub, client-side code, and so forth.</span>
-                    </p>
-                    <p class="c10">
-                        <span class="c4">All API requests must be made over</span>
+                            <li class="sub_menu_item">
+                                <a class="sub_menu_item_txt" href="#Error_Codes" >Error Codes</a>
+                            </li>
                         
-                        <a class="c37 link" href="http://en.wikipedia.org/wiki/HTTP_Secure">HTTPS</a>
-                        <span class="c1">. Calls made over plain HTTP will fail. API requests without authentication will also fail.</span>
-                    </p>
-                </div>
-                <div class="table_block">
-
-                </div>
+                        </ul>
+                    </li>
+                </ul>
             </div>
+            <div class="data_block">
 
-
-            
-            <hr style="page-break-before: always; display: none;" />
-            
-            <h1 class="c6 pl50px" id="Environments"><span class="c38 c0 c24">Environments</span></h1>
-
-            <div class="flex flex-row">
-                <div class="text_block">
-                    <p class="c10">
-                        <span class="c4">The NPGW provides two separate domains for our API: one for </span><span class="c0 c24">Sandbox</span><span class="c4">&nbsp;and one for </span><span class="c0 c24">Production</span>
-                        <span class="c1">
-                            . The sandbox environment is intended for testing and development, while the production environment is used for live transaction processing. All API endpoints are consistent across both environments, meaning the request
-                            structure, parameters, and responses are the same&mdash;only the base domain changes depending on the environment.
-                        </span>
-                    </p>
-                    <p class="c10"><span class="c1">Successful acceptance testing is required in order to move your integration from Sandbox to Production.</span></p>
-                </div>
-
-                <div class="table_block">
-                    <div class="data_block_table mb15px">
-                        <div class="tableDivHeader">
-                            SANDBOX BASE DOMAIN
-                        </div>
-                        <div class="tableDivContainer">
-                            <p class="c2">https://sandbox.npgw.xyz</p>
-                        </div>
-                    </div>
-
-                    <div class="data_block_table">
-                        <div class="tableDivHeader">
-                            PRODUCTION BASE DOMAIN
-                        </div>
-                        <div class="tableDivContainer">
-                            <p class="c2">https://npgw.xyz</p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-
-            
-            <hr style="page-break-before: always; display: none;" />
-            
-            <h1 class="c6 pl50px" id="Company_Registration"><span class="c38 c0 c24">Company Registration</span></h1>
-
-            <div class="flex flex-row">
-                <div class="text_block">
-                    <p class="c10">
-                        <span class="c4">Once you have been successfully set up as a Company within the NPGW, our team will configure </span>
-                        <span class="c0 c24">Business Units</span>
-                        <span class="c1">&nbsp;as required for payment processing under your organisational hierarchy.</span>
-                    </p>
-                    <p class="c10">
-                        <span class="c4">Each </span><span class="c4 c22">Business Unit</span><span class="c4">&nbsp;is assigned a unique </span><span class="c0 c24">merchantId</span><span class="c4">&nbsp;and requires its own </span>
-                        <span class="c4 c22">Secret Token</span><span class="c4">&nbsp;to interface with the Merchant API.</span>
-                    </p>
-
-                    <p>
-                        You can retrieve these details by logging into your account and navigating to the <span class="c0 c24">System Administration</span> menu.
-                    </p>
-                </div>
-                <div class="table_block">
-
-                </div>
-            </div>
-
-            
-            
-           
-            
-            <h1 class="c6 pl50px" id="Errors"><span class="c38 c0 c24">Errors</span></h1>
-
-            <div class="flex flex-row">
-                <div class="text_block">
-                    <p class="c29">
-                        <span class="c4">The NPGW uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the </span><span class="c14 c0 c24">2xx</span>
-                        <span class="c4">&nbsp;range indicate success. Codes in the </span><span class="c14 c0 c24">4xx</span>
-                        <span class="c4">&nbsp;range indicate an error that failed given the information provided (e.g. a required parameter was omitted etc). Codes in the </span><span class="c14 c0 c24">5xx</span>
-                        <span class="c1">&nbsp;range indicate an error with our servers (these are rare).</span>
-                    </p>
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        <h1 class="c6 mt5px" id="API_Reference"><span>API Reference</span></h1>
+                        <p class="c5">
+                            <span class="c1">
+                                The NPGW API is organized around the principles of REST. It has predictable resource-oriented URLs, accepts and returns JSON-encoded bodies and responses, all while using standard HTTP response codes &amp; authentication.
+                            </span>
+                        </p>
                     
-                    <p>
-                        <span class="c0 c24">API-level errors</span> (such as invalid request parameters, authentication failures, or unsupported endpoints) are returned directly in the 
-                        response body, alongside the relevant HTTP status code.
-                    </p>
-
-                    <p>
-                        <span class="c0 c24">Transaction-level errors</span> (such as an issuer decline or 3D Secure failure) are returned within the transaction response body itself. 
-                        In these cases, the API request is considered valid and successful at the gateway level (typically a <span class="c14 c0 c24">200</span> response), but the transaction 
-                        result reflects the decline or failure.
-
-                    </p>
-                </div>
-                <div class="table_block">
-                    <div class="data_block_table">
-                        <div class="tableDivHeader ">
-                            <div class="cardsTableHeader">
-                                HTTP STATUS CODE SUMMARY
-                            </div>
-                        </div>
-                        <div class="tableDivContainer">
-                            <table class="httpTable">
-                                <tbody class="cardsTableBody">
-                                    <tr>
-                                        <td >
-                                            200
-                                        </td>
-                                        <td >
-                                            OK
-                                        </td>
-                                        <td >
-                                            Everything worked as expected
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td >
-                                            400
-                                        </td>
-                                        <td >
-                                            Bad Request
-                                        </td>
-                                        <td >
-                                            The request was unacceptable, often due to missing a required parameter
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td >
-                                            401
-                                        </td>
-                                        <td >
-                                            Unauthorized
-                                        </td>
-                                        <td >
-                                            No valid Secret Token provided
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td >
-                                            403
-                                        </td>
-                                        <td >
-                                            Forbidden
-                                        </td>
-                                        <td >
-                                            The Secret Token doesn’t have permissions to perform the request
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td >
-                                            404
-                                        </td>
-                                        <td >
-                                            Not Found
-                                        </td>
-                                        <td >
-                                            The requested resource doesn't exist
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td >
-                                            405
-                                        </td>
-                                        <td >
-                                            Not Allowed
-                                        </td>
-                                        <td >
-                                            The request method is not supported for the requested resource
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td >
-                                            406
-                                        </td>
-                                        <td >
-                                            Not Acceptable
-                                        </td>
-                                        <td >
-                                            The requested resource could not be processed due to a conflict with this or related resources
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td >
-                                            422
-                                        </td>
-                                        <td >
-                                            Failed Validation
-                                        </td>
-                                        <td >
-                                            The request payload could not pass the validation (probably incorrect)
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td >
-                                            429
-                                        </td>
-                                        <td >
-                                            Too Many Requests
-                                        </td>
-                                        <td >
-                                            Too many requests hit the API too quickly. We recommend an exponential backoff of your requests
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td >
-                                            500
-                                        </td>
-                                        <td >
-                                            Server Errors
-                                        </td>
-                                        <td >
-                                            Something went wrong on NPGW’s end (these are rare)
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-
-            <p class="c29 c12"><span class="c1 c23"></span></p>
-            
-            <hr style="page-break-before: always; display: none;" />
-            
-            <h1 class="c6 pl50px" id="One_time_payments"><span class="c38 c0 c24">One-time payments</span></h1>
-
-            <div class="flex flex-row">
-                <div class="text_block">
-                    <ol class="c41 lst-kix_us75fhk8r05x-0 start" start="1">
-                        <li class="c5 c13 li-bullet-0"><span class="c1">When a customer is ready to complete a purchase, your application will submit a Transaction to the NPGW API.</span></li>
-                        <li class="c5 c13 li-bullet-0"><span class="c1">The API provides a URL that redirects customers to an NPGW-hosted page for 3D Secure.</span></li>
-                        <li class="c5 c13 li-bullet-0"><span class="c1">Customers authenticate with their bank when required to complete the transaction.</span></li>
-                        <li class="c5 c13 li-bullet-0"><span class="c1">Asynchronously, the NPGW API delivers notifications related to the Transaction and your application can further poll status.</span></li>
-                    </ol>
-                </div>
-                <div class="table_block">
-                    <p class="c42">
-                        <span style="overflow: hidden; display: inline-block; margin: 0px 0px; border: 0px solid #000000; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px); width: 714.7px; height: 656.75px;">
-                            <img alt="" src="images/image2.png" style="width: 714.7px; height: 656.75px; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
-                        </span>
-                    </p>
-                </div>
-            </div>
-
-
-            
-            
-            <p class="c42 c12"><span class="c1"></span></p>
-            <h2 class="c6 pl50px" id="Supported_currencies"><span class="c19 c0">Supported currencies</span></h2>
-
-            <div class="flex flex-row">
-                <div class="text_block">
-                    <p class="c5"><span>The list of available currencies depends on your account configuration. Please check with the Support Team.</span></p>
-                </div>
-                <div class="table_block">
-                    <div class="data_block_table">
-                        <div class="tableDivHeader ">
-                            <div class="cardsTableHeader">
-                                <div class="w50percent">
-                                    CODE
-                                </div>
-                                <div class="w50percent">
-                                    CURRENCY
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tableDivContainer">
-                            <table >
-                                <tbody class="cardsTableBody">
-                                    <tr>
-                                        <td class="w50percent">
-                                            USD
-                                        </td>
-                                        <td class="w50percent">
-                                            United States Dollars
-                                        </td>
-
-                                    </tr>
-                                    <tr>
-                                        <td class="w50percent">
-                                            EUR
-                                        </td>
-                                        <td>
-                                            Euro
-                                        </td>
-
-                                    </tr>
-                                    <tr>
-                                        <td class="w50percent">
-                                            GBP
-                                        </td>
-                                        <td>
-                                            British Pound
-                                        </td>
-
-                                    </tr>
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
+                        <p class="c5">
+                            <span class="c4">
+                                You can use the NPGW API via our Sandbox while completing your integration, which won&rsquo;t affect your live data or interact with the Acquiring networks. The domain and credentials you use to authenticate and
+                            </span>
+                            <span>submit yours </span><span class="c4">request determines whether </span><span>a payment </span><span class="c1">is processed via Production or Sandbox.</span>
+                        </p>
                     
-                </div>
-            </div>
-            
-            
-            
-            
-            
-            <h2 class="c6 pl50px" id="Transaction_statuses"><span class="c19 c0">Transaction statuses</span></h2>
-
-            <div class="flex flex-row">
-                <div class="text_block">
-
-                </div>
-                <div class="table_block">
-                    <span style="overflow: hidden; display: inline-block; margin: 0px 0px; border: 0px solid #000000; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px); width: 559.2px; height: 366.37px;">
-                        <img alt="" src="images/image1.png" style="width: 559.2px; height: 366.37px; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
-                    </span>
-                </div>
-            </div>
-            
-            
-            <hr style="page-break-before: always; display: none;" />
-            
-            <h1 class="c6 pl50px" id="Core_Resources"><span>Core Resources</span></h1>
-
-            <h2 class="c6 pl50px" id="Token"><span>Token</span></h2>
-            <div class="flex flex-row">
-                <div class="text_block">
+                        <p class="c5"><span class="c1">The NPGW API doesn&rsquo;t currently support bulk updates. You can work on only one object per request.</span></p>
+                        
+                        <h2 class="c6" id="Technical_Documentation"><span>Technical Documentation</span></h2>
+                        <p class="c5"><span class="c1">Further detailed documentation for developers is available via the following links.</span></p>
                     
+                        <ul class="c41 lst-kix_ksvcksyqiwbz-0 start">                
+                            <li class="c5 c13 li-bullet-0">
+                                <a class="c4 underline link" href="/docs/api/">API Documentation </a>
+                            </li>
+                            <!-- <li class="c5 c13 li-bullet-0">
+                                <a class="c4 underline link" type="text/yaml" href="/docs/api/api.yaml">Swagger Editor</a>
+                            </li> -->
+                        </ul>
+                    
+                        <h2 class="c6" id="Usage"><span>Usage</span></h2>
+                        <p ><span class="c1">There are multiple ways you can explore the Merchant API:</span></p>
+                        <ul class="c41 lst-kix_azv0bdsdg6gt-0 start">
+                            <li class="c10 c13 li-bullet-0">
+                                <span class="c4">By using the classic Swagger toolset, upload the definition to the</span>
+                            
+                                <a class="c37 link" href="http://editor.swagger.io/">Swagger Editor</a>
+                    
+                            </li>
+                            <li class="c10 c13 li-bullet-0">
+                                <span class="c4">By using</span>
+                                
+                                <a class="c37 link" href="https://www.getpostman.com/postman">Postman</a>
+                                <span class="c1">&nbsp;to import the API definition and create your personal collection of requests.</span>
+                            </li>
+                        </ul>
+                        <hr style="page-break-before: always; display: none;" />
+                        
+                        <h1 class="c6" id="Authentication"><span class="c38 c0 c24">Authentication</span></h1>
                         <p class="c10">
-                            <span class="c4">The Token endpoint is used to create a new </span><span class="c4 c22">Bearer token</span>
-                            <span class="c1">&nbsp;or refresh an expired one for accessing the NPGW API. Tokens are valid for 15 minutes but can be regenerated at any time.</span>
+                            <span class="c4">The NPGW API uses a </span><span class="c0 c24">Secret Token</span>                
+                            <span class="c1">to authenticate requests. You can view and manage your tokens within your account.</span>
                         </p>
                         <p class="c10">
-                            <span class="c4">The request requires a plain text </span><span class="c4 c22">Secret Token</span><span class="c4">&nbsp;within the body. A successful response returns a JSON object containing the </span>
-                            <span class="c0 c24">ID Token</span><span class="c1">&nbsp;which can be used for further operation of the NPGW API.</span>
+                            <span class="c4">Your </span><span class="c4 c22">Secret Token</span>
+                            <span class="c1">&nbsp;carries many privileges, so be sure to keep it secure! Do not share your Token in publicly accessible areas such as GitHub, client-side code, and so forth.</span>
                         </p>
+                        <p class="c10">
+                            <span class="c4">All API requests must be made over</span>
+                            
+                            <a class="c37 link" href="http://en.wikipedia.org/wiki/HTTP_Secure">HTTPS</a>
+                            <span class="c1">. Calls made over plain HTTP will fail. API requests without authentication will also fail.</span>
+                        </p>
+                    </div>
+                    <div class="table_block">
 
-                        <a class="c4 underline link" href="/docs/api/#api-Authentication-getToken"> See details </a>
-
-                </div>
-                <div class="table_block">        
-                    <div class="data_block_table">
-                        <div class="tableDivHeader">
-                            ENDPOINTS
-                        </div>
-                        <div class="tableDivContainer">
-                            <table class="errorTable">
-                                <thead></thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <span class="c14 c0 c24">POST</span>
-                                        </td>
-                                        <td>
-                                            <span class="c1"> /token</span>
-                                        </td>
-                                    </tr>
-                                    
-                                </tbody>
-                            </table>
-                        </div>
                     </div>
                 </div>
-            </div>
 
-            <h2 class="c6 pl50px" id="Payment"><span>Payment</span></h2>
-            <div class="flex flex-row">
-                <div class="text_block">
-                    
-                    <p class="c10"><span class="c1">Posting to the Transaction endpoint enables a new credit/debit card payment to be submitted for processing.</span></p>
-                    <p class="c10">
-                        <span class="c4">The NPGW supports both </span><span class="c0 c24">SALE</span><span class="c4">&nbsp;and </span><span class="c0 c24">AUTH</span><span class="c4">&nbsp;transaction types (the latter requiring a separate </span>
-                        <a class="c37 link" href="/docs/api/#api-PaymentOperations-captureTransaction">Capture</a><span class="c4">&nbsp;action to be submitted to complete a payment). On success, the NPGW API returns a secure </span>
-                        <span class="c0 c24">Payment URL</span><span class="c1">&nbsp; to which the end customer must be redirected in order to complete 3D Secure enrollment checks and authentication with their bank where necessary.</span>
-                    </p>
 
-                    <p><span class="c0 c24">Heads up!</span></p>
-                    <p class="c10">The optional async query parameter (a boolean) determines whether a transaction should be processed asynchronously with the NPGW - if true, the API responds immediately while processing continues in the background.</p>
-                </div>
-                <div class="table_block">
+                
+                <hr style="page-break-before: always; display: none;" />
+                
+                <h1 class="c6 pl50px" id="Environments"><span class="c38 c0 c24">Environments</span></h1>
 
-                    <div class="data_block_table">
-                        <div class="tableDivHeader">
-                            ENDPOINTS
-                        </div>
-                        <div class="tableDivContainer">
-                            <table class="errorTable">
-                                <thead></thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <span class="c14 c0 c24">POST</span>
-                                        </td>
-                                        <td>
-                                            <span class="c1"> /transaction</span>
-                                        </td>
-                                    </tr>
-                                    
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        <p class="c10">
+                            <span class="c4">The NPGW provides two separate domains for our API: one for </span><span class="c0 c24">Sandbox</span><span class="c4">&nbsp;and one for </span><span class="c0 c24">Production</span>
+                            <span class="c1">
+                                . The sandbox environment is intended for testing and development, while the production environment is used for live transaction processing. All API endpoints are consistent across both environments, meaning the request
+                                structure, parameters, and responses are the same&mdash;only the base domain changes depending on the environment.
+                            </span>
+                        </p>
+                        <p class="c10"><span class="c1">Successful acceptance testing is required in order to move your integration from Sandbox to Production.</span></p>
                     </div>
-                </div>
-            </div>
-            
-            <h3 class="c6 pl50px" id="The_Transaction_object"><span class="c0 c15">The Transaction object</span></h3>
 
-            <div class="flex flex-row">
-                <div class="text_block">
-                    <p>
-                        For full detail of the required request structure for and Gateway responses post Transaction processing please review the API Documentation.
-                    </p>
-                    <a class="c4 underline link" href="/docs/api/#api-Payment-createTransaction"> See details </a>
-                </div>
-                <div class="table_block">
-
-                </div>
-            </div>
-            
-           
-            
-            <h2 class="c6 pl50px" id="Payment_Operations"><span class="c19 c0">Payment Operations</span></h2>
-
-            <div class="flex flex-row">
-                <div class="text_block">
-                    <p class="c10">
-
-                        <span>The NPGW API provides further </span><span class="c0">Management</span>
-                        <span class="c1">
-                            &nbsp;functions that can be used with previously processed Transactions in order to collect or return funds as necessary. The full Transaction response object is returned to confirm the status of each operation.
-                        </span>
-                    </p>
-                    <h3 class="c6" id="Capture"><span class="c32 c0 c22 c24">Capture</span></h3>
-                    <p class="c10">
-                        <span class="c4">This endpoint enables </span><span class="c0 c24">Capture</span><span class="c4">&nbsp;of an </span><span class="c4 c22">AUTH</span><span class="c4">&nbsp;Transaction Type with status </span>
-                        <span class="c4 c22">A</span><span class="c22">uthorised</span><span class="c1">&nbsp;by referencing its transactionId.</span>
-                    </p>
-                    <p class="c10"><span class="c1">The NPGW supports both full and partial captures via this operation.</span></p>
-
-
-                    <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-captureTransaction"> See details </a>
-            
-                    <h3 class="c6" id="Cancel"><span class="c32 c0 c22 c24">Cancel</span></h3>
-                    <p class="c10">
-                        <span class="c4">This endpoint enables </span><span class="c0 c24">Cancellation </span><span class="c4">(or Void),</span><span class="c4">&nbsp;in full, of </span><span>an </span><span class="c22">AUTH</span>
-                        <span>&nbsp;Transaction Type with status </span><span class="c22">Authorised</span><span class="c4">&nbsp;by referencing its transactionId. A </span><span class="c4 c22">cancellation</span>
-                        <span class="c1">&nbsp;may only be submitted against a Transaction which has no captures associated with it.</span>
-                    </p>
-                    <p class="c10">
-                        <span class="c4">Please note that this operation is irreversible. Once th</span><span>is</span><span class="c4">&nbsp;operation has been completed successfully, if you wish to charge the customer again</span>
-                        <span>&nbsp;then</span><span class="c1">&nbsp;a new transaction must be submitted.</span>
-                    </p>
-
-                    <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-cancelTransaction"> See details </a>
-
-            
-                    <h3 class="c6" id="Refund"><span class="c32 c0 c22 c24">Refund</span></h3>
-                    <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span><span class="c1">&nbsp;of a successful Transaction by referencing its transactionId. </span></p>
-                    <p class="c10"><span class="c1">The NPGW supports both full and partial refunds via this operation.</span></p>
-
-                    <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-refundTransaction"> See details </a>
-                
-
-                    <h3 class="c6" id="Refund"><span class="c32 c0 c22 c24">Refund against an individual capture</span></h3>
-                    <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span>
-                        <span class="c1">&nbsp;against a successful Capture within a Transaction by referencing the transactionId and the individual operationId of the capture. </span>
-                    </p>
-                   
-
-                    <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-refundCaptureTransaction"> See details </a>
-
-                    
-                    <h2 class="c6 " id="Payment_Status"><span class="c19 c0">Payment Status</span></h2>
-                    <p class="c10">
-                        <span class="c4">Querying the </span><span class="c0 c24">Transaction </span><span class="c4">endpoint allows you to retrieve the full detail and current status of a Transaction using either the NPGW </span>
-                        <span class="c4 c22">transactionId</span><span class="c4">&nbsp;or your own submitted </span><span class="c4 c22">externalTransactionId</span><span class="c4">.</span>
-                        <span class="c1">&nbsp;The full Transaction response object is returned.</span>
-                    </p>
-
-                    <a class="c4 underline link " href="/docs/api/#api-PaymentStatus-getTransaction"> See details </a>
-
-                    
-                    <h2 class="c6" id="Notifications">
-                        <span>Notifications</span>
-                    </h2>
-                    <p class="c10">
-                        <span class="c4">The NPGW is able to post notifications to your servers for each event that occurs during the lifecycle of a </span>
-                        <span class="c4 c22">Transaction</span><span class="c1">. </span>
-                    </p>
-                    <p class="c10">
-
-                        <span class="c4"></span>Notifications will be automatically sent if a valid, fully qualified HTTPS-secured endpoint is provided in the <b>notificationUrl</b> field with each submitted 
-                        <span class="c4 c22">Transaction</span>. The webhook request body will contain the full <span class="c4 c22">Transaction response object</span>. 
-                        You can append query string parameters (e.g. a security token) 
-                        to the <b>notificationUrl</b>. 
-                        These parameters will be returned unmodified with each webhook, allowing you to verify that the communication originated from our gateway.</span> 
-                        
-                    </p>
-
-                    <p class="c10">
-                        <span class="c0 c24 c40">Heads up!</span>
-                        <span class="c4">
-                            <br />
-                            The NPGW sends a single webhook per event &mdash; there are no retries if your server is unavailable or does not respond.
-                        </span>
-                        <span class="c1">They are also sent asynchronously and so may arrive out of order.</span>
-                    </p>
-                
-                    
-                    <hr style="page-break-before: always; display: none;" />
-                    <h1 class="c6 c27" id="h.zevk44ifkf9y"><span class="c38 c0 c24"></span></h1>
-                </div>
-                <div class="table_block">
-
-                </div>
-            </div>
-                    
-            <h1 class="c6 pl50px" id="Testing"><span class="c38 c0 c24">Testing</span></h1>
-
-            <div class="flex flex-row">
-                <div class="text_block">
-                    <p class="c10"><span class="c1">All features of the NPGW can be tested via our Sandbox!</span></p>
-                    <p class="c10"><span class="c4">However, we please ask you don&rsquo;t use the sandbox to load test your integration as it is a </span><span>non-performant</span><span class="c1">&nbsp;environment.</span></p>
-                    <h2 class="c6" id="Test_Cards">
-                        <span>Test Cards</span>
-                    </h2>
-                    <p class="c5"><span class="c1">To simulate payments and QA your integration, use test cards from the following list for each scenario you wish to fulfill.</span></p>
-                    
-                    <p class="c5">
-                        <span class="c0 c40">Heads up!</span>
-                        <span>
-                            <br />
-                            Don&rsquo;t use real card details. The NPGW prohibits testing with live card data on Sandbox.
-                        </span>
-                    </p>
-                </div>
-                <div class="table_block">
-                    <div class="data_block_table">
-                        <div class="tableDivHeader ">
-                            <div class="cardsTableHeader">
-                                <div class="w22percent">
-                                    NUMBER
-                                </div>
-                                <div class="w18percent">
-                                    CARD TYPE
-                                </div>
-                                <div class="w20percent">
-                                    CVC/CVV
-                                </div>
-                                <div class="w20percent">
-                                    DATE
-                                </div>
-                                <div class="w25percent">
-                                    SCENARIO
-                                </div>
+                    <div class="table_block">
+                        <div class="data_block_table mb15px">
+                            <div class="tableDivHeader">
+                                SANDBOX BASE DOMAIN
+                            </div>
+                            <div class="tableDivContainer p12">
+                                <p class="c2">https://sandbox.npgw.xyz</p>
                             </div>
                         </div>
-                        <div class="tableDivContainer">
-                            <table >
-                                <tbody class="cardsTableBody">
-                                    <tr>
-                                        <td class="w22percent">
-                                            2303779999000275
-                                        </td>
-                                        <td class="w18percent">
-                                            MASTERCARD
-                                        </td>
-                                        <td class="w20percent">
-                                            Any 3 digits
-                                        </td>
-                                        <td class="w20percent">
-                                            Any future date
-                                        </td>
-                                        <td class="w20percent">
-                                            3DS 2.0 Frictionless Success
-                                        </td>
+
+                        <div class="data_block_table">
+                            <div class="tableDivHeader">
+                                PRODUCTION BASE DOMAIN
+                            </div>
+                            <div class="tableDivContainer p12">
+                                <p class="c2">https://npgw.xyz</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                
+                <hr style="page-break-before: always; display: none;" />
+                
+                <h1 class="c6 pl50px" id="Company_Registration"><span class="c38 c0 c24">Company Registration</span></h1>
+
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        <p class="c10">
+                            <span class="c4">Once you have been successfully set up as a Company within the NPGW, our team will configure </span>
+                            <span class="c0 c24">Business Units</span>
+                            <span class="c1">&nbsp;as required for payment processing under your organisational hierarchy.</span>
+                        </p>
+                        <p class="c10">
+                            <span class="c4">Each </span><span class="c4 c22">Business Unit</span><span class="c4">&nbsp;is assigned a unique </span><span class="c0 c24">merchantId</span><span class="c4">&nbsp;and requires its own </span>
+                            <span class="c4 c22">Secret Token</span><span class="c4">&nbsp;to interface with the Merchant API.</span>
+                        </p>
+
+                        <p>
+                            You can retrieve these details by logging into your account and navigating to the <span class="c0 c24">System Administration</span> menu.
+                        </p>
+                    </div>
+                    <div class="table_block">
+
+                    </div>
+                </div>
+
+                
+                
+            
+                
+                <h1 class="c6 pl50px" id="Errors"><span class="c38 c0 c24">Errors</span></h1>
+
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        <p class="c29">
+                            <span class="c4">The NPGW uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the </span><span class="c14 c0 c24">2xx</span>
+                            <span class="c4">&nbsp;range indicate success. Codes in the </span><span class="c14 c0 c24">4xx</span>
+                            <span class="c4">&nbsp;range indicate an error that failed given the information provided (e.g. a required parameter was omitted etc). Codes in the </span><span class="c14 c0 c24">5xx</span>
+                            <span class="c1">&nbsp;range indicate an error with our servers (these are rare).</span>
+                        </p>
+                        
+                        <p>
+                            <span class="c0 c24">API-level errors</span> (such as invalid request parameters, authentication failures, or unsupported endpoints) are returned directly in the 
+                            response body, alongside the relevant HTTP status code.
+                        </p>
+
+                        <p>
+                            <span class="c0 c24">Transaction-level errors</span> (such as an issuer decline or 3D Secure failure) are returned within the transaction response body itself. 
+                            In these cases, the API request is considered valid and successful at the gateway level (typically a <span class="c14 c0 c24">200</span> response), but the transaction 
+                            result reflects the decline or failure.
+
+                        </p>
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table">
+                            <!-- <div class="tableDivHeader ">
+                                <div class="cardsTableHeader">
+                                    
+                                    <div class="w10percent">
+                                        HTTP
+                                    </div>
+                                    <div class="w20percent">
+                                        STATUS 
+                                    </div>
+                                    <div class="w65percent">
+                                        CODE SUMMARY
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="tableDivContainer">
+                                <table class="httpTable">
+                                    <thead class="tableDivHeader ">
+                                        <tr> 
+                                            <th>
+                                                HTTP
+                                            </th>
+                                            <th>
+                                                STATUS
+                                            </th>
+                                            <th>
+                                                CODE SUMMARY
+                                            </th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody class="cardsTableBody">
+                                        <tr>
+                                            <td class="w10percent">
+                                                200
+                                            </td>
+                                            <td class="w20percent">
+                                                OK
+                                            </td>
+                                            <td class="w65percent">
+                                                Everything worked as expected
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="w10percent">
+                                                400
+                                            </td>
+                                            <td class="w20percent">
+                                                Bad Request
+                                            </td>
+                                            <td class="w65percent">
+                                                The request was unacceptable, often due to missing a required parameter
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td >
+                                                401
+                                            </td>
+                                            <td >
+                                                Unauthorized
+                                            </td>
+                                            <td >
+                                                No valid Secret Token provided
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td >
+                                                403
+                                            </td>
+                                            <td >
+                                                Forbidden
+                                            </td>
+                                            <td >
+                                                The Secret Token doesn’t have permissions to perform the request
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td >
+                                                404
+                                            </td>
+                                            <td >
+                                                Not Found
+                                            </td>
+                                            <td >
+                                                The requested resource doesn't exist
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td >
+                                                405
+                                            </td>
+                                            <td >
+                                                Not Allowed
+                                            </td>
+                                            <td >
+                                                The request method is not supported for the requested resource
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td >
+                                                406
+                                            </td>
+                                            <td >
+                                                Not Acceptable
+                                            </td>
+                                            <td >
+                                                The requested resource could not be processed due to a conflict with this or related resources
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td >
+                                                422
+                                            </td>
+                                            <td >
+                                                Failed Validation
+                                            </td>
+                                            <td >
+                                                The request payload could not pass the validation (probably incorrect)
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td >
+                                                429
+                                            </td>
+                                            <td >
+                                                Too Many Requests
+                                            </td>
+                                            <td >
+                                                Too many requests hit the API too quickly. We recommend an exponential backoff of your requests
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td >
+                                                500
+                                            </td>
+                                            <td >
+                                                Server Errors
+                                            </td>
+                                            <td >
+                                                Something went wrong on NPGW’s end (these are rare)
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <p class="c29 c12"><span class="c1 c23"></span></p>
+                
+                <hr style="page-break-before: always; display: none;" />
+                
+                <h1 class="c6 pl50px" id="One_time_payments"><span class="c38 c0 c24">One-time payments</span></h1>
+
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        <ol class="c41 lst-kix_us75fhk8r05x-0 start" start="1">
+                            <li class="c5 c13 li-bullet-0"><span class="c1">When a customer is ready to complete a purchase, your application will submit a Transaction to the NPGW API.</span></li>
+                            <li class="c5 c13 li-bullet-0"><span class="c1">The API provides a URL that redirects customers to an NPGW-hosted page for 3D Secure.</span></li>
+                            <li class="c5 c13 li-bullet-0"><span class="c1">Customers authenticate with their bank when required to complete the transaction.</span></li>
+                            <li class="c5 c13 li-bullet-0"><span class="c1">Asynchronously, the NPGW API delivers notifications related to the Transaction and your application can further poll status.</span></li>
+                        </ol>
+
+                        <p class="c42">
+                            <span style="overflow: hidden; display: inline-block; margin: 0px 0px; border: 0px solid #000000; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px); ">
+                                <img alt="" src="images/image2.png" style="width: 100%; height: auto; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
+                            </span>
+                        </p>
+                    </div>
+                    <div class="table_block">
+                        
+                    </div>
+                </div>
+
+
+                <h1 class="c6 pl50px" id="Core_Resources"><span>Core Resources</span></h1>
+
+                <h2 class="c6 pl50px" id="Token"><span>Token</span></h2>
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        
+                            <p class="c10">
+                                <span class="c4">The Token endpoint is used to create a new </span><span class="c4 c22">Bearer token</span>
+                                <span class="c1">&nbsp;or refresh an expired one for accessing the NPGW API. Tokens are valid for 15 minutes but can be regenerated at any time.</span>
+                            </p>
+                            <p class="c10">
+                                <span class="c4">The request requires a plain text </span><span class="c4 c22">Secret Token</span><span class="c4">&nbsp;within the body. A successful response returns a JSON object containing the </span>
+                                <span class="c0 c24">ID Token</span><span class="c1">&nbsp;which can be used for further operation of the NPGW API.</span>
+                            </p>
+
+                        
+
+                    </div>
+                    <div class="table_block">        
+                        <div class="data_block_table mb15px">
+                            <div class="tableDivHeader">
+                                ENDPOINTS
+                            </div>
+                            <div class="tableDivContainer">
+                                <table class="errorTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span class="c14 c0 c24">POST</span>
+                                            </td>
+                                            <td>
+                                                <span class="c1"> /merchant-v1/token</span>
+                                            </td>
+                                        </tr>
                                         
-                                    </tr>
-                                    <tr>
-                                        <td class="w22percent">
-                                            2303779999000291
-                                        </td>
-                                        <td>
-                                            MASTERCARD
-                                        </td>
-                                        <td>
-                                            Any 3 digits
-                                        </td>
-                                        <td>
-                                            Any future date
-                                        </td>
-                                        <td>
-                                            3DS 2.0 Frictionless Fail
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="w20percent">
-                                            2303779999000317
-                                        </td>
-                                        <td>
-                                            MASTERCARD
-                                        </td>
-                                        <td>
-                                            Any 3 digits
-                                        </td>
-                                        <td>
-                                            Any future date
-                                        </td>
-                                        <td>
-                                            3DS 2.0 Frictionless Unknown
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="w20percent">
-                                            2303779999000408
-                                        </td>
-                                        <td>
-                                            MASTERCARD
-                                        </td>
-                                        <td>
-                                            Any 3 digits
-                                        </td>
-                                        <td>
-                                            Any future date
-                                        </td>
-                                        <td>
-                                            3DS 2.0 Challenge Success
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="w20percent">
-                                            2303779999000424
-                                        </td>
-                                        <td>
-                                            MASTERCARD
-                                        </td>
-                                        <td>
-                                            Any 3 digits
-                                        </td>
-                                        <td>
-                                            Any future date
-                                        </td>
-                                        <td>
-                                            3DS 2.0 Challenge Fail
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td class="w20percent">
-                                            4093191766216474
-                                        </td>
-                                        <td>
-                                            VISA
-                                        </td>
-                                        <td>
-                                            Any 3 digits
-                                        </td>
-                                        <td>
-                                            Any future date
-                                        </td>
-                                        <td>
-                                            None enrolled card Success
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td class="w20percent">
-                                            5126702681201744
-                                        </td>
-                                        <td>
-                                            MASTERCARD
-                                        </td>
-                                        <td>
-                                            Any 3 digits
-                                        </td>
-                                        <td>
-                                            Any future date
-                                        </td>
-                                        <td>
-                                            None enrolled card Fail
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td class="w20percent">
-                                            5513935292057458
-                                        </td>
-                                        <td>
-                                            MASTERCARD
-                                        </td>
-                                        <td>
-                                            Any 3 digits
-                                        </td>
-                                        <td>
-                                            Any future date
-                                        </td>
-                                        <td>
-                                            Issuer decline
-                                        </td>
-                                    </tr>
-
-                                    
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+                        <a class="c4 underline link" href="/docs/api/#api-Authentication-getToken"> See details </a>
                     </div>
                 </div>
 
-            </div>
+                <h2 class="c6 pl50px" id="Payment"><span>Payment</span></h2>
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        
+                        <p class="c10"><span class="c1">Posting to the Transaction endpoint enables a new credit/debit card payment to be submitted for processing.</span></p>
+                        <p class="c10">
+                            <span class="c4">The NPGW supports both </span><span class="c0 c24">SALE</span><span class="c4">&nbsp;and </span><span class="c0 c24">AUTH</span><span class="c4">&nbsp;transaction types (the latter requiring a separate </span>
+                            <a class="c37 link" href="/docs/api/#api-PaymentOperations-captureTransaction">Capture</a><span class="c4">&nbsp;action to be submitted to complete a payment). On success, the NPGW API returns a secure </span>
+                            <span class="c0 c24">Payment URL</span><span class="c1">&nbsp; to which the end customer must be redirected in order to complete 3D Secure enrollment checks and authentication with their bank where necessary.</span>
+                        </p>
 
-<!--             <h2 class="c6" id="Fraud_controls"><span class="c19 c0">Fraud controls</span></h2>
-            <div class="flex flex-row">
-                <div class="text_block">
-                    <p class="c10">
-                        <span class="c4">The NPGW&rsquo;s Fraud Controls can block payments when they have a high risk level or fail verification checks. This automated fraud prevention </span><span>process </span>
-                        <span class="c1">evaluates each payment, without requiring any action from you.</span>
-                    </p>
-                    <p class="c10">
-                        <span class="c4">When </span><span>NPGW </span>
-                        <span class="c1">blocks a payment, it doesn&rsquo;t obtain authorization from the card issuer. This precaution helps prevent potential fraudulent payments that might lead to disputes.</span>
-                    </p>
-                    <p class="c10"><span class="c4">Use an email address with domain </span><span class="c4 c22">fraudster.com</span><span class="c1">&nbsp;to test how your integration responds to blocked payments.</span></p>
-                </div>
-                <div>
-
-                </div>
-
-            </div> -->
-            
-            
-            <h1 class="c6 pl50px" id="Appendix"><span class="c38 c0 c24">Appendix</span></h1>
-            <h2 class="c6 pl50px" id="Error_Codes"><span class="c19 c0">Error Codes</span></h2>
-     
-            <div class="flex flex-row mb15px">
-                <div class="text_block">
-
-                </div>
-                <div class="table_block">
-                    <div class="data_block_table">
-                        <div class="tableDivHeader">
-                            Common API (service) error list
+                        <div class="data_block_table">
+                            <div class="tableDivHeader tableDivHeaderHeadsUp">
+                                Heads up!
+                            </div>
+                            <div class="tableDivContainer p12">
+                                <p class="c10">
+                                    The optional async query parameter (a boolean) determines whether a transaction should be processed asynchronously with the NPGW - if true, the API responds immediately while processing continues in the background.
+                                </p>
+                            </div>
                         </div>
-                        <div class="tableDivContainer">
-                            <table class="errorTable">
-                                <thead></thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            BRE-400.1
-                                        </td>
-                                        <td>
-                                            Bad request error. Unable to parse data
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            BRE-400.2
-                                        </td>
-                                        <td>
-                                            Bad request error. Required field is not specified
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            BRE-400.3
-                                        </td>
-                                        <td>
-                                            Bad request error. Request body could not be deserialized
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            BRE-400.4
-                                        </td>
-                                        <td>
-                                            Bad request error. Failed to convert value {V} for parameter {P} due to type mismatch
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            URE-401.1
-                                        </td>
-                                        <td>
-                                            Unauthorized request error. Incorrect username or password
-                                        </td>
-                                    </tr>
 
-                                    <tr>
-                                        <td>
-                                            URE-401.2
-                                        </td>
-                                        <td>
-                                            Unauthorized request error. Incorrect token
-                                        </td>
-                                    </tr>
+                    </div>
+                    <div class="table_block">
 
-                                    <tr>
-                                        <td>
-                                            UCE-404
-                                        </td>
-                                        <td>
-                                            Unknown client error. The requested resource was not found
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            DSE-409.1
-                                        </td>
-                                        <td>
-                                            Data system error. Resource already exists
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UCE-422
-                                        </td>
-                                        <td>
-                                            Unprocessable content error. The request was well-formed (i.e., syntactically correct) but could not be processed
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UCE-422.1
-                                        </td>
-                                        <td>
-                                            Unprocessable content error. Some value is invalid
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UCE-422.2
-                                        </td>
-                                        <td>
-                                            Unprocessable content error. One value is invalid
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UCE-422.3
-                                        </td>
-                                        <td>
-                                            Unprocessable content error. Many values are invalid
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            USE-500.1
-                                        </td>
-                                        <td>
-                                            Unknown system error. An unexpected condition was encountered and no more specific message is suitable
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            USE-500.2
-                                        </td>
-                                        <td>
-                                            Unknown system error. Exception for missing implementation
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="data_block_table">
+                            <div class="tableDivHeader">
+                                ENDPOINTS
+                            </div>
+                            <div class="tableDivContainer">
+                                <table class="errorTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span class="c14 c0 c24">POST</span>
+                                            </td>
+                                            <td>
+                                                <span class="c1"> /merchant-v1/transaction</span>
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                
+                <h3 class="c6 pl50px" id="The_Transaction_object"><span class="c0 c15">The Transaction object</span></h3>
 
-            <div class="flex flex-row mb15px">
-                <div class="text_block">
-
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        <p>
+                            For full detail of the required request structure for and Gateway responses post Transaction processing please review the API Documentation.
+                        </p>
+                        
+                    </div>
+                    <div class="table_block">
+                        <a class="c4 underline link" href="/docs/api/#api-Payment-createTransaction"> See details </a>
+                    </div>
                 </div>
-                <div class="table_block">
-                    <div class="data_block_table ">
-                        <div class="tableDivHeader">
-                            Merchant API (service) error list
-                        </div>
-                        <div class="tableDivContainer">
-                            <table class="errorTable">
-                                <thead></thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            AIE-404.11
-                                        </td>
-                                        <td>
-                                            Acquirer internal error. Acquirer not found for X merchant
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            AIE-404.12
-                                        </td>
-                                        <td>
-                                            Acquirer internal error. Acquirer not found for X currency
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            AIE-500.11
-                                        </td>
-                                        <td>
-                                            Acquirer internal error. Acquirer payment status not recognized
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            AIE-501.11
-                                        </td>
-                                        <td>
-                                            Acquirer internal error. Acquirer X is not implemented
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            AIE-501.12
-                                        </td>
-                                        <td>
-                                            Acquirer internal error. Acquirer was found for X merchant and Y currency, but it is not implemented
-                                        </td>
-                                    </tr>
+                
+                <h2 class="c6 pl50px" id="Payment_Operations"><span class="c19 c0">Payment Operations</span></h2>
 
-                                    <tr>
-                                        <td>
-                                            AEE-400.11
-                                        </td>
-                                        <td>
-                                            Acquirer external error. Unable to send a request to the Acquirer
-                                        </td>
-                                    </tr>
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        <p class="c10">
+                            <span>The NPGW API provides further </span><span class="c0">Management</span>
+                            <span class="c1">
+                                &nbsp;functions that can be used with previously processed Transactions in order to collect or return funds as necessary. The full Transaction response object is returned to confirm the status of each operation.
+                            </span>
+                        </p>
+                    </div>
 
-                                    <tr>
-                                        <td>
-                                            AEE-422.11
-                                        </td>
-                                        <td>
-                                            Acquirer external error. Purchase is not refundable
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            AEE-500.11
-                                        </td>
-                                        <td>
-                                            Acquirer external error. Unknown acquirer error
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            AEE-501.11
-                                        </td>
-                                        <td>
-                                            Acquirer external error. Payment details not implemented
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            CEE-400.11
-                                        </td>
-                                        <td>
-                                            Control external error. Unable to send a request to the Control
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            CEE-500.11
-                                        </td>
-                                        <td>
-                                            Control external error. Unknown control error
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            SCE-400.11
-                                        </td>
-                                        <td>
-                                            System communication error. Unable to get a service
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="table_block">
 
                     </div>
                 </div>
 
-            </div>
+                <h3 class="c6 pl50px" id="Capture"><span class="c32 c0 c22 c24">Capture</span></h3>
+                
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        
+                        <p class="c10">
+                            <span class="c4">This endpoint enables </span><span class="c0 c24">Capture</span><span class="c4">&nbsp;of an </span><span class="c4 c22">AUTH</span><span class="c4">&nbsp;Transaction Type with status </span>
+                            <span class="c4 c22">A</span><span class="c22">uthorised</span><span class="c1">&nbsp;by referencing its transactionId.</span>
+                        </p>
+                        <p class="c10"><span class="c1">The NPGW supports both full and partial captures via this operation.</span></p>
 
-            <div class="flex flex-row">
-                <div class="text_block">
 
-                </div>
-                <div class="table_block">
-                    <div class="data_block_table ">
-                        <div class="tableDivHeader">
-                            Portal API (service) error list
+                        
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table mb15px">
+                            <div class="tableDivHeader">
+                                ENDPOINTS
+                            </div>
+                            <div class="tableDivContainer">
+                                <table class="errorTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span class="c14 c0 c24">POST</span>
+                                            </td>
+                                            <td>
+                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/capture</span>
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div class="tableDivContainer">
-                            <table class="errorTable">
-                                <thead></thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            UUE-422
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. The request was well-formed (i.e., syntactically correct) but could not be processed
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            UUE-422.21
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. Password did not conform with password policy
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            UUE-422.22
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. User challenge type not supported
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            UUE-422.23
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. User account already exists
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            UUE-422.24
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. The date field is invalid
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UUE-422.25
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. The request cannot be produce
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UUE-422.26
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. Too many merchants on the list
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UUE-401.21
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. Invalid session for the user, session is expired
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UUE-401.22
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. Invalid session for the user, session is corrupted
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UUE-403.21
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. The action cannot be performed because privileges are not granted
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UUE-409.21
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. User could not be created: user information contains non-existent merchant ids X in company Y
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UUE-501.21
-                                        </td>
-                                        <td>
-                                            Unprocessable user error. The challenge type X is not implemented
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            URE-403
-                                        </td>
-                                        <td>
-                                            Unauthorized user error
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            URE-403.22
-                                        </td>
-                                        <td>
-                                            Unauthorized user error. Company is deactivated
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            IAE-500
-                                        </td>
-                                        <td>
-                                            Internal authorization error
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            IAE-500.21
-                                        </td>
-                                        <td>
-                                            Internal authorization error. Error getting token
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UCOE-409.21
-                                        </td>
-                                        <td>
-                                            Unprocessable company error. Company could not be deleted: there are still users associated with it
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UCOE-409.22
-                                        </td>
-                                        <td>
-                                            Unprocessable company error. Company could not be deleted: there are still merchants associated with it
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UCOE-409.23
-                                        </td>
-                                        <td>
-                                            Unprocessable company error. Merchant could not be deleted: there are still acquirers associated with it
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UCOE-409.24
-                                        </td>
-                                        <td>
-                                            Unprocessable company error. Merchant could not be deleted: there are still users associated with it
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UCOE-422.23
-                                        </td>
-                                        <td>
-                                            Unprocessable company error. Merchant could not be created: the company already has a merchant with this title
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UCOE-422.24
-                                        </td>
-                                        <td>
-                                            Unprocessable company error. Merchant could not be updated: the company already has a merchant with this title
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            UTHE-422.21
-                                        </td>
-                                        <td>
-                                            Unprocessable transaction history error. MerchantId is required for role {X}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
+                        <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-captureTransaction"> See details </a>
                     </div>
                 </div>
 
-            </div>
+                <h3 class="c6 pl50px" id="Cancel"><span class="c32 c0 c22 c24">Cancel</span></h3>
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        
+                        <p class="c10">
+                            <span class="c4">This endpoint enables </span><span class="c0 c24">Cancellation </span><span class="c4">(or Void),</span><span class="c4">&nbsp;in full, of </span><span>an </span><span class="c22">AUTH</span>
+                            <span>&nbsp;Transaction Type with status </span><span class="c22">Authorised</span><span class="c4">&nbsp;by referencing its transactionId. A </span><span class="c4 c22">cancellation</span>
+                            <span class="c1">&nbsp;may only be submitted against a Transaction which has no captures associated with it.</span>
+                        </p>
+                        <p class="c10">
+                            <span class="c4">Please note that this operation is irreversible. Once th</span><span>is</span><span class="c4">&nbsp;operation has been completed successfully, if you wish to charge the customer again</span>
+                            <span>&nbsp;then</span><span class="c1">&nbsp;a new transaction must be submitted.</span>
+                        </p>
 
-         
-        </div>
+                        
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table mb15px">
+                            <div class="tableDivHeader">
+                                ENDPOINTS
+                            </div>
+                            <div class="tableDivContainer">
+                                <table class="errorTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span class="c14 c0 c24">POST</span>
+                                            </td>
+                                            <td>
+                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/cancel</span>
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-cancelTransaction"> See details </a>
+                    </div>
+                </div>
+
+                <h3 class="c6 pl50px" id="Refund"><span class="c32 c0 c22 c24">Refund</span></h3>
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        
+                        <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span><span class="c1">&nbsp;of a successful Transaction by referencing its transactionId. </span></p>
+                        <p class="c10"><span class="c1">The NPGW supports both full and partial refunds via this operation.</span></p>
+
+                        
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table mb15px">
+                            <div class="tableDivHeader">
+                                ENDPOINTS
+                            </div>
+                            <div class="tableDivContainer">
+                                <table class="errorTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span class="c14 c0 c24">POST</span>
+                                            </td>
+                                            <td>
+                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/refund</span>
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-refundTransaction"> See details </a>
+                    </div>
+                </div>
+
+                <h3 class="c6 pl50px" id="Refund"><span class="c32 c0 c22 c24">Refund against an individual capture</span></h3>
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        
+                        <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span>
+                            <span class="c1">&nbsp;against a successful Capture within a Transaction by referencing the transactionId and the individual operationId of the capture. </span>
+                        </p>
+               
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table mb15px">
+                            <div class="tableDivHeader">
+                                ENDPOINTS
+                            </div>
+                            <div class="tableDivContainer">
+                                <table class="errorTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span class="c14 c0 c24">POST</span>
+                                            </td>
+                                            <td>
+                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/refund/capture/{operationId}</span>
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-refundCaptureTransaction"> See details </a>
+                    </div>
+                </div>
+
+                <h3 class="c6 pl50px" id="Refund"><span class="c32 c0 c22 c24">Refund against an individual capture</span></h3>
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        
+                        <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span>
+                            <span class="c1">&nbsp;against a successful Capture within a Transaction by referencing the transactionId and the individual operationId of the capture. </span>
+                        </p>
+                    
+
+                        
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table mb15px">
+                            <div class="tableDivHeader">
+                                ENDPOINTS
+                            </div>
+                            <div class="tableDivContainer">
+                                <table class="errorTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span class="c14 c0 c24">POST</span>
+                                            </td>
+                                            <td>
+                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/refund/capture/{operationId}</span>
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-refundCaptureTransaction"> See details </a>
+                    </div>
+                </div>
+
+
+                <h2 class="c6 pl50px" id="Payment_Status"><span class="c19 c0">Payment Status</span></h2>
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        
+                        <p class="c10">
+                            <span class="c4">Querying the </span><span class="c0 c24">Transaction </span><span class="c4">endpoint allows you to retrieve the full detail and current status of a Transaction using either the NPGW </span>
+                            <span class="c4 c22">transactionId</span><span class="c4">&nbsp;or your own submitted </span><span class="c4 c22">externalTransactionId</span><span class="c4">.</span>
+                            <span class="c1">&nbsp;The full Transaction response object is returned.</span>
+                        </p>
+
+                        
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table mb15px">
+                            <div class="tableDivHeader">
+                                ENDPOINTS
+                            </div>
+                            <div class="tableDivContainer">
+                                <table class="errorTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span class="c14 c0 c24">GET</span>
+                                            </td>
+                                            <td>
+                                                <span class="c1"> /merchant-v1/transaction</span>
+                                            </td>
+                                        </tr>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <a class="c4 underline link " href="/docs/api/#api-PaymentStatus-getTransaction"> See details </a>
+                    </div>
+                </div>
+
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+
+                        <h2 class="c6" id="Notifications">
+                            <span>Notifications</span>
+                        </h2>
+                        <p class="c10">
+                            <span class="c4">The NPGW is able to post notifications to your servers for each event that occurs during the lifecycle of a </span>
+                            <span class="c4 c22">Transaction</span><span class="c1">. </span>
+                        </p>
+                        <p class="c10">
+
+                            <span class="c4"></span>Notifications will be automatically sent if a valid, fully qualified HTTPS-secured endpoint is provided in the <b>notificationUrl</b> field with each submitted 
+                            <span class="c4 c22">Transaction</span>. The webhook request body will contain the full <span class="c4 c22">Transaction response object</span>. 
+                            You can append query string parameters (e.g. a security token) 
+                            to the <b>notificationUrl</b>. 
+                            These parameters will be returned unmodified with each webhook, allowing you to verify that the communication originated from our gateway.</span> 
+                            
+                        </p>
+                    
+                        <div class="data_block_table">
+                            <div class="tableDivHeader tableDivHeaderHeadsUp">
+                                Heads up!
+                            </div>
+                            <div class="tableDivContainer p12">
+                                <p class="c10">
+                                    The NPGW sends a single webhook per event &mdash; there are no retries if your server is unavailable or does not respond.
+                                </p>
+                                <p class="c10">
+                                    They are also sent asynchronously and so may arrive out of order.
+                                </p>
+                        
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table_block">
+
+                    </div>
+                </div>
+                        
+                <h1 class="c6 pl50px" id="Testing"><span class="c38 c0 c24">Testing</span></h1>
+
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        <p class="c10"><span class="c1">All features of the NPGW can be tested via our Sandbox!</span></p>
+                        <p class="c10"><span class="c4">However, we please ask you don&rsquo;t use the sandbox to load test your integration as it is a </span><span>non-performant</span><span class="c1">&nbsp;environment.</span></p>
+                        <h2 class="c6" id="Test_Cards">
+                            <span>Test Cards</span>
+                        </h2>
+                        <p class="c5"><span class="c1">To simulate payments and QA your integration, use test cards from the following list for each scenario you wish to fulfill.</span></p>
+                        
+                        <div class="data_block_table">
+                            <div class="tableDivHeader tableDivHeaderHeadsUp">
+                                Heads up!
+                            </div>
+                            <div class="tableDivContainer p12">
+                                <p class="c10">
+                                    Don&rsquo;t use real card details. The NPGW prohibits testing with live card data on Sandbox.
+                                </p>
+                        
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table">
+                            <!-- <div class="tableDivHeader ">
+                                <div class="cardsTableHeader">
+                                    <div class="w22percent">
+                                        NUMBER
+                                    </div>
+                                    <div class="w18percent">
+                                        CARD TYPE
+                                    </div>
+                                    <div class="w20percent">
+                                        CVC/CVV
+                                    </div>
+                                    <div class="w20percent">
+                                        DATE
+                                    </div>
+                                    <div class="w25percent">
+                                        SCENARIO
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="tableDivContainer">
+                                <table >
+                                    <thead class="tableDivHeader ">
+                                        <tr> 
+                                            <th>
+                                                NUMBER
+                                            </th>
+                                            <th>
+                                                CARD TYPE
+                                            </th>
+                                            <th>
+                                                CVC/CVV
+                                            </th>
+                                            <th>
+                                                DATE
+                                            </th>
+                                            <th>
+                                                SCENARIO
+                                            </th>
+                                        </tr>
+
+                                    </thead>
+                                    <tbody class="cardsTableBody">
+                                        <tr>
+                                            <td class="w22percent">
+                                                2303779999000275
+                                            </td>
+                                            <td class="w18percent">
+                                                MASTERCARD
+                                            </td>
+                                            <td class="w20percent">
+                                                Any 3 digits
+                                            </td>
+                                            <td class="w20percent">
+                                                Any future date
+                                            </td>
+                                            <td class="w20percent">
+                                                3DS 2.0 Frictionless Success
+                                            </td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td class="w22percent">
+                                                2303779999000291
+                                            </td>
+                                            <td>
+                                                MASTERCARD
+                                            </td>
+                                            <td>
+                                                Any 3 digits
+                                            </td>
+                                            <td>
+                                                Any future date
+                                            </td>
+                                            <td>
+                                                3DS 2.0 Frictionless Fail
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="w20percent">
+                                                2303779999000317
+                                            </td>
+                                            <td>
+                                                MASTERCARD
+                                            </td>
+                                            <td>
+                                                Any 3 digits
+                                            </td>
+                                            <td>
+                                                Any future date
+                                            </td>
+                                            <td>
+                                                3DS 2.0 Frictionless Unknown
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="w20percent">
+                                                2303779999000408
+                                            </td>
+                                            <td>
+                                                MASTERCARD
+                                            </td>
+                                            <td>
+                                                Any 3 digits
+                                            </td>
+                                            <td>
+                                                Any future date
+                                            </td>
+                                            <td>
+                                                3DS 2.0 Challenge Success
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="w20percent">
+                                                2303779999000424
+                                            </td>
+                                            <td>
+                                                MASTERCARD
+                                            </td>
+                                            <td>
+                                                Any 3 digits
+                                            </td>
+                                            <td>
+                                                Any future date
+                                            </td>
+                                            <td>
+                                                3DS 2.0 Challenge Fail
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="w20percent">
+                                                4093191766216474
+                                            </td>
+                                            <td>
+                                                VISA
+                                            </td>
+                                            <td>
+                                                Any 3 digits
+                                            </td>
+                                            <td>
+                                                Any future date
+                                            </td>
+                                            <td>
+                                                None enrolled card Success
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="w20percent">
+                                                5126702681201744
+                                            </td>
+                                            <td>
+                                                MASTERCARD
+                                            </td>
+                                            <td>
+                                                Any 3 digits
+                                            </td>
+                                            <td>
+                                                Any future date
+                                            </td>
+                                            <td>
+                                                None enrolled card Fail
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="w20percent">
+                                                5513935292057458
+                                            </td>
+                                            <td>
+                                                MASTERCARD
+                                            </td>
+                                            <td>
+                                                Any 3 digits
+                                            </td>
+                                            <td>
+                                                Any future date
+                                            </td>
+                                            <td>
+                                                Issuer decline
+                                            </td>
+                                        </tr>
+
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+    <!--             <h2 class="c6" id="Fraud_controls"><span class="c19 c0">Fraud controls</span></h2>
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        <p class="c10">
+                            <span class="c4">The NPGW&rsquo;s Fraud Controls can block payments when they have a high risk level or fail verification checks. This automated fraud prevention </span><span>process </span>
+                            <span class="c1">evaluates each payment, without requiring any action from you.</span>
+                        </p>
+                        <p class="c10">
+                            <span class="c4">When </span><span>NPGW </span>
+                            <span class="c1">blocks a payment, it doesn&rsquo;t obtain authorization from the card issuer. This precaution helps prevent potential fraudulent payments that might lead to disputes.</span>
+                        </p>
+                        <p class="c10"><span class="c4">Use an email address with domain </span><span class="c4 c22">fraudster.com</span><span class="c1">&nbsp;to test how your integration responds to blocked payments.</span></p>
+                    </div>
+                    <div>
+
+                    </div>
+
+                </div> -->
+                
+                
+                <h1 class="c6 pl50px" id="Appendix"><span class="c38 c0 c24">Appendix</span></h1>
+
+                <h2 class="c6 pl50px" id="Transaction_statuses"><span class="c19 c0">Transaction statuses</span></h2>
+
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+
+                    </div>
+                    <div class="table_block">
+                        <span style="overflow: hidden; display: inline-block; margin: 0px 0px; border: 0px solid #000000; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px); width: 559.2px; height: 366.37px;">
+                            <img alt="" src="images/image1.png" style="width: 559.2px; height: 366.37px; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
+                        </span>
+                    </div>
+                </div>
+
+                <h2 class="c6 pl50px" id="Supported_currencies"><span class="c19 c0">Supported currencies</span></h2>
+
+                <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+                        <p class="c5"><span>The list of available currencies depends on your account configuration. Please check with the Support Team.</span></p>
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table">
+                            <!-- <div class="tableDivHeader ">
+                                <div class="cardsTableHeader">
+                                    <div class="w50percent">
+                                        CODE
+                                    </div>
+                                    <div class="w50percent">
+                                        CURRENCY
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="tableDivContainer">
+                                <table >
+                                    <thead class="tableDivHeader ">
+                                        <tr> 
+                                            <th>
+                                                CODE
+                                            </th>
+                                            <th>
+                                                CURRENCY
+                                            </th>
+
+                                        </tr>
+
+                                    </thead>
+                                    <tbody class="cardsTableBody">
+                                        <tr>
+                                            <td class="w50percent">
+                                                USD
+                                            </td>
+                                            <td class="w50percent">
+                                                United States Dollars
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                            <td class="w50percent">
+                                                EUR
+                                            </td>
+                                            <td>
+                                                Euro
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                            <td class="w50percent">
+                                                GBP
+                                            </td>
+                                            <td>
+                                                British Pound
+                                            </td>
+
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                </div>
+
+                <h2 class="c6 pl50px" id="Error_Codes"><span class="c19 c0">Error Codes</span></h2>
         
+                <div class="flex flex-row borderBottom mb15px">
+                    <div class="text_block">
+
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table">
+                            <div class="tableDivHeader">
+                                Common API (service) error list
+                            </div>
+                            <div class="tableDivContainer">
+                                <table class="errorTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                BRE-400.1
+                                            </td>
+                                            <td>
+                                                Bad request error. Unable to parse data
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                BRE-400.2
+                                            </td>
+                                            <td>
+                                                Bad request error. Required field is not specified
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                BRE-400.3
+                                            </td>
+                                            <td>
+                                                Bad request error. Request body could not be deserialized
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                BRE-400.4
+                                            </td>
+                                            <td>
+                                                Bad request error. Failed to convert value {V} for parameter {P} due to type mismatch
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                URE-401.1
+                                            </td>
+                                            <td>
+                                                Unauthorized request error. Incorrect username or password
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                URE-401.2
+                                            </td>
+                                            <td>
+                                                Unauthorized request error. Incorrect token
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UCE-404
+                                            </td>
+                                            <td>
+                                                Unknown client error. The requested resource was not found
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                DSE-409.1
+                                            </td>
+                                            <td>
+                                                Data system error. Resource already exists
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UCE-422
+                                            </td>
+                                            <td>
+                                                Unprocessable content error. The request was well-formed (i.e., syntactically correct) but could not be processed
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UCE-422.1
+                                            </td>
+                                            <td>
+                                                Unprocessable content error. Some value is invalid
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UCE-422.2
+                                            </td>
+                                            <td>
+                                                Unprocessable content error. One value is invalid
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UCE-422.3
+                                            </td>
+                                            <td>
+                                                Unprocessable content error. Many values are invalid
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                USE-500.1
+                                            </td>
+                                            <td>
+                                                Unknown system error. An unexpected condition was encountered and no more specific message is suitable
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                USE-500.2
+                                            </td>
+                                            <td>
+                                                Unknown system error. Exception for missing implementation
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-row borderBottom mb15px">
+                    <div class="text_block">
+
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table ">
+                            <div class="tableDivHeader">
+                                Merchant API (service) error list
+                            </div>
+                            <div class="tableDivContainer">
+                                <table class="errorTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                AIE-404.11
+                                            </td>
+                                            <td>
+                                                Acquirer internal error. Acquirer not found for X merchant
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                AIE-404.12
+                                            </td>
+                                            <td>
+                                                Acquirer internal error. Acquirer not found for X currency
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                AIE-500.11
+                                            </td>
+                                            <td>
+                                                Acquirer internal error. Acquirer payment status not recognized
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                AIE-501.11
+                                            </td>
+                                            <td>
+                                                Acquirer internal error. Acquirer X is not implemented
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                AIE-501.12
+                                            </td>
+                                            <td>
+                                                Acquirer internal error. Acquirer was found for X merchant and Y currency, but it is not implemented
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                AEE-400.11
+                                            </td>
+                                            <td>
+                                                Acquirer external error. Unable to send a request to the Acquirer
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                AEE-422.11
+                                            </td>
+                                            <td>
+                                                Acquirer external error. Purchase is not refundable
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                AEE-500.11
+                                            </td>
+                                            <td>
+                                                Acquirer external error. Unknown acquirer error
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                AEE-501.11
+                                            </td>
+                                            <td>
+                                                Acquirer external error. Payment details not implemented
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                CEE-400.11
+                                            </td>
+                                            <td>
+                                                Control external error. Unable to send a request to the Control
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                CEE-500.11
+                                            </td>
+                                            <td>
+                                                Control external error. Unknown control error
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                SCE-400.11
+                                            </td>
+                                            <td>
+                                                System communication error. Unable to get a service
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- <div class="flex flex-row borderBottom">
+                    <div class="text_block">
+
+                    </div>
+                    <div class="table_block">
+                        <div class="data_block_table ">
+                            <div class="tableDivHeader">
+                                Portal API (service) error list
+                            </div>
+                            <div class="tableDivContainer">
+                                <table class="errorTable">
+                                    <thead></thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                UUE-422
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. The request was well-formed (i.e., syntactically correct) but could not be processed
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                UUE-422.21
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. Password did not conform with password policy
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                UUE-422.22
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. User challenge type not supported
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                UUE-422.23
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. User account already exists
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                UUE-422.24
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. The date field is invalid
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UUE-422.25
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. The request cannot be produce
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UUE-422.26
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. Too many merchants on the list
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UUE-401.21
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. Invalid session for the user, session is expired
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UUE-401.22
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. Invalid session for the user, session is corrupted
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UUE-403.21
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. The action cannot be performed because privileges are not granted
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UUE-409.21
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. User could not be created: user information contains non-existent merchant ids X in company Y
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UUE-501.21
+                                            </td>
+                                            <td>
+                                                Unprocessable user error. The challenge type X is not implemented
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                URE-403
+                                            </td>
+                                            <td>
+                                                Unauthorized user error
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                URE-403.22
+                                            </td>
+                                            <td>
+                                                Unauthorized user error. Company is deactivated
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                IAE-500
+                                            </td>
+                                            <td>
+                                                Internal authorization error
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                IAE-500.21
+                                            </td>
+                                            <td>
+                                                Internal authorization error. Error getting token
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UCOE-409.21
+                                            </td>
+                                            <td>
+                                                Unprocessable company error. Company could not be deleted: there are still users associated with it
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UCOE-409.22
+                                            </td>
+                                            <td>
+                                                Unprocessable company error. Company could not be deleted: there are still merchants associated with it
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UCOE-409.23
+                                            </td>
+                                            <td>
+                                                Unprocessable company error. Merchant could not be deleted: there are still acquirers associated with it
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UCOE-409.24
+                                            </td>
+                                            <td>
+                                                Unprocessable company error. Merchant could not be deleted: there are still users associated with it
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UCOE-422.23
+                                            </td>
+                                            <td>
+                                                Unprocessable company error. Merchant could not be created: the company already has a merchant with this title
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UCOE-422.24
+                                            </td>
+                                            <td>
+                                                Unprocessable company error. Merchant could not be updated: the company already has a merchant with this title
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                UTHE-422.21
+                                            </td>
+                                            <td>
+                                                Unprocessable transaction history error. MerchantId is required for role {X}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div> -->
+
+            
+            </div>
+        </div>
         
     </body>
 
