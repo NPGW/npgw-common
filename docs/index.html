@@ -765,9 +765,10 @@
             }
             body {
                 width: calc(100vw - 10px);
-                height: calc(100vh - 30px);
+                height: calc(100vh - 10px);
                 display: flex;
                 flex-direction: column;
+                margin-top: 0px;
             }
             .content {
                 display: flex;
@@ -775,17 +776,29 @@
 
                 padding: 15px 5px 15px 0px;
                 /* width: calc(100vw - 80px); */
-                height: calc(100vh - 80px);
+                height: calc(100vh - 110px);
                 gap: 25px;
             }
             .topMenuBlock {
                 display: flex;
                 flex-direction: row;
-                justify-content: end;
+                justify-content: space-between;
                 gap: 10px;
-                height: 25px;
-                text-align: right;
-                padding: 0px 20px 0px 0px;
+                height: 55px;
+                /* text-align: right;
+                padding: 0px 20px 5px 20px; */
+                border-bottom: 1px solid;
+                border-color: #d8dee4;
+                margin: 0px 20px 0px 20px;
+                align-content: center;
+                flex-wrap: wrap;
+            }
+            .topRightMenu {
+                display: flex;
+                flex-direction: row;
+                gap: 10px;
+                align-content: center;
+                flex-wrap: wrap;
             }
             .menu_block {
                 /* width: 250px;
@@ -814,7 +827,8 @@
                 flex-direction: column;
                 max-height: 100%;/* calc(100vh - 100px); */
                 overflow-y: auto;
-                
+                padding-left: 10rem;
+                padding-right: 10rem;
             }
             .menu_list {
                 /* margin-top: 0px !important;
@@ -853,7 +867,7 @@
             .menu_item_txt {
                 color: #3387CC;
                 text-decoration: none;
-                font-weight: 500;
+                font-weight: 700;
                 width: 90%;
                 display: block;
                 padding: 5px 5px;
@@ -968,11 +982,11 @@
             }
             .text_block {
                 width: 60%;
-                padding: 10px 50px 10px 50px;
+                padding: 10px 25px 10px 0px;
             }
             .table_block {
                 width: 40%;
-                padding: 10px 50px 10px 50px;
+                padding: 10px 0px 10px 25px;
             }
             .flex {
                 display: flex;
@@ -983,14 +997,24 @@
             .borderBottom {
                 border-bottom: 1px solid #d8dee4;
             }
+            
             .table_block table {
                 width: 100%;
             }
             .mt5px {
                 margin-top: 5px;
             }
+            .mt40px {
+                margin-top: 40px;
+            }
             .mb15px {
                 margin-bottom: 15px;
+            }
+            .mb30px {
+                margin-bottom: 30px;
+            }
+            .pb15px {
+                padding-bottom: 15px;
             }
             .pl50px {
                 padding-left: 50px;
@@ -1053,8 +1077,8 @@
             .p12 {
                 padding: 12px;
             }
-            .mb15px {
-                margin-bottom: 15px;
+            .tableDivContainerHeadsUp {
+                background-color: #d5e5f5;
             }
             .tableDivContainer table {
                 width: 100%;
@@ -1131,12 +1155,31 @@
                 text-decoration: none;
                 background-color: transparent;
             }
+            .divider{
+                border-right: 1px solid #3387CC;;
+            }
+            .logo {
+                width: 40px; 
+                height: 40px;
+                border-radius: 8px;
+                background-color: #f5f6f8;
+                border-color: #d8dee4;
+                border-width: 1px;
+                border-style: solid;
+            }
         </style>
     </head>
     <body class="c39">
         <div class="topMenuBlock">
-            <a class="c4 underline link" href="/docs/api/">API Reference </a>      
-            <a class="c4 underline link" href="/login">Portal Login </a>
+            <img alt="" src="images/logo.png" class="logo" />
+            <div class="topRightMenu">
+                <a class="c4 underline link border" href="/docs/api/"> API </a> 
+                <div class="divider"></div> 
+                <a class="c4 underline link" href="/docs/"> Docs  </a>     
+                <div class="divider"></div>  
+                <a class="c4 underline link" href="/login"> Portal Login </a>
+            </div>
+
         </div>
         <div class="content">
             <div class="menu_block">
@@ -1239,9 +1282,9 @@
                     </li>
                 </ul>
             </div>
-            <div class="data_block">
+            <div class="data_block ">
 
-                <div class="flex flex-row borderBottom">
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
                         <h1 class="c6 mt5px" id="API_Reference"><span>API Reference</span></h1>
                         <p class="c5">
@@ -1287,8 +1330,13 @@
                                 <span class="c1">&nbsp;to import the API definition and create your personal collection of requests.</span>
                             </li>
                         </ul>
-                        <hr style="page-break-before: always; display: none;" />
-                        
+                    </div>
+                    <div  class="table_block">
+
+                    </div>
+                </div>
+                <div class="flex flex-row borderBottom mb15px pb15px">
+                    <div class="text_block">
                         <h1 class="c6" id="Authentication"><span class="c38 c0 c24">Authentication</span></h1>
                         <p class="c10">
                             <span class="c4">The NPGW API uses a </span><span class="c0 c24">Secret Token</span>                
@@ -1310,25 +1358,19 @@
                     </div>
                 </div>
 
-
-                
-                <hr style="page-break-before: always; display: none;" />
-                
-                <h1 class="c6 pl50px" id="Environments"><span class="c38 c0 c24">Environments</span></h1>
-
-                <div class="flex flex-row borderBottom">
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
+                        <h1 class="c6" id="Environments"><span class="c38 c0 c24">Environments</span></h1>
                         <p class="c10">
-                            <span class="c4">The NPGW provides two separate domains for our API: one for </span><span class="c0 c24">Sandbox</span><span class="c4">&nbsp;and one for </span><span class="c0 c24">Production</span>
-                            <span class="c1">
-                                . The sandbox environment is intended for testing and development, while the production environment is used for live transaction processing. All API endpoints are consistent across both environments, meaning the request
+                            <span class="c4">The NPGW provides two separate domains for our API: one for <span class="c0 c24">Sandbox</span><span class="c4">&nbsp;and one for </span>
+                            <span class="c0 c24">Production</span>. The sandbox environment is intended for testing and development, while the production environment is used for live transaction processing. All API endpoints are consistent across both environments, meaning the request
                                 structure, parameters, and responses are the same&mdash;only the base domain changes depending on the environment.
                             </span>
                         </p>
                         <p class="c10"><span class="c1">Successful acceptance testing is required in order to move your integration from Sandbox to Production.</span></p>
                     </div>
 
-                    <div class="table_block">
+                    <div class="table_block mt40px">
                         <div class="data_block_table mb15px">
                             <div class="tableDivHeader">
                                 SANDBOX BASE DOMAIN
@@ -1351,12 +1393,9 @@
                 </div>
 
 
-                
-                <hr style="page-break-before: always; display: none;" />
-                
-                <h1 class="c6 pl50px" id="Company_Registration"><span class="c38 c0 c24">Company Registration</span></h1>
+                <h1 class="c6" id="Company_Registration"><span class="c38 c0 c24">Company Registration</span></h1>
 
-                <div class="flex flex-row borderBottom">
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
                         <p class="c10">
                             <span class="c4">Once you have been successfully set up as a Company within the NPGW, our team will configure </span>
@@ -1372,19 +1411,14 @@
                             You can retrieve these details by logging into your account and navigating to the <span class="c0 c24">System Administration</span> menu.
                         </p>
                     </div>
-                    <div class="table_block">
+                    <div class="table_block mt40px">
 
                     </div>
                 </div>
 
-                
-                
-            
-                
-                <h1 class="c6 pl50px" id="Errors"><span class="c38 c0 c24">Errors</span></h1>
-
-                <div class="flex flex-row borderBottom">
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
+                        <h1 class="c6 " id="Errors"><span class="c38 c0 c24">Errors</span></h1>
                         <p class="c29">
                             <span class="c4">The NPGW uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the </span><span class="c14 c0 c24">2xx</span>
                             <span class="c4">&nbsp;range indicate success. Codes in the </span><span class="c14 c0 c24">4xx</span>
@@ -1404,7 +1438,7 @@
 
                         </p>
                     </div>
-                    <div class="table_block">
+                    <div class="table_block mt40px">
                         <div class="data_block_table">
                             <!-- <div class="tableDivHeader ">
                                 <div class="cardsTableHeader">
@@ -1565,11 +1599,12 @@
                 
                 <hr style="page-break-before: always; display: none;" />
                 
-                <h1 class="c6 pl50px" id="One_time_payments"><span class="c38 c0 c24">One-time payments</span></h1>
+                
 
-                <div class="flex flex-row borderBottom">
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
-                        <ol class="c41 lst-kix_us75fhk8r05x-0 start" start="1">
+                        <h1 class="c6 " id="One_time_payments"><span class="c38 c0 c24">One-time payments</span></h1>
+                        <ol class="c41 lst-kix_us75fhk8r05x-0 start mb30px" start="1">
                             <li class="c5 c13 li-bullet-0"><span class="c1">When a customer is ready to complete a purchase, your application will submit a Transaction to the NPGW API.</span></li>
                             <li class="c5 c13 li-bullet-0"><span class="c1">The API provides a URL that redirects customers to an NPGW-hosted page for 3D Secure.</span></li>
                             <li class="c5 c13 li-bullet-0"><span class="c1">Customers authenticate with their bank when required to complete the transaction.</span></li>
@@ -1582,32 +1617,30 @@
                             </span>
                         </p>
                     </div>
-                    <div class="table_block">
+                    <div class="table_block mt40px">
                         
                     </div>
                 </div>
 
 
-                <h1 class="c6 pl50px" id="Core_Resources"><span>Core Resources</span></h1>
-
-                <h2 class="c6 pl50px" id="Token"><span>Token</span></h2>
-                <div class="flex flex-row borderBottom">
+                
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
-                        
-                            <p class="c10">
-                                <span class="c4">The Token endpoint is used to create a new </span><span class="c4 c22">Bearer token</span>
-                                <span class="c1">&nbsp;or refresh an expired one for accessing the NPGW API. Tokens are valid for 15 minutes but can be regenerated at any time.</span>
-                            </p>
-                            <p class="c10">
-                                <span class="c4">The request requires a plain text </span><span class="c4 c22">Secret Token</span><span class="c4">&nbsp;within the body. A successful response returns a JSON object containing the </span>
-                                <span class="c0 c24">ID Token</span><span class="c1">&nbsp;which can be used for further operation of the NPGW API.</span>
-                            </p>
+                        <h1 class="c6 " id="Core_Resources"><span>Core Resources</span></h1>
 
-                        
+                        <h2 class="c6 " id="Token"><span>Token</span></h2>
 
+                        <p class="c10">
+                            <span class="c4">The Token endpoint is used to create a new </span><span class="c4 c22">Bearer token</span>
+                            <span class="c1">&nbsp;or refresh an expired one for accessing the NPGW API. Tokens are valid for 15 minutes but can be regenerated at any time.</span>
+                        </p>
+                        <p class="c10">
+                            <span class="c4">The request requires a plain text </span><span class="c4 c22">Secret Token</span><span class="c4">&nbsp;within the body. A successful response returns a JSON object containing the </span>
+                            <span class="c0 c24">ID Token</span><span class="c1">&nbsp;which can be used for further operation of the NPGW API.</span>
+                        </p>
                     </div>
-                    <div class="table_block">        
-                        <div class="data_block_table mb15px">
+                    <div class="table_block mt40px">        
+                        <div class="data_block_table mb15px pb15px">
                             <div class="tableDivHeader">
                                 ENDPOINTS
                             </div>
@@ -1632,32 +1665,23 @@
                     </div>
                 </div>
 
-                <h2 class="c6 pl50px" id="Payment"><span>Payment</span></h2>
-                <div class="flex flex-row borderBottom">
+                
+                <div class="flex flex-row  mb15px pb15px">
                     <div class="text_block">
-                        
+                        <h2 class="c6 " id="Payment"><span>Payment</span></h2>
                         <p class="c10"><span class="c1">Posting to the Transaction endpoint enables a new credit/debit card payment to be submitted for processing.</span></p>
-                        <p class="c10">
+                        <p class="c10 mb30px">
                             <span class="c4">The NPGW supports both </span><span class="c0 c24">SALE</span><span class="c4">&nbsp;and </span><span class="c0 c24">AUTH</span><span class="c4">&nbsp;transaction types (the latter requiring a separate </span>
                             <a class="c37 link" href="/docs/api/#api-PaymentOperations-captureTransaction">Capture</a><span class="c4">&nbsp;action to be submitted to complete a payment). On success, the NPGW API returns a secure </span>
                             <span class="c0 c24">Payment URL</span><span class="c1">&nbsp; to which the end customer must be redirected in order to complete 3D Secure enrollment checks and authentication with their bank where necessary.</span>
                         </p>
 
-                        <div class="data_block_table">
-                            <div class="tableDivHeader tableDivHeaderHeadsUp">
-                                Heads up!
-                            </div>
-                            <div class="tableDivContainer p12">
-                                <p class="c10">
-                                    The optional async query parameter (a boolean) determines whether a transaction should be processed asynchronously with the NPGW - if true, the API responds immediately while processing continues in the background.
-                                </p>
-                            </div>
-                        </div>
+
 
                     </div>
-                    <div class="table_block">
+                    <div class="table_block mt40px">
 
-                        <div class="data_block_table">
+                        <div class="data_block_table mb15px pb15px">
                             <div class="tableDivHeader">
                                 ENDPOINTS
                             </div>
@@ -1678,26 +1702,39 @@
                                 </table>
                             </div>
                         </div>
+
+                        <div class="data_block_table mb15px pb15px">
+                            <div class="tableDivHeader tableDivHeaderHeadsUp">
+                                Heads up!
+                            </div>
+                            <div class="tableDivContainer tableDivContainerHeadsUp p12">
+                                <p class="c10">
+                                    The optional async query parameter (a boolean) determines whether a transaction should be processed asynchronously with the NPGW - if true, the API responds immediately while processing continues in the background.
+                                </p>
+                            </div>
+                        </div>
+
+                         <a class="c4 underline link" href="/docs/api/#api-Payment-createTransaction"> See details </a>
                     </div>
                 </div>
                 
-                <h3 class="c6 pl50px" id="The_Transaction_object"><span class="c0 c15">The Transaction object</span></h3>
+                <h3 class="c6 " id="The_Transaction_object"><span class="c0 c15">The Transaction object</span></h3>
 
-                <div class="flex flex-row borderBottom">
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
                         <p>
                             For full detail of the required request structure for and Gateway responses post Transaction processing please review the API Documentation.
                         </p>
                         
                     </div>
-                    <div class="table_block">
-                        <a class="c4 underline link" href="/docs/api/#api-Payment-createTransaction"> See details </a>
+                    <div class="table_block mt40px">
+                       
                     </div>
                 </div>
                 
-                <h2 class="c6 pl50px" id="Payment_Operations"><span class="c19 c0">Payment Operations</span></h2>
+                <h2 class="c6 " id="Payment_Operations"><span class="c19 c0">Payment Operations</span></h2>
 
-                <div class="flex flex-row borderBottom">
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
                         <p class="c10">
                             <span>The NPGW API provides further </span><span class="c0">Management</span>
@@ -1707,16 +1744,16 @@
                         </p>
                     </div>
 
-                    <div class="table_block">
+                    <div class="table_block mt40px">
 
                     </div>
                 </div>
 
-                <h3 class="c6 pl50px" id="Capture"><span class="c32 c0 c22 c24">Capture</span></h3>
                 
-                <div class="flex flex-row borderBottom">
+                
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
-                        
+                        <h3 class="c6 " id="Capture"><span class="c32 c0 c22 c24">Capture</span></h3>
                         <p class="c10">
                             <span class="c4">This endpoint enables </span><span class="c0 c24">Capture</span><span class="c4">&nbsp;of an </span><span class="c4 c22">AUTH</span><span class="c4">&nbsp;Transaction Type with status </span>
                             <span class="c4 c22">A</span><span class="c22">uthorised</span><span class="c1">&nbsp;by referencing its transactionId.</span>
@@ -1726,8 +1763,8 @@
 
                         
                     </div>
-                    <div class="table_block">
-                        <div class="data_block_table mb15px">
+                    <div class="table_block mt40px">
+                        <div class="data_block_table mb15px pb15px">
                             <div class="tableDivHeader">
                                 ENDPOINTS
                             </div>
@@ -1752,10 +1789,10 @@
                     </div>
                 </div>
 
-                <h3 class="c6 pl50px" id="Cancel"><span class="c32 c0 c22 c24">Cancel</span></h3>
-                <div class="flex flex-row borderBottom">
+                
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
-                        
+                        <h3 class="c6 " id="Cancel"><span class="c32 c0 c22 c24">Cancel</span></h3>
                         <p class="c10">
                             <span class="c4">This endpoint enables </span><span class="c0 c24">Cancellation </span><span class="c4">(or Void),</span><span class="c4">&nbsp;in full, of </span><span>an </span><span class="c22">AUTH</span>
                             <span>&nbsp;Transaction Type with status </span><span class="c22">Authorised</span><span class="c4">&nbsp;by referencing its transactionId. A </span><span class="c4 c22">cancellation</span>
@@ -1768,8 +1805,8 @@
 
                         
                     </div>
-                    <div class="table_block">
-                        <div class="data_block_table mb15px">
+                    <div class="table_block mt40px">
+                        <div class="data_block_table mb15px pb15px">
                             <div class="tableDivHeader">
                                 ENDPOINTS
                             </div>
@@ -1794,17 +1831,17 @@
                     </div>
                 </div>
 
-                <h3 class="c6 pl50px" id="Refund"><span class="c32 c0 c22 c24">Refund</span></h3>
-                <div class="flex flex-row borderBottom">
+                
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
-                        
+                        <h3 class="c6 " id="Refund"><span class="c32 c0 c22 c24">Refund</span></h3>
                         <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span><span class="c1">&nbsp;of a successful Transaction by referencing its transactionId. </span></p>
                         <p class="c10"><span class="c1">The NPGW supports both full and partial refunds via this operation.</span></p>
 
                         
                     </div>
-                    <div class="table_block">
-                        <div class="data_block_table mb15px">
+                    <div class="table_block mt40px">
+                        <div class="data_block_table mb15px pb15px">
                             <div class="tableDivHeader">
                                 ENDPOINTS
                             </div>
@@ -1829,17 +1866,17 @@
                     </div>
                 </div>
 
-                <h3 class="c6 pl50px" id="Refund"><span class="c32 c0 c22 c24">Refund against an individual capture</span></h3>
-                <div class="flex flex-row borderBottom">
+                
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
-                        
+                        <h3 class="c6 " id="Refund"><span class="c32 c0 c22 c24">Refund against an individual capture</span></h3>
                         <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span>
                             <span class="c1">&nbsp;against a successful Capture within a Transaction by referencing the transactionId and the individual operationId of the capture. </span>
                         </p>
                
                     </div>
-                    <div class="table_block">
-                        <div class="data_block_table mb15px">
+                    <div class="table_block mt40px">
+                        <div class="data_block_table mb15px pb15px">
                             <div class="tableDivHeader">
                                 ENDPOINTS
                             </div>
@@ -1864,48 +1901,10 @@
                     </div>
                 </div>
 
-                <h3 class="c6 pl50px" id="Refund"><span class="c32 c0 c22 c24">Refund against an individual capture</span></h3>
-                <div class="flex flex-row borderBottom">
+                
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
-                        
-                        <p class="c10"><span class="c4">This endpoint enables </span><span class="c0 c24">Refund</span>
-                            <span class="c1">&nbsp;against a successful Capture within a Transaction by referencing the transactionId and the individual operationId of the capture. </span>
-                        </p>
-                    
-
-                        
-                    </div>
-                    <div class="table_block">
-                        <div class="data_block_table mb15px">
-                            <div class="tableDivHeader">
-                                ENDPOINTS
-                            </div>
-                            <div class="tableDivContainer">
-                                <table class="errorTable">
-                                    <thead></thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <span class="c14 c0 c24">POST</span>
-                                            </td>
-                                            <td>
-                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/refund/capture/{operationId}</span>
-                                            </td>
-                                        </tr>
-                                        
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-refundCaptureTransaction"> See details </a>
-                    </div>
-                </div>
-
-
-                <h2 class="c6 pl50px" id="Payment_Status"><span class="c19 c0">Payment Status</span></h2>
-                <div class="flex flex-row borderBottom">
-                    <div class="text_block">
-                        
+                        <h2 class="c6 " id="Payment_Status"><span class="c19 c0">Payment Status</span></h2>
                         <p class="c10">
                             <span class="c4">Querying the </span><span class="c0 c24">Transaction </span><span class="c4">endpoint allows you to retrieve the full detail and current status of a Transaction using either the NPGW </span>
                             <span class="c4 c22">transactionId</span><span class="c4">&nbsp;or your own submitted </span><span class="c4 c22">externalTransactionId</span><span class="c4">.</span>
@@ -1914,8 +1913,8 @@
 
                         
                     </div>
-                    <div class="table_block">
-                        <div class="data_block_table mb15px">
+                    <div class="table_block mt40px">
+                        <div class="data_block_table mb15px pb15px">
                             <div class="tableDivHeader">
                                 ENDPOINTS
                             </div>
@@ -1940,17 +1939,18 @@
                     </div>
                 </div>
 
-                <div class="flex flex-row borderBottom">
+                
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
-
                         <h2 class="c6" id="Notifications">
                             <span>Notifications</span>
                         </h2>
+
                         <p class="c10">
                             <span class="c4">The NPGW is able to post notifications to your servers for each event that occurs during the lifecycle of a </span>
                             <span class="c4 c22">Transaction</span><span class="c1">. </span>
                         </p>
-                        <p class="c10">
+                        <p class="c10 mb30px">
 
                             <span class="c4"></span>Notifications will be automatically sent if a valid, fully qualified HTTPS-secured endpoint is provided in the <b>notificationUrl</b> field with each submitted 
                             <span class="c4 c22">Transaction</span>. The webhook request body will contain the full <span class="c4 c22">Transaction response object</span>. 
@@ -1960,6 +1960,9 @@
                             
                         </p>
                     
+
+                    </div>
+                    <div class="table_block mt40px">
                         <div class="data_block_table">
                             <div class="tableDivHeader tableDivHeaderHeadsUp">
                                 Heads up!
@@ -1975,37 +1978,25 @@
                             </div>
                         </div>
                     </div>
-                    <div class="table_block">
-
-                    </div>
                 </div>
                         
-                <h1 class="c6 pl50px" id="Testing"><span class="c38 c0 c24">Testing</span></h1>
+                
 
-                <div class="flex flex-row borderBottom">
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
+                        <h1 class="c6 " id="Testing"><span class="c38 c0 c24">Testing</span></h1>
                         <p class="c10"><span class="c1">All features of the NPGW can be tested via our Sandbox!</span></p>
                         <p class="c10"><span class="c4">However, we please ask you don&rsquo;t use the sandbox to load test your integration as it is a </span><span>non-performant</span><span class="c1">&nbsp;environment.</span></p>
                         <h2 class="c6" id="Test_Cards">
                             <span>Test Cards</span>
                         </h2>
-                        <p class="c5"><span class="c1">To simulate payments and QA your integration, use test cards from the following list for each scenario you wish to fulfill.</span></p>
+                        <p class="c5 mb30px"><span class="c1">To simulate payments and QA your integration, use test cards from the following list for each scenario you wish to fulfill.</span></p>
                         
-                        <div class="data_block_table">
-                            <div class="tableDivHeader tableDivHeaderHeadsUp">
-                                Heads up!
-                            </div>
-                            <div class="tableDivContainer p12">
-                                <p class="c10">
-                                    Don&rsquo;t use real card details. The NPGW prohibits testing with live card data on Sandbox.
-                                </p>
-                        
-                            </div>
-                        </div>
+
 
                     </div>
-                    <div class="table_block">
-                        <div class="data_block_table">
+                    <div class="table_block mt40px">
+                        <div class="data_block_table mb15px">
                             <!-- <div class="tableDivHeader ">
                                 <div class="cardsTableHeader">
                                     <div class="w22percent">
@@ -2194,6 +2185,18 @@
                                 </table>
                             </div>
                         </div>
+
+                        <div class="data_block_table">
+                            <div class="tableDivHeader tableDivHeaderHeadsUp">
+                                Heads up!
+                            </div>
+                            <div class="tableDivContainer p12">
+                                <p class="c10">
+                                    Don&rsquo;t use real card details. The NPGW prohibits testing with live card data on Sandbox.
+                                </p>
+                        
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -2218,28 +2221,26 @@
                 </div> -->
                 
                 
-                <h1 class="c6 pl50px" id="Appendix"><span class="c38 c0 c24">Appendix</span></h1>
+                <h1 class="c6 " id="Appendix"><span class="c38 c0 c24">Appendix</span></h1>
 
-                <h2 class="c6 pl50px" id="Transaction_statuses"><span class="c19 c0">Transaction statuses</span></h2>
+                <h2 class="c6 " id="Transaction_statuses"><span class="c19 c0">Transaction statuses</span></h2>
 
-                <div class="flex flex-row borderBottom">
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
-
-                    </div>
-                    <div class="table_block">
                         <span style="overflow: hidden; display: inline-block; margin: 0px 0px; border: 0px solid #000000; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px); width: 559.2px; height: 366.37px;">
                             <img alt="" src="images/image1.png" style="width: 559.2px; height: 366.37px; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
                         </span>
                     </div>
+                    <div class="table_block mt40px">
+                        
+                    </div>
                 </div>
 
-                <h2 class="c6 pl50px" id="Supported_currencies"><span class="c19 c0">Supported currencies</span></h2>
+                <h2 class="c6 " id="Supported_currencies"><span class="c19 c0">Supported currencies</span></h2>
 
-                <div class="flex flex-row borderBottom">
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
                         <p class="c5"><span>The list of available currencies depends on your account configuration. Please check with the Support Team.</span></p>
-                    </div>
-                    <div class="table_block">
                         <div class="data_block_table">
                             <!-- <div class="tableDivHeader ">
                                 <div class="cardsTableHeader">
@@ -2298,18 +2299,16 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+                    <div class="table_block mt40px">
 
-                        
                     </div>
                 </div>
 
-                <h2 class="c6 pl50px" id="Error_Codes"><span class="c19 c0">Error Codes</span></h2>
+                <h2 class="c6 " id="Error_Codes"><span class="c19 c0">Error Codes</span></h2>
         
-                <div class="flex flex-row borderBottom mb15px">
+                <div class="flex flex-row  mb15px pb15px">
                     <div class="text_block">
-
-                    </div>
-                    <div class="table_block">
                         <div class="data_block_table">
                             <div class="tableDivHeader">
                                 Common API (service) error list
@@ -2444,13 +2443,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="table_block mt40px">
+                        
+                    </div>
                 </div>
 
-                <div class="flex flex-row borderBottom mb15px">
+                <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
-
-                    </div>
-                    <div class="table_block">
                         <div class="data_block_table ">
                             <div class="tableDivHeader">
                                 Merchant API (service) error list
@@ -2566,7 +2565,10 @@
                                 </table>
                             </div>
 
-                        </div>
+                        </div>  
+                    </div>
+                    <div class="table_block mt40px">
+                        
                     </div>
 
                 </div>
