@@ -663,8 +663,14 @@ components:
       required:
         - status
       properties:
+        version:
+          type: string
         status:
           $ref: '#/components/schemas/ThreeDSecureStatus'
+        workflow:
+          type: string
+        eci:
+          type: string
 
     TransactionType:
       type: string
