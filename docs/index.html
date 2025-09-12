@@ -595,6 +595,9 @@
             .c14 {
                 color: #188038;
             }
+            .blue {
+                color: #3387CC;
+            }
             .c0 {
                 font-weight: 700;
             }
@@ -607,9 +610,7 @@
             .c23 {
                 background-color: #f6b26b;
             }
-            .c24 {
-                /*font-family: "Calibri";*/
-            }
+
             .c25 {
                 background-color: #d9d9d9;
             }
@@ -810,7 +811,7 @@
 
                 padding: 8px 8px 8px 0px;
                 overflow-y: auto;
-                width: 280px;
+                width: 300px;
                 gap: 12px;
                 display: flex;
                 flex: 1 1 auto;
@@ -822,13 +823,13 @@
             }
             .data_block {
                 flex-grow: 1;
-                width: calc(100vw - 250px);
+                width: calc(100vw - 350px);
                 display: flex;
                 flex-direction: column;
                 max-height: 100%;/* calc(100vh - 100px); */
                 overflow-y: auto;
-                padding-left: 10rem;
-                padding-right: 10rem;
+                padding-left: 16rem;
+                padding-right: 16rem;
             }
             .menu_list {
                 /* margin-top: 0px !important;
@@ -1142,6 +1143,9 @@
             .w50percent {
                 width: 50%;
             }
+            .w60percent {
+                width: 60%;
+            }
             .w65percent {
                 width: 65%;
                 max-width: 65%;
@@ -1151,6 +1155,14 @@
                 border-color: #3387CC;
                 color: #3387CC;
                 fill: #3387CC;
+                font-weight: 500;
+                text-decoration: none;
+                background-color: transparent;
+            }
+            .linkDetails {
+                border-color: #596171;
+                color: #596171;
+                fill: #596171;
                 font-weight: 500;
                 text-decoration: none;
                 background-color: transparent;
@@ -1167,11 +1179,35 @@
                 border-width: 1px;
                 border-style: solid;
             }
+            .breakWord {
+                word-break: break-word;
+            }
+            .logoDiv {
+                align-items: center;
+                gap: 15px;
+            }
+            code {
+                color: #353A44;
+                padding: 3px 3px;
+                background-color: #f5f6f8;
+                border-radius: 6px;
+              
+                border: 1px solid #d8dee4;
+                font-weight: 700;
+                font-size: 12px;
+                line-height: 16px;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            }
         </style>
     </head>
     <body class="c39">
         <div class="topMenuBlock">
-            <img alt="" src="images/logo.png" class="logo" />
+            <div class="flex flex-row logoDiv">
+                <img alt="NPGW Docs" src="images/logo.png" class="logo" />
+                <div class="link">NPGW Docs</div>
+            </div>
+            
+
             <div class="topRightMenu">
                 <a class="c4 underline link border" href="/docs/api/"> API </a> 
                 <div class="divider"></div> 
@@ -1185,10 +1221,10 @@
             <div class="menu_block">
                 <ul class="menu_list">
                     <li class="menu_item">
-                        <a class="menu_item_txt" href="#API_Reference" >API Reference</a>
+                        <a class="menu_item_txt" href="#Get_started" >Get started</a>
                         <ul class="sub_menu_list">
                             <li class="sub_menu_item">
-                                <a class="sub_menu_item_txt" href="#Technical_Documentation" >Technical Documentation</a>
+                                <a class="sub_menu_item_txt" href="#API_Summary" >API Summary</a>
                             </li>
                             <li class="sub_menu_item">
                                 <a class="sub_menu_item_txt" href="#Usage" >Usage</a>
@@ -1286,7 +1322,14 @@
 
                 <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
-                        <h1 class="c6 mt5px" id="API_Reference"><span>API Reference</span></h1>
+                        <h1 class="c6 mt5px" id="Get_started"><span>Get started</span></h1>
+
+                        
+                        <p class="c5">
+                            <span class="c1">
+                                Request an account and begin building your integration
+                            </span>
+                        </p>
                         <p class="c5">
                             <span class="c1">
                                 The NPGW API is organized around the principles of REST. It has predictable resource-oriented URLs, accepts and returns JSON-encoded bodies and responses, all while using standard HTTP response codes &amp; authentication.
@@ -1302,25 +1345,28 @@
                     
                         <p class="c5"><span class="c1">The NPGW API doesn&rsquo;t currently support bulk updates. You can work on only one object per request.</span></p>
                         
-                        <h2 class="c6" id="Technical_Documentation"><span>Technical Documentation</span></h2>
-                        <p class="c5"><span class="c1">Further detailed documentation for developers is available via the following links.</span></p>
+                        <h2 class="c6" id="API_Summary"><span>API Summary</span></h2>
+                        <p class="c5"><span class="c1">Further detailed documentation for developers is available via the following links. 
+                            Our API Summary site is auto generated from the API definition, ensuring you have up to date information on current request/response 
+                            structures and all field attributes.
+                        </span></p>
                     
                         <ul class="c41 lst-kix_ksvcksyqiwbz-0 start">                
                             <li class="c5 c13 li-bullet-0">
-                                <a class="c4 underline link" href="/docs/api/">API Documentation </a>
+                                <a class="c4 underline link" href="/docs/api/">API Summary </a>
                             </li>
-                            <!-- <li class="c5 c13 li-bullet-0">
-                                <a class="c4 underline link" type="text/yaml" href="/docs/api/api.yaml">Swagger Editor</a>
-                            </li> -->
+                            <li class="c5 c13 li-bullet-0">
+                                <a class="c4 underline link" type="text/yaml" href="/docs/api/api.yaml">API YAML definition</a>
+                            </li>
                         </ul>
                     
                         <h2 class="c6" id="Usage"><span>Usage</span></h2>
                         <p ><span class="c1">There are multiple ways you can explore the Merchant API:</span></p>
                         <ul class="c41 lst-kix_azv0bdsdg6gt-0 start">
                             <li class="c10 c13 li-bullet-0">
-                                <span class="c4">By using the classic Swagger toolset, upload the definition to the</span>
+                                <span class="c4">By using the classic Swagger toolset; view the definition using the</span>
                             
-                                <a class="c37 link" href="http://editor.swagger.io/">Swagger Editor</a>
+                                <a class="c37 link" href="https://editor.swagger.io/?url=/docs/api/api.yaml">Swagger Editor</a>
                     
                             </li>
                             <li class="c10 c13 li-bullet-0">
@@ -1339,11 +1385,11 @@
                     <div class="text_block">
                         <h1 class="c6" id="Authentication"><span class="c38 c0 c24">Authentication</span></h1>
                         <p class="c10">
-                            <span class="c4">The NPGW API uses a </span><span class="c0 c24">Secret Token</span>                
+                            <span class="c4">The NPGW API uses a </span><code>Secret Token</code>                
                             <span class="c1">to authenticate requests. You can view and manage your tokens within your account.</span>
                         </p>
                         <p class="c10">
-                            <span class="c4">Your </span><span class="c4 c22">Secret Token</span>
+                            <span class="c4">Your </span><code>Secret Token</code>  
                             <span class="c1">&nbsp;carries many privileges, so be sure to keep it secure! Do not share your Token in publicly accessible areas such as GitHub, client-side code, and so forth.</span>
                         </p>
                         <p class="c10">
@@ -1403,12 +1449,12 @@
                             <span class="c1">&nbsp;as required for payment processing under your organisational hierarchy.</span>
                         </p>
                         <p class="c10">
-                            <span class="c4">Each </span><span class="c4 c22">Business Unit</span><span class="c4">&nbsp;is assigned a unique </span><span class="c0 c24">merchantId</span><span class="c4">&nbsp;and requires its own </span>
-                            <span class="c4 c22">Secret Token</span><span class="c4">&nbsp;to interface with the Merchant API.</span>
+                            <span class="c4">Each </span><span class="c4 c22">Business Unit</span><span class="c4">&nbsp;is assigned a unique </span><code >merchantId</code><span class="c4">&nbsp;and requires its own </span>
+                            <code>Secret Token</code><span class="c4">&nbsp;to interface with the Merchant API.</span>
                         </p>
 
                         <p>
-                            You can retrieve these details by logging into your account and navigating to the <span class="c0 c24">System Administration</span> menu.
+                            You can retrieve these details by logging into <a class="link underline" href="/login">your account</a> and navigating to the <span class="c0 c24">System Administration</span> menu.
                         </p>
                     </div>
                     <div class="table_block mt40px">
@@ -1420,9 +1466,9 @@
                     <div class="text_block">
                         <h1 class="c6 " id="Errors"><span class="c38 c0 c24">Errors</span></h1>
                         <p class="c29">
-                            <span class="c4">The NPGW uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the </span><span class="c14 c0 c24">2xx</span>
-                            <span class="c4">&nbsp;range indicate success. Codes in the </span><span class="c14 c0 c24">4xx</span>
-                            <span class="c4">&nbsp;range indicate an error that failed given the information provided (e.g. a required parameter was omitted etc). Codes in the </span><span class="c14 c0 c24">5xx</span>
+                            <span class="c4">The NPGW uses conventional HTTP response codes to indicate the success or failure of an API request. In general: Codes in the </span><code >2xx</code>
+                            <span class="c4">&nbsp;range indicate success. Codes in the </span><code>4xx</code>
+                            <span class="c4">&nbsp;range indicate an error that failed given the information provided (e.g. a required parameter was omitted etc). Codes in the </span><code >5xx</code>
                             <span class="c1">&nbsp;range indicate an error with our servers (these are rare).</span>
                         </p>
                         
@@ -1433,7 +1479,7 @@
 
                         <p>
                             <span class="c0 c24">Transaction-level errors</span> (such as an issuer decline or 3D Secure failure) are returned within the transaction response body itself. 
-                            In these cases, the API request is considered valid and successful at the gateway level (typically a <span class="c14 c0 c24">200</span> response), but the transaction 
+                            In these cases, the API request is considered valid and successful at the gateway level (typically a <code>200</code> response), but the transaction 
                             result reflects the decline or failure.
 
                         </p>
@@ -1636,7 +1682,7 @@
                         </p>
                         <p class="c10">
                             <span class="c4">The request requires a plain text </span><span class="c4 c22">Secret Token</span><span class="c4">&nbsp;within the body. A successful response returns a JSON object containing the </span>
-                            <span class="c0 c24">ID Token</span><span class="c1">&nbsp;which can be used for further operation of the NPGW API.</span>
+                            <code>ID Token</code><span class="c1">&nbsp;which can be used for further operation of the NPGW API.</span>
                         </p>
                     </div>
                     <div class="table_block mt40px">        
@@ -1645,15 +1691,18 @@
                                 ENDPOINTS
                             </div>
                             <div class="tableDivContainer">
-                                <table class="errorTable">
+                                <table >
                                     <thead></thead>
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <span class="c14 c0 c24">POST</span>
+                                                <span class="blue c0 c24">POST</span>
+                                            </td>
+                                            <td class="w65percent breakWord">
+                                                <span class="c1 "> /merchant-v1/token</span>
                                             </td>
                                             <td>
-                                                <span class="c1"> /merchant-v1/token</span>
+                                                <a class="c4 underline linkDetails" href="/docs/api/#api-Authentication-getToken"> See details </a>
                                             </td>
                                         </tr>
                                         
@@ -1661,22 +1710,27 @@
                                 </table>
                             </div>
                         </div>
-                        <a class="c4 underline link" href="/docs/api/#api-Authentication-getToken"> See details </a>
+                        
                     </div>
                 </div>
 
                 
-                <div class="flex flex-row  mb15px pb15px">
+                <div class="flex flex-row  mb15px pb15px borderBottom">
                     <div class="text_block">
                         <h2 class="c6 " id="Payment"><span>Payment</span></h2>
                         <p class="c10"><span class="c1">Posting to the Transaction endpoint enables a new credit/debit card payment to be submitted for processing.</span></p>
                         <p class="c10 mb30px">
                             <span class="c4">The NPGW supports both </span><span class="c0 c24">SALE</span><span class="c4">&nbsp;and </span><span class="c0 c24">AUTH</span><span class="c4">&nbsp;transaction types (the latter requiring a separate </span>
                             <a class="c37 link" href="/docs/api/#api-PaymentOperations-captureTransaction">Capture</a><span class="c4">&nbsp;action to be submitted to complete a payment). On success, the NPGW API returns a secure </span>
-                            <span class="c0 c24">Payment URL</span><span class="c1">&nbsp; to which the end customer must be redirected in order to complete 3D Secure enrollment checks and authentication with their bank where necessary.</span>
+                            <code>Payment URL</code><span class="c1">&nbsp; to which the end customer must be redirected in order to complete 3D Secure enrollment checks and authentication with their bank where necessary.</span>
                         </p>
 
+                        <h3 class="c6 " id="The_Transaction_object"><span class="c0 c15">The Transaction object</span></h3>
 
+                        <p>
+                            For full detail of the required request structure for and Gateway responses post Transaction processing please review our <a class="link underline" href="/docs/api/">
+                                API Summary</a>. You can find a direct link to specific sections via links in the endpoints tables. 
+                        </p>
 
                     </div>
                     <div class="table_block mt40px">
@@ -1686,15 +1740,18 @@
                                 ENDPOINTS
                             </div>
                             <div class="tableDivContainer">
-                                <table class="errorTable">
+                                <table >
                                     <thead></thead>
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <span class="c14 c0 c24">POST</span>
+                                                <span class="blue c0 c24">POST</span>
+                                            </td>
+                                            <td class="w65percent breakWord">
+                                                <span class="c1 "> /merchant-v1/transaction</span>
                                             </td>
                                             <td>
-                                                <span class="c1"> /merchant-v1/transaction</span>
+                                                <a class="c4 underline linkDetails" href="/docs/api/#api-Payment-createTransaction"> See details </a>
                                             </td>
                                         </tr>
                                         
@@ -1714,23 +1771,11 @@
                             </div>
                         </div>
 
-                         <a class="c4 underline link" href="/docs/api/#api-Payment-createTransaction"> See details </a>
+                         
                     </div>
                 </div>
                 
-                <h3 class="c6 " id="The_Transaction_object"><span class="c0 c15">The Transaction object</span></h3>
 
-                <div class="flex flex-row borderBottom mb15px pb15px">
-                    <div class="text_block">
-                        <p>
-                            For full detail of the required request structure for and Gateway responses post Transaction processing please review the API Documentation.
-                        </p>
-                        
-                    </div>
-                    <div class="table_block mt40px">
-                       
-                    </div>
-                </div>
                 
                 <h2 class="c6 " id="Payment_Operations"><span class="c19 c0">Payment Operations</span></h2>
 
@@ -1769,15 +1814,18 @@
                                 ENDPOINTS
                             </div>
                             <div class="tableDivContainer">
-                                <table class="errorTable">
+                                <table >
                                     <thead></thead>
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <span class="c14 c0 c24">POST</span>
+                                                <span class="blue c0 c24">POST</span>
+                                            </td>
+                                            <td class="w65percent breakWord">
+                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/capture</span>
                                             </td>
                                             <td>
-                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/capture</span>
+                                                <a class="c4 underline linkDetails" href="/docs/api/#api-PaymentOperations-captureTransaction"> See details </a>
                                             </td>
                                         </tr>
                                         
@@ -1785,7 +1833,7 @@
                                 </table>
                             </div>
                         </div>
-                        <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-captureTransaction"> See details </a>
+                        
                     </div>
                 </div>
 
@@ -1816,10 +1864,13 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <span class="c14 c0 c24">POST</span>
+                                                <span class="blue c0 c24">POST</span>
+                                            </td>
+                                            <td class="w65percent breakWord">
+                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/cancel</span>
                                             </td>
                                             <td>
-                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/cancel</span>
+                                                <a class="c4 underline linkDetails" href="/docs/api/#api-PaymentOperations-cancelTransaction"> See details </a>
                                             </td>
                                         </tr>
                                         
@@ -1827,7 +1878,7 @@
                                 </table>
                             </div>
                         </div>
-                        <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-cancelTransaction"> See details </a>
+                        
                     </div>
                 </div>
 
@@ -1851,10 +1902,13 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <span class="c14 c0 c24">POST</span>
+                                                <span class="blue c0 c24">POST</span>
+                                            </td>
+                                            <td class="w65percent breakWord">
+                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/refund</span>
                                             </td>
                                             <td>
-                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/refund</span>
+                                                <a class="c4 underline linkDetails" href="/docs/api/#api-PaymentOperations-refundTransaction"> See details </a>
                                             </td>
                                         </tr>
                                         
@@ -1862,7 +1916,7 @@
                                 </table>
                             </div>
                         </div>
-                        <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-refundTransaction"> See details </a>
+                        
                     </div>
                 </div>
 
@@ -1888,10 +1942,13 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <span class="c14 c0 c24">POST</span>
+                                                <span class="blue c0 c24">POST</span>
+                                            </td>
+                                            <td class="w65percent breakWord">
+                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/refund/capture/{operationId}</span>
                                             </td>
                                             <td>
-                                                <span class="c1"> /merchant-v1/transaction/{transactionId}/refund/capture/{operationId}</span>
+                                                <a class="c4 underline linkDetails" href="/docs/api/#api-PaymentOperations-refundCaptureTransaction"> See details </a>
                                             </td>
                                         </tr>
                                         
@@ -1899,7 +1956,7 @@
                                 </table>
                             </div>
                         </div>
-                        <a class="c4 underline link" href="/docs/api/#api-PaymentOperations-refundCaptureTransaction"> See details </a>
+                        
                     </div>
                 </div>
 
@@ -1928,8 +1985,11 @@
                                             <td>
                                                 <span class="c14 c0 c24">GET</span>
                                             </td>
-                                            <td>
+                                            <td class="w65percent breakWord">
                                                 <span class="c1"> /merchant-v1/transaction</span>
+                                            </td>
+                                            <td>
+                                                <a class="c4 underline linkDetails " href="/docs/api/#api-PaymentStatus-getTransaction"> See details </a>
                                             </td>
                                         </tr>
                                         
@@ -1937,7 +1997,7 @@
                                 </table>
                             </div>
                         </div>
-                        <a class="c4 underline link " href="/docs/api/#api-PaymentStatus-getTransaction"> See details </a>
+                        
                     </div>
                 </div>
 
@@ -1949,16 +2009,15 @@
                         </h2>
 
                         <p class="c10">
-                            <span class="c4">The NPGW is able to post notifications to your servers for each event that occurs during the lifecycle of a </span>
-                            <span class="c4 c22">Transaction</span><span class="c1">. </span>
+                            <span class="c4">The NPGW is able to post notifications to your servers for each event that occurs during the lifecycle of a Transaction. </span>
                         </p>
                         <p class="c10 mb30px">
 
-                            <span class="c4"></span>Notifications will be automatically sent if a valid, fully qualified HTTPS-secured endpoint is provided in the <b>notificationUrl</b> field with each submitted 
-                            <span class="c4 c22">Transaction</span>. The webhook request body will contain the full <span class="c4 c22">Transaction response object</span>. 
+                            <span class="c4"></span>Notifications will be automatically sent if a valid, fully qualified HTTPS-secured endpoint is provided in the <code>notificationUrl</code> field with each submitted 
+                            Transaction. The notification request body will contain the full Transaction response object. 
                             You can append query string parameters (e.g. a security token) 
-                            to the <b>notificationUrl</b>. 
-                            These parameters will be returned unmodified with each webhook, allowing you to verify that the communication originated from our gateway.</span> 
+                            to the <code>notificationUrl</code>. 
+                            These parameters will be returned unmodified with each notification, allowing you to verify that the communication originated from our gateway.</span> 
                             
                         </p>
                     
@@ -1969,7 +2028,7 @@
                             <div class="tableDivHeader tableDivHeaderHeadsUp">
                                 Heads up!
                             </div>
-                            <div class="tableDivContainer p12">
+                            <div class="tableDivContainer p12 tableDivContainerHeadsUp">
                                 <p class="c10">
                                     The NPGW sends a single webhook per event &mdash; there are no retries if your server is unavailable or does not respond.
                                 </p>
@@ -2192,7 +2251,7 @@
                             <div class="tableDivHeader tableDivHeaderHeadsUp">
                                 Heads up!
                             </div>
-                            <div class="tableDivContainer p12">
+                            <div class="tableDivContainer p12 tableDivContainerHeadsUp">
                                 <p class="c10">
                                     Don&rsquo;t use real card details. The NPGW prohibits testing with live card data on Sandbox.
                                 </p>
@@ -2243,64 +2302,13 @@
                 <div class="flex flex-row borderBottom mb15px pb15px">
                     <div class="text_block">
                         <p class="c5"><span>The list of available currencies depends on your account configuration. Please check with the Support Team.</span></p>
-                        <div class="data_block_table">
-                            <!-- <div class="tableDivHeader ">
-                                <div class="cardsTableHeader">
-                                    <div class="w50percent">
-                                        CODE
-                                    </div>
-                                    <div class="w50percent">
-                                        CURRENCY
-                                    </div>
-                                </div>
-                            </div> -->
-                            <div class="tableDivContainer">
-                                <table >
-                                    <thead class="tableDivHeader ">
-                                        <tr> 
-                                            <th>
-                                                CODE
-                                            </th>
-                                            <th>
-                                                CURRENCY
-                                            </th>
 
-                                        </tr>
+                        <ul>
+                            <li class="c5 c13 li-bullet-0"><code>USD</code><span class="c1 c22"> - United States Dollar </span></li>
+                            <li class="c5 c13 li-bullet-0"><code>EUR</code><span class="c1 c22"> - Euro </span></li>
+                            <li class="c5 c13 li-bullet-0"><code>GBP</code><span class="c1 c22"> - British Pound </span></li>
+                        </ul>
 
-                                    </thead>
-                                    <tbody class="cardsTableBody">
-                                        <tr>
-                                            <td class="w50percent">
-                                                USD
-                                            </td>
-                                            <td class="w50percent">
-                                                United States Dollars
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                            <td class="w50percent">
-                                                EUR
-                                            </td>
-                                            <td>
-                                                Euro
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                            <td class="w50percent">
-                                                GBP
-                                            </td>
-                                            <td>
-                                                British Pound
-                                            </td>
-
-                                        </tr>
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
                     </div>
                     <div class="table_block mt40px">
 
