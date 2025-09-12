@@ -522,6 +522,19 @@ components:
               pattern: '^[\p{L}0-9 \_.,-:&]+$'
             cardType:
               $ref: '#/components/schemas/CardType'
+            bin:
+              type: string
+              description: The first 6 digits of pan.
+            issuer:
+              type: string
+              description: Issuer of the card.
+            country:
+              type: string
+              description: 2-char country code (ISO 3166-1, alpha-2).
+              example: US
+              minLength: 2
+              maxLength: 2
+              pattern: '^[A-Z]{2}$'
 
     CustomerDetails:
       type: object
@@ -650,8 +663,14 @@ components:
       required:
         - status
       properties:
+        version:
+          type: string
         status:
           $ref: '#/components/schemas/ThreeDSecureStatus'
+        workflow:
+          type: string
+        eci:
+          type: string
 
     TransactionType:
       type: string
