@@ -765,11 +765,12 @@
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif, Apple Color Emoji, "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
             }
             body {
-                width: calc(100vw - 10px);
-                height: calc(100vh - 10px);
+                width: calc(100vw);
+                height: calc(100vh);
                 display: flex;
                 flex-direction: column;
-                margin-top: 0px;
+                margin: 0px 0px;
+
             }
             .content {
                 display: flex;
@@ -777,7 +778,7 @@
 
                 padding: 15px 5px 15px 0px;
                 /* width: calc(100vw - 80px); */
-                height: calc(100vh - 110px);
+                height: calc(100vh - 100px);
                 gap: 25px;
             }
             .topMenuBlock {
@@ -790,7 +791,7 @@
                 padding: 0px 20px 5px 20px; */
                 border-bottom: 1px solid;
                 border-color: #d8dee4;
-                margin: 0px 20px 0px 20px;
+                padding: 0px 20px 0px 20px;
                 align-content: center;
                 flex-wrap: wrap;
             }
@@ -1186,6 +1187,9 @@
                 align-items: center;
                 gap: 15px;
             }
+            .logoBackground {
+                background-color: #e5f5f2;
+            }
             code {
                 color: #353A44;
                 padding: 3px 3px;
@@ -1201,7 +1205,7 @@
         </style>
     </head>
     <body class="c39">
-        <div class="topMenuBlock">
+        <div class="topMenuBlock logoBackground">
             <div class="flex flex-row logoDiv">
                 <img alt="NPGW Docs" src="images/logo.png" class="logo" />
                 <div class="link">NPGW Docs</div>
@@ -1324,12 +1328,10 @@
                     <div class="text_block">
                         <h1 class="c6 mt5px" id="Get_started"><span>Get started</span></h1>
 
-                        
-                        <p class="c5">
-                            <span class="c1">
-                                Request an account and begin building your integration
-                            </span>
-                        </p>
+                        <h2>
+                             Request an account and begin building your integration
+                        </h2>
+     
                         <p class="c5">
                             <span class="c1">
                                 The NPGW API is organized around the principles of REST. It has predictable resource-oriented URLs, accepts and returns JSON-encoded bodies and responses, all while using standard HTTP response codes &amp; authentication.
