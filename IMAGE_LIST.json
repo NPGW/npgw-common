@@ -64,6 +64,15 @@
     "repoName": "mock-acquirer-ngenius"
   },
   {
+    "dockerContext": "npgw-services/tests/http-service-mock-control",
+    "dockerFile": "Dockerfile",
+    "files": [
+      "tests/http-service-mock-control/target/http-service-mock-control-${RELEASE_VERSION}-exec.jar",
+      "tests/http-service-mock-control/Dockerfile"
+    ],
+    "repoName": "mock-control"
+  },
+  {
     "dockerContext": "npgw-portal",
     "dockerFile": "docker/Dockerfile",
     "repoName": "portal-web"

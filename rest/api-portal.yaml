@@ -2116,7 +2116,7 @@ components:
         notificationQueue:
           type: string
 
-    BaseAcquirer:
+    Acquirer:
       type: object
       required:
         - acquirerName
@@ -2130,6 +2130,8 @@ components:
           type: string
         acquirerMid:
           type: string
+        acquirerMcc:
+          type: integer
         acquirerCode:
           type: string
         acquirerConfig:
@@ -2144,17 +2146,9 @@ components:
           type: boolean
           default: true
 
-    Acquirer:
-      allOf:
-        - $ref: '#/components/schemas/BaseAcquirer'
-        - type: object
-          properties:
-            acquirerMidMcc:
-              type: integer
-
     MerchantAcquirerItem:
       allOf:
-        - $ref: '#/components/schemas/BaseAcquirer'
+        - $ref: '#/components/schemas/Acquirer'
         - type: object
           properties:
             priority:
@@ -2256,6 +2250,41 @@ components:
           items:
             type: string
 
+    AcquirerDetails:
+      type: object
+      properties:
+        responseCode:
+          type: string
+        responseMessage:
+          type: string
+        authCode:
+          type: string
+        acquirerReference:
+          type: string
+        acquirerCode:
+          type: string
+        acquirerMid:
+          type: string
+        acquirerMcc:
+          type: integer
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotNull"
+
+    ControlDetails:
+      type: object
+      properties:
+        riskLevel:
+            type: string
+        riskDecision:
+            type: string
+        riskScore:
+            type: string
+        riskIP:
+            type: string
+        disposition:
+            type: string
+        insights:
+            type: string
+
     TransactionHistory:
       allOf:
         - $ref: '../api-merchant.yaml#/components/schemas/TransactionResponse'
@@ -2263,6 +2292,10 @@ components:
           required:
             - customerDetails
           properties:
+            acquirerDetails:
+              $ref: '#/components/schemas/AcquirerDetails'
+            controlDetails:
+              $ref: '#/components/schemas/ControlDetails'
             customerDetails:
               $ref: '../api-merchant.yaml#/components/schemas/CustomerDetails'
 
