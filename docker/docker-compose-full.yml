@@ -10,6 +10,13 @@ services:
         condition: service_healthy
       notification-service:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-sf", "http://localhost:8080/merchant-v1/health" ]
+      interval: 30s
+      timeout: 10s
+      start_period: 180s
+      retries: 10
+    env_file: ee.env
     ports:
       - "8080:8080"
       - "5080:5005"
@@ -20,6 +27,13 @@ services:
     depends_on:
       aws-mock:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-sf", "http://localhost:8081/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      start_period: 180s
+      retries: 10
+    env_file: ee.env
     ports:
       - "5081:5005"
 
@@ -29,6 +43,12 @@ services:
     depends_on:
       mock-acquirer-ngenius-service:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-sf", "http://localhost:8082/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      start_period: 180s
+      retries: 10
     ports:
       - "5082:5005"
 
@@ -41,6 +61,18 @@ services:
     ports:
       - "80:80"
       - "5083:5005"
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+        reservations:
+          memory: 512m
+    healthcheck:
+      interval: 30s
+      timeout: 10s
+      start_period: 240s
+      retries: 10
+      test: ["CMD", "curl", "-sf", "http://localhost/actuator/health"]
 
   portal-service:
     image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/portal:${IMAGE_VERSION}
@@ -50,6 +82,13 @@ services:
         condition: service_healthy
       opensearch:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-sf", "http://localhost:8090/portal-v1/health" ]
+      interval: 30s
+      timeout: 10s
+      start_period: 180s
+      retries: 10
+    env_file: ee.env
     ports:
       - "8090:8090"
       - "5090:5005"
@@ -57,8 +96,20 @@ services:
   opensearch:
     container_name: opensearch
     build:
-      context: ../../../_common/docker/image-opensearch
+      context: ./image-opensearch
       dockerfile: Dockerfile
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+        reservations:
+          memory: 1g
+    healthcheck:
+      test: [ "CMD", "curl", "-k", "-sf", "http://localhost:9200/_cluster/health?wait_for_status=green&timeout=60s" ]
+      interval: 30s
+      timeout: 20s
+      start_period: 180s
+      retries: 10
     env_file:
       - path: ee.env
     ports:
@@ -72,30 +123,27 @@ services:
   aws-mock:
     container_name: aws-mock
     build:
-      context: ../../../_common/docker/image-aws-mock
+      context: ./image-aws-mock
       dockerfile: Dockerfile
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4566/_localstack/init/ready" ]
+      interval: 30s
+      timeout: 10s
+      start_period: 180s
+      retries: 10
     env_file:
       - path: ee.env
-      - path: ../../../.env
+      - path: ../.env
         required: false
     environment:
       - SERVICES=dynamodb,sqs,sns,ssm,cognito-idp,apigateway,events,s3,lambda,scheduler
     ports:
       - "4566:4566"
     volumes:
-      - ../../../_common/docker/image-aws-mock/aws-mock-init:/etc/localstack/init/ready.d
-      - ../../../_common/lambda:/lambda
+      - ./image-aws-mock/aws-mock-init:/etc/localstack/init/ready.d
+      - ../lambda:/lambda
       # this is required for lambda, as it launches its own docker container
       - /var/run/docker.sock:/var/run/docker.sock
-
-  api-test:
-    image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/api-test:${IMAGE_VERSION}
-    container_name: api-test
-    depends_on:
-      merchant-service:
-        condition: service_healthy
-      portal-service:
-        condition: service_healthy
 
   portal-web:
     image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/portal-web:${IMAGE_VERSION}
@@ -103,3 +151,8 @@ services:
     depends_on:
       portal-service:
         condition: service_healthy
+    ports:
+      - "8085:80"
+    platform: linux/amd64
+    environment:
+      - API_HOST=portal-service:8090
