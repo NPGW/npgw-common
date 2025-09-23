@@ -26,7 +26,7 @@ CONTROL_NAME="control-for-test-2"
 echo "Adding control {${CONTROL_NAME}} to {npgw.control} table..."
 ITEM=$(cat <<EOF
 {
-  "controlCode": {"S": "NGenius"},
+  "controlCode": {"S": "Neutrino"},
   "controlName": {"S": "${CONTROL_NAME}"},
   "controlConfig": {"S": ""},
   "isActive": {"BOOL": true},
