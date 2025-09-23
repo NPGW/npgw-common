@@ -849,6 +849,11 @@ components:
               type: string
               description: Updated time (ISO 8601).
               example: 2025-08-12T11:11:59.711Z
+            cancelAt:
+              format: date-time
+              type: string
+              description: Updated time (ISO 8601).
+              example: 2025-08-12T11:11:59.711Z
             paymentUrl:
               type: string
               description: Payment link to which the customer should be redirected to complete 3DSecure and subsequent processing.
