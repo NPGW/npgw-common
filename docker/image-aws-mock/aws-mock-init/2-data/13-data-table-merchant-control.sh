@@ -203,4 +203,3 @@ aws dynamodb put-item \
   --item "$ITEM" \
   --region "${AWS_REGION}" \
   --output text
-
