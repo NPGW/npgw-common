@@ -15,7 +15,7 @@ USER root
 RUN chmod +x /usr/local/bin/setup-opensearch.sh
 USER opensearch
 
-HEALTHCHECK --interval=20s --timeout=20s --start-period=200s --retries=5 \
+HEALTHCHECK --interval=20s --timeout=20s --start-period=20s --retries=30 \
   CMD curl -k "${OPENSEARCH_HOST}/${OPENSEARCH_HEALTH_CHECK}" || exit 1
 
 ENTRYPOINT ["/usr/local/bin/setup-opensearch.sh"]
