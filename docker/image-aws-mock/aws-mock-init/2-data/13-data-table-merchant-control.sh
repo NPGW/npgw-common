@@ -130,7 +130,7 @@ ITEM=$(cat <<EOF
         "controlConfig": {"M": {
             "url": {"S": "https://neutrinoapi.net/bin-lookup"},
             "userId": {"S": "npgw"},
-            "apiKey": {"S": "9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq"}
+            "apiKey": {"S": ""}
           }
         },
         "isActive": {"BOOL": true}
@@ -160,7 +160,7 @@ ITEM=$(cat <<EOF
         "controlConfig": {"M": {
             "url": {"S": "https://neutrinoapi.net/bin-lookup"},
             "userId": {"S": "npgw"},
-            "apiKey": {"S": "9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq"}
+            "apiKey": {"S": ""}
           }
         },
         "isActive": {"BOOL": true}
@@ -190,7 +190,7 @@ ITEM=$(cat <<EOF
         "controlConfig": {"M": {
             "url": {"S": "https://neutrinoapi.net/bin-lookup"},
             "userId": {"S": "npgw"},
-            "apiKey": {"S": "9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq"}
+            "apiKey": {"S": ""}
           }
         },
         "isActive": {"BOOL": true}
@@ -220,7 +220,7 @@ ITEM=$(cat <<EOF
         "controlConfig": {"M": {
             "url": {"S": "https://neutrinoapi.net/bin-lookup"},
             "userId": {"S": "npgw"},
-            "apiKey": {"S": "9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq"}
+            "apiKey": {"S": ""}
           }
         },
         "isActive": {"BOOL": true}
