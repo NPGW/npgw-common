@@ -15,10 +15,9 @@ ITEM=$(cat <<EOF
         "controlCode": {"S": "${CONTROL_CODE}"},
         "controlName": {"S": "${CONTROL_NAME}"},
         "controlDisplayName": {"S": "${CONTROL_NAME}"},
-        "controlConfig": {"M": {
-            "url": {"S": "http://mock-control-service/bin-lookup"},
-          }
-        },
+        "controlConfig": {"S": "{\"url\": \"http://mock-control-service/bin-lookup\", \
+            \"userId\": \"npgw\", \
+            \"apiKey\": \"9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq\"}"},
         "isActive": {"BOOL": true}
       }
     }
@@ -43,10 +42,9 @@ ITEM=$(cat <<EOF
         "controlCode": {"S": "${CONTROL_CODE}"},
         "controlName": {"S": "${CONTROL_NAME}"},
         "controlDisplayName": {"S": "${CONTROL_NAME}"},
-        "controlConfig": {"M": {
-            "url": {"S": "http://mock-control-service/bin-lookup"},
-          }
-        },
+        "controlConfig": {"S": "{\"url\": \"http://mock-control-service/bin-lookup\", \
+            \"userId\": \"npgw\", \
+            \"apiKey\": \"9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq\"}"},
         "isActive": {"BOOL": true}
       }
     }
@@ -71,10 +69,9 @@ ITEM=$(cat <<EOF
         "controlCode": {"S": "${CONTROL_CODE}"},
         "controlName": {"S": "${CONTROL_NAME}"},
         "controlDisplayName": {"S": "${CONTROL_NAME}"},
-        "controlConfig": {"M": {
-            "url": {"S": "http://mock-control-service/bin-lookup"},
-          }
-        },
+        "controlConfig": {"S": "{\"url\": \"http://mock-control-service/bin-lookup\", \
+            \"userId\": \"npgw\", \
+            \"apiKey\": \"9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq\"}"},
         "isActive": {"BOOL": true}
       }
     }
@@ -99,10 +96,9 @@ ITEM=$(cat <<EOF
         "controlCode": {"S": "${CONTROL_CODE}"},
         "controlName": {"S": "${CONTROL_NAME}"},
         "controlDisplayName": {"S": "${CONTROL_NAME}"},
-        "controlConfig": {"M": {
-            "url": {"S": "http://mock-control-service/bin-lookup"},
-          }
-        },
+        "controlConfig": {"S": "{\"url\": \"http://mock-control-service/bin-lookup\", \
+            \"userId\": \"npgw\", \
+            \"apiKey\": \"9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq\"}"},
         "isActive": {"BOOL": true}
       }
     }
@@ -127,12 +123,9 @@ ITEM=$(cat <<EOF
         "controlCode": {"S": "${CONTROL_CODE}"},
         "controlName": {"S": "${CONTROL_NAME}"},
         "controlDisplayName": {"S": "${CONTROL_NAME}"},
-        "controlConfig": {"M": {
-            "url": {"S": "https://neutrinoapi.net/bin-lookup"},
-            "userId": {"S": "npgw"},
-            "apiKey": {"S": "9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq"}
-          }
-        },
+        "controlConfig": {"S": "{\"url\": \"https://neutrinoapi.net/bin-lookup\", \
+            \"userId\": \"npgw\", \
+            \"apiKey\": \"9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq\"}"},
         "isActive": {"BOOL": true}
       }
     }
@@ -157,12 +150,9 @@ ITEM=$(cat <<EOF
         "controlCode": {"S": "${CONTROL_CODE}"},
         "controlName": {"S": "${CONTROL_NAME}"},
         "controlDisplayName": {"S": "${CONTROL_NAME}"},
-        "controlConfig": {"M": {
-            "url": {"S": "https://neutrinoapi.net/bin-lookup"},
-            "userId": {"S": "npgw"},
-            "apiKey": {"S": "9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq"}
-          }
-        },
+        "controlConfig": {"S": "{\"url\": \"https://neutrinoapi.net/bin-lookup\", \
+            \"userId\": \"npgw\", \
+            \"apiKey\": \"9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq\"}"},
         "isActive": {"BOOL": true}
       }
     }
@@ -187,12 +177,9 @@ ITEM=$(cat <<EOF
         "controlCode": {"S": "${CONTROL_CODE}"},
         "controlName": {"S": "${CONTROL_NAME}"},
         "controlDisplayName": {"S": "${CONTROL_NAME}"},
-        "controlConfig": {"M": {
-            "url": {"S": "https://neutrinoapi.net/bin-lookup"},
-            "userId": {"S": "npgw"},
-            "apiKey": {"S": "9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq"}
-          }
-        },
+        "controlConfig": {"S": "{\"url\": \"https://neutrinoapi.net/bin-lookup\", \
+            \"userId\": \"npgw\", \
+            \"apiKey\": \"9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq\"}"},
         "isActive": {"BOOL": true}
       }
     }
@@ -217,12 +204,9 @@ ITEM=$(cat <<EOF
         "controlCode": {"S": "${CONTROL_CODE}"},
         "controlName": {"S": "${CONTROL_NAME}"},
         "controlDisplayName": {"S": "${CONTROL_NAME}"},
-        "controlConfig": {"M": {
-            "url": {"S": "https://neutrinoapi.net/bin-lookup"},
-            "userId": {"S": "npgw"},
-            "apiKey": {"S": "9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq"}
-          }
-        },
+        "controlConfig": {"S": "{\"url\": \"https://neutrinoapi.net/bin-lookup\", \
+            \"userId\": \"npgw\", \
+            \"apiKey\": \"9OIww5gdYChbVgNYPrzu4ZQTcCQCUuRSVE0sshXjo0WwBEbq\"}"},
         "isActive": {"BOOL": true}
       }
     }
