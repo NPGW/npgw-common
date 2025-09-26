@@ -835,6 +835,10 @@ components:
               type: string
               description: Unique Transaction ID in the Gateway.
               example: id.transaction.vxIXLerl1XJ-KxoChv5GU6ASc3TTzAk7zM8U5jzV_n9kXyPNp4yAAuAILXriju5g
+            merchantTitle:
+              type: string
+              description: Merchant title.
+              example: Business unit 1
             status:
               $ref: '#/components/schemas/TransactionStatus'
             error:

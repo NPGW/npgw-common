@@ -2301,6 +2301,11 @@ components:
 
     TransactionHistoryFilter:
       type: object
+      x-implements:
+        - xyz.npgw.validator.date.IDateRange
+      required:
+        - dateFrom
+        - dateTo
       properties:
         merchantId:
           type: string
@@ -2352,6 +2357,11 @@ components:
 
     TransactionSummaryFilter:
       type: object
+      x-implements:
+        - xyz.npgw.validator.date.IDateRange
+      required:
+        - dateFrom
+        - dateTo
       properties:
         merchantId:
           type: string
