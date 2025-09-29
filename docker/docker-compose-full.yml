@@ -10,12 +10,6 @@ services:
         condition: service_healthy
       notification-service:
         condition: service_healthy
-    healthcheck:
-      test: [ "CMD", "curl", "-sf", "http://localhost:8080/merchant-v1/health" ]
-      interval: 30s
-      timeout: 10s
-      start_period: 180s
-      retries: 10
     env_file: ee.env
     ports:
       - "8080:8080"
@@ -27,12 +21,6 @@ services:
     depends_on:
       aws-mock:
         condition: service_healthy
-    healthcheck:
-      test: [ "CMD", "curl", "-sf", "http://localhost:8081/actuator/health" ]
-      interval: 30s
-      timeout: 10s
-      start_period: 180s
-      retries: 10
     env_file: ee.env
     ports:
       - "5081:5005"
@@ -43,12 +31,6 @@ services:
     depends_on:
       mock-acquirer-ngenius-service:
         condition: service_healthy
-    healthcheck:
-      test: [ "CMD", "curl", "-sf", "http://localhost:8082/actuator/health" ]
-      interval: 30s
-      timeout: 10s
-      start_period: 180s
-      retries: 10
     ports:
       - "5082:5005"
 
@@ -59,7 +41,7 @@ services:
       - MOCK_NGENIUS_SERVER_URL=http://mock-acquirer-ngenius-service
       - MOCK_NGENIUS_CLIENT_URL=http://localhost
     ports:
-      - "80:80"
+      - "81:81"
       - "5083:5005"
     deploy:
       resources:
@@ -67,12 +49,6 @@ services:
           memory: 1g
         reservations:
           memory: 512m
-    healthcheck:
-      interval: 30s
-      timeout: 10s
-      start_period: 240s
-      retries: 10
-      test: ["CMD", "curl", "-sf", "http://localhost/actuator/health"]
 
   portal-service:
     image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/portal:${IMAGE_VERSION}
@@ -82,12 +58,6 @@ services:
         condition: service_healthy
       opensearch:
         condition: service_healthy
-    healthcheck:
-      test: [ "CMD", "curl", "-sf", "http://localhost:8090/portal-v1/health" ]
-      interval: 30s
-      timeout: 10s
-      start_period: 180s
-      retries: 10
     env_file: ee.env
     ports:
       - "8090:8090"
@@ -104,12 +74,6 @@ services:
           memory: 2g
         reservations:
           memory: 1g
-    healthcheck:
-      test: [ "CMD", "curl", "-k", "-sf", "http://localhost:9200/_cluster/health?wait_for_status=green&timeout=60s" ]
-      interval: 30s
-      timeout: 20s
-      start_period: 180s
-      retries: 10
     env_file:
       - path: ee.env
     ports:
@@ -125,12 +89,6 @@ services:
     build:
       context: ./image-aws-mock
       dockerfile: Dockerfile
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:4566/_localstack/init/ready" ]
-      interval: 30s
-      timeout: 10s
-      start_period: 180s
-      retries: 10
     env_file:
       - path: ee.env
       - path: ../.env
