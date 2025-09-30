@@ -50,6 +50,13 @@ services:
         reservations:
           memory: 512m
 
+  mock-control-service:
+    image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/mock-control:${IMAGE_VERSION}
+    container_name: mock-control-service
+    ports:
+      - "82:82"
+      - "5084:5005"
+
   portal-service:
     image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/portal:${IMAGE_VERSION}
     container_name: portal-service
