@@ -55,9 +55,9 @@ if curl -s -k "${OPENSEARCH_HOST}/${DELTA_INDEX}" -u ${OPENSEARCH_USER}:${OPENSE
     --data-binary @"${MAPPING_PROPERTIES_DELTA}"
 fi
 
-echo "Indexing document into '${HISTORY_INDEX}'..."
+echo "Indexing document into '${DELTA_INDEX}'..."
 init_doc_output=$(
-  curl -X POST "${OPENSEARCH_HOST}/${HISTORY_INDEX}/_doc/id.transaction.dummy?refresh=true" \
+  curl -X POST "${OPENSEARCH_HOST}/${DELTA_INDEX}/_doc/id.transaction.dummy?refresh=true" \
   -H 'Content-Type: application/json' \
   --data-binary @"${INITIAL_DOCUMENT}" -k -u ${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}
 )
