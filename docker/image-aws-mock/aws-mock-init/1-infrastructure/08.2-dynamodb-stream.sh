@@ -108,3 +108,35 @@ awslocal lambda add-permission \
   --action lambda:InvokeFunction \
   --principal sns.amazonaws.com \
   --source-arn "${DYNAMODB_SNS_TOPIC_ARN}"
+
+
+echo "Creating Delta Lambda..."
+awslocal lambda create-function \
+  --function-name DynamoDBStreamHandlerDelta \
+  --zip-file fileb:///lambda/dbstream/lambda_dynamo_stream_handlerdelta.zip \
+  --role arn:aws:iam::000000000000:role/lambda-role \
+  --handler lambda_handler_delta.lambda_handler_delta \
+  --timeout 50 \
+  --runtime python3.9 \
+  --environment Variables="{OPENSEARCH_HOST=$OPENSEARCH_HOST,OPENSEARCH_USER=$OPENSEARCH_USER,OPENSEARCH_PASSWORD=$OPENSEARCH_PASSWORD}"
+
+echo "Waiting for function DynamoDBStreamHandlerDelta to be active..."
+awslocal lambda wait function-active-v2 --function-name DynamoDBStreamHandlerDelta
+
+awslocal lambda create-event-source-mapping \
+  --function-name DynamoDBStreamHandlerDelta \
+  --event-source "${STREAM_ARN}"  \
+  --batch-size 5 \
+  --starting-position LATEST
+
+awslocal sns subscribe \
+  --topic-arn "${DYNAMODB_SNS_TOPIC_ARN}" \
+  --protocol lambda \
+  --notification-endpoint arn:aws:lambda:${AWS_REGION}:000000000000:function:DynamoDBStreamHandlerDelta
+
+awslocal lambda add-permission \
+  --function-name DynamoDBStreamHandlerDelta \
+  --statement-id AllowExecutionFromSNS \
+  --action lambda:InvokeFunction \
+  --principal sns.amazonaws.com \
+  --source-arn "${DYNAMODB_SNS_TOPIC_ARN}"

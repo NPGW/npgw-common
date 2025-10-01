@@ -9,6 +9,7 @@ COPY transforms-job.json /usr/local/bin/transforms-job.json
 COPY initial-document.json /usr/local/bin/initial-document.json
 COPY mapping_properties_status_history.json /usr/local/bin/mapping_properties_status_history.json
 COPY mapping_properties_summary.json /usr/local/bin/mapping_properties_summary.json
+COPY mapping_properties_delta.json /usr/local/bin/mapping_properties_delta.json
 
 
 USER root
