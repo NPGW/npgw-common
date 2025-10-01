@@ -1,0 +1,33 @@
+{
+  "mappings": {
+    "properties": {
+      "transactionId": {
+        "type": "text",
+        "index": true,
+        "fields": { "keyword": { "type": "keyword" } }
+      },
+      "merchantId": {
+        "type": "text",
+        "index": true,
+        "fields": { "keyword": { "type": "keyword" } }
+      },
+      "currency": {
+        "type": "text",
+        "index": true,
+        "fields": { "keyword": { "type": "keyword" } }
+      },
+      "status": {
+        "type": "text",
+        "index": true,
+        "fields": { "keyword": { "type": "keyword" } }
+      },
+      "updatedOn": {
+        "type": "date",
+        "index": true
+      },
+      "amountChange": { "type": "long", "index": false },
+      "countChange": { "type": "long", "index": false }
+    }
+  }
+}
+

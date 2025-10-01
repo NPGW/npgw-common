@@ -33,11 +33,11 @@
           }
         },
         "totalAmount": {
-          "type": "integer",
+          "type": "long",
           "index": false
         },
         "totalCount": {
-          "type": "integer",
+          "type": "long",
           "index": false
         },
         "transform": {

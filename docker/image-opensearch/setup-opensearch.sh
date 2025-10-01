@@ -4,12 +4,14 @@ set -e
 HISTORY_INDEX="npgw.transaction.log"
 STATUS_INDEX="npgw.transaction.status"
 SUMMARY_INDEX="npgw.transaction.summary"
+DELTA_INDEX="npgw.transaction.delta"
 
 TRANSFORMS_JOB_NAME="daily_aggregation"
 INGEST_PIPELINE_NAME="integer_conversion_pipeline"
 
 MAPPING_PROPERTIES_STATUS_HISTORY="/usr/local/bin/mapping_properties_status_history.json"
 MAPPING_PROPERTIES_SUMMARY="/usr/local/bin/mapping_properties_summary.json"
+MAPPING_PROPERTIES_DELTA="/usr/local/bin/mapping_properties_delta.json"
 TRANSFORMS_JOB="/usr/local/bin/transforms-job.json"
 INITIAL_DOCUMENT="/usr/local/bin/initial-document.json"
 
@@ -42,6 +44,15 @@ if curl -s -k "${OPENSEARCH_HOST}/${STATUS_INDEX}" -u ${OPENSEARCH_USER}:${OPENS
     -k -u ${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD} \
     -H 'Content-Type: application/json' \
     --data-binary @"${MAPPING_PROPERTIES_STATUS_HISTORY}"
+fi
+
+echo "Creating delta index '${DELTA_INDEX}'..."
+if curl -s -k "${OPENSEARCH_HOST}/${DELTA_INDEX}" -u ${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD} | grep -q '"index_not_found_exception"'; then
+  echo "Delta index '${DELTA_INDEX}' does not exist. Creating it..."
+  curl -X PUT "${OPENSEARCH_HOST}/${DELTA_INDEX}" \
+    -k -u ${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD} \
+    -H 'Content-Type: application/json' \
+    --data-binary @"${MAPPING_PROPERTIES_DELTA}"
 fi
 
 echo "Indexing document into '${HISTORY_INDEX}'..."

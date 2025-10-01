@@ -9,7 +9,7 @@
       }
     },
     "description": "Transform job created by API call",
-    "source_index": "npgw.transaction.log",
+    "source_index": "npgw.transaction.delta",
     "data_selection_query": {
       "match_all": {}
     },
@@ -45,18 +45,18 @@
     ],
     "aggregations": {
       "totalCount": {
-        "value_count": {
-          "field": "_id"
+        "sum": {
+          "field": "countChange"
         }
       },
       "totalAmount": {
         "sum": {
-          "field": "amount"
+          "field": "amountChange"
         }
       },
       "averageAmount": {
         "avg": {
-          "field": "amount"
+          "field": "amountChange"
         }
       }
     }
