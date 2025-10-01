@@ -1,0 +1,123 @@
+services:
+
+  merchant-service:
+    image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/merchant:${IMAGE_VERSION}
+    container_name: merchant-service
+    depends_on:
+      aws-mock:
+        condition: service_healthy
+      acquirer-ngenius-service:
+        condition: service_healthy
+      notification-service:
+        condition: service_healthy
+    env_file: ee.env
+    ports:
+      - "8080:8080"
+      - "5080:5005"
+
+  notification-service:
+    image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/notification:${IMAGE_VERSION}
+    container_name: notification-service
+    depends_on:
+      aws-mock:
+        condition: service_healthy
+    env_file: ee.env
+    ports:
+      - "5081:5005"
+
+  acquirer-ngenius-service:
+    image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/acquirer-ngenius:${IMAGE_VERSION}
+    container_name: acquirer-ngenius-service
+    depends_on:
+      mock-acquirer-ngenius-service:
+        condition: service_healthy
+    ports:
+      - "5082:5005"
+
+  mock-acquirer-ngenius-service:
+    image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/mock-acquirer-ngenius:${IMAGE_VERSION}
+    container_name: mock-acquirer-ngenius-service
+    environment:
+      - MOCK_NGENIUS_SERVER_URL=http://mock-acquirer-ngenius-service
+      - MOCK_NGENIUS_CLIENT_URL=http://localhost
+    ports:
+      - "81:81"
+      - "5083:5005"
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+        reservations:
+          memory: 512m
+
+  mock-control-service:
+    image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/mock-control:${IMAGE_VERSION}
+    container_name: mock-control-service
+    ports:
+      - "82:82"
+      - "5084:5005"
+
+  portal-service:
+    image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/portal:${IMAGE_VERSION}
+    container_name: portal-service
+    depends_on:
+      aws-mock:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+    env_file: ee.env
+    ports:
+      - "8090:8090"
+      - "5090:5005"
+
+  opensearch:
+    container_name: opensearch
+    build:
+      context: ./image-opensearch
+      dockerfile: Dockerfile
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+        reservations:
+          memory: 1g
+    env_file:
+      - path: ee.env
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  aws-mock:
+    container_name: aws-mock
+    build:
+      context: ./image-aws-mock
+      dockerfile: Dockerfile
+    env_file:
+      - path: ee.env
+      - path: ../.env
+        required: false
+    environment:
+      - SERVICES=dynamodb,sqs,sns,ssm,cognito-idp,apigateway,events,s3,lambda,scheduler
+    ports:
+      - "4566:4566"
+    volumes:
+      - ./image-aws-mock/aws-mock-init:/etc/localstack/init/ready.d
+      - ../lambda:/lambda
+      # this is required for lambda, as it launches its own docker container
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  portal-web:
+    image: 214404897309.dkr.ecr.eu-central-1.amazonaws.com/npgw/portal-web:${IMAGE_VERSION}
+    container_name: portal-web
+    depends_on:
+      portal-service:
+        condition: service_healthy
+    ports:
+      - "8085:80"
+    platform: linux/amd64
+    environment:
+      - API_HOST=portal-service:8090
